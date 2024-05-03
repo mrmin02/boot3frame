@@ -22,7 +22,7 @@ public class ResultVO {
     @Schema(description = "응답 결과 데이터")
     private Map<String,Object> result = new HashMap<String,Object>();
 
-    private void putResult(String key, Object value) {
+    public void putResult(String key, Object value) {
         this.result.put(key, value);
     }
 

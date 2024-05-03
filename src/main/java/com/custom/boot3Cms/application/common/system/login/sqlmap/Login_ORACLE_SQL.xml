@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.common.system.login.mapper.LoginMapper">
+
+	<!-- 회원 아이디 비밀번호 검증 -->
+	<select id="getUser" resultType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		SELECT
+			  USER_ID
+			, OUT_YN
+			, USER_AUTH
+			, USER_STATUS
+			, USER_SEQ
+			, DECODE(USER_PWD,#{user_pwd},'Y','N') as pwd_check
+		FROM TB_USER_LIST
+		WHERE USER_ID = #{user_id}
+	</select>
+
+	<!-- 회원 상세정보 -->
+	<select id="getUserDetail" resultType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		SELECT
+			TUL.USER_SEQ,
+			TUL.USER_ID,
+			TUL.LAST_LOGIN_DATE,
+			TUL.LAST_LOGIN_IP,
+			TUL.INPT_SEQ,
+			TUL.INPT_DATE,
+			TUL.UPD_SEQ,
+			TUL.UPD_DATE,
+			TUL.OUT_YN,
+			TUL.USER_AUTH,
+			TUL.USER_STATUS,
+			TUD.USER_NAME,
+			TUD.USER_EMAIL
+		FROM TB_USER_LIST TUL
+		INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+		WHERE 1=1
+		AND TUL.USER_SEQ = #{user_seq}
+		AND TUL.OUT_YN = 'N'
+	</select>
+
+	<!--  회원 토큰 저장 -->
+	<insert id="setUserToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		INSERT INTO TB_USER_TOKEN
+		(
+		  	TOKEN_SEQ,
+	   		USER_ID,
+		    ACCESS_TOKEN,
+		 	REFRESH_TOKEN,
+		 	INPT_DATE
+		)
+		VALUES
+		(
+			TB_USER_TOKEN_SEQ.NEXTVAL,
+			#{user_id},
+			#{access_token},
+			#{refresh_token},
+			CURRENT_TIMESTAMP
+		)
+	</insert>
+
+	<!-- 회원 로그인 일자 및 IP 수정 -->
+	<update id="updUserLoginDateIp" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		UPDATE TB_USER_LIST SET
+			LAST_LOGIN_DATE = CURRENT_TIMESTAMP,
+			LAST_LOGIN_IP = #{last_login_ip}
+		WHERE USER_SEQ = #{user_seq}
+	</update>
+
+	<!-- 관리자페이지 접속 로그 저장 -->
+	<insert id="setAdminLog" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		INSERT INTO TB_ADMIN_LOG
+		(
+			ADMIN_LOG_SEQ,
+			USER_SEQ,
+			USER_ID,
+			USER_IP,
+			INPT_DATE
+		)
+		VALUES
+		(
+			TB_ADMIN_LOG_SEQ.NEXTVAL,
+			#{user_seq},
+			#{user_id},
+			#{last_login_ip},
+			CURRENT_TIMESTAMP
+		)
+	</insert>
+
+	<!-- access token 블랙 리스트에 등록 -->
+	<insert id="setBlackAccessToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		INSERT INTO TB_BLACK_TOKEN
+		(
+			TYPE,
+		 	TOKEN,
+		 	INPT_DATE,
+		 	INPT_IP
+		) VALUES
+		(
+			'A',
+		 	#{access_token},
+			CURRENT_TIMESTAMP,
+			#{last_login_ip}
+		)
+	</insert>
+
+	<!-- refresh token 블랙 리스트에 등록 -->
+	<insert id="setBlackRefreshToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		INSERT INTO TB_BLACK_TOKEN
+		(
+			TYPE,
+			TOKEN,
+			INPT_DATE,
+			INPT_IP
+		) VALUES
+		(
+			'R',
+			#{access_token},
+			CURRENT_TIMESTAMP,
+			#{last_login_ip}
+		)
+	</insert>
+
+	<!-- 토큰 블랙리스트 검증 -->
+	<select id="checkBlackToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO" resultType="int">
+		SELECT
+		    COUNT(*)
+		FROM TB_BLACK_TOKEN
+		WHERE TOKEN = #{access_token}
+	</select>
+</mapper>
