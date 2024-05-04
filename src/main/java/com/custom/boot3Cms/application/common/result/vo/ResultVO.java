@@ -28,6 +28,6 @@ public class ResultVO {
 
     public ResultVO() {}
 
-    public ResultVO(String resultCode) {}
-    public ResultVO(int resultCode, String resultMsg) {}
+    public ResultVO(int resultCode) {this.resultCode = resultCode;}
+    public ResultVO(int resultCode, String resultMsg) {this.resultCode = resultCode; this.resultMsg = resultMsg;}
 }

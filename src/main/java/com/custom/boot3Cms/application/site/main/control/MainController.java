@@ -1,5 +1,6 @@
 package com.custom.boot3Cms.application.site.main.control;
 
+import com.custom.boot3Cms.application.common.result.vo.ResultVO;
 import com.custom.boot3Cms.application.site.main.service.MainService;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +15,13 @@ public class MainController {
 
     @ApiOperation(value = "", notes = "메인 테스트")
     @GetMapping(value = {"/","/main"})
-    public String mainTest() throws Exception {
+    public ResultVO mainTest() throws Exception {
 
         // System.out.println(mainService.test()+1);
 
+        ResultVO rtnVO = new ResultVO(200);
+        rtnVO.putResult("result",true);
 
-        return "test123";
+        return rtnVO;
     }
 }
