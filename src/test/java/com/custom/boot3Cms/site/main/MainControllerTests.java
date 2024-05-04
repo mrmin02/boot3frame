@@ -13,6 +13,7 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FilterType;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -20,6 +21,7 @@ import org.springframework.util.MultiValueMap;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 //@ExtendWith(SpringExtension.class)
 @WebMvcTest(controllers = MainController.class,
@@ -61,19 +63,20 @@ public class MainControllerTests {
     }
 
     @Test
+    @WithMockUser // security 설정을 exclude 하여, 401 오류 발생 > MockUser 주입
     public void mainTest() throws Exception {
+        //given
 
-        // when
+        // when / then
         mockMvc.perform(get("/main")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("")
                         .params(params)
                 )
-//                .andExpect(status().isOk())
+                .andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
 
-        //then
     }
 
 }
