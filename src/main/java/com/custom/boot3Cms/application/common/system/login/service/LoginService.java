@@ -1,9 +1,9 @@
 package com.custom.boot3Cms.application.common.system.login.service;
 
-
 import com.custom.boot3Cms.application.common.system.login.mapper.LoginMapper;
 import com.custom.boot3Cms.application.common.system.login.vo.LoginVO;
 import com.custom.boot3Cms.application.common.utils.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import jakarta.annotation.Resource;
@@ -11,12 +11,23 @@ import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * 로그인 서비스
- * 2024-05-03
+ *
+ * @author SEKOREA
+ * @version 1.0
+ * @see <pre>
+ *  Modification Information
+ *
+ * 	수정일     / 수정자   / 수정내용
+ * 	------------------------------------------
+ * 	2018-03-06 / 최재민	 / 최초 생성
+ *
+ * </pre>
+ * @since 2018-03-06
  */
 @Service("loginService")
 public class LoginService {
 
-    @Resource(name = "loginMapper")
+    @Autowired
     LoginMapper loginMapper;
 
     /**
@@ -29,6 +40,15 @@ public class LoginService {
         return loginMapper.getUser(vo);
     }
 
+//    /**
+//     * 휴면 회원 아이디 비밀번호 검증
+//     * @param vo
+//     * @return
+//     */
+//    public LoginVO getUserRest(LoginVO vo) {
+//        return loginMapper.getUserRest(vo);
+//    }
+    
     /**
      * 회원 상세정보
      * @param vo
@@ -36,17 +56,8 @@ public class LoginService {
      * @throws Exception
      */
     public LoginVO getUserDetail(LoginVO vo) throws Exception{
-        return loginMapper.getUserDetail(vo);
-    }
-
-    /**
-     * 회원 토큰 저장
-     * @param vo
-     * @return
-     * @throws Exception
-     */
-    public int setUserToken(LoginVO vo) throws Exception {
-        return loginMapper.setUserToken(vo);
+        vo = loginMapper.getUserDetail(vo);
+        return vo;
     }
 
     /**
@@ -59,6 +70,17 @@ public class LoginService {
         vo.setLast_login_ip(StringUtil.getIP(request));
         return loginMapper.updUserLoginDateIp(vo)>0;
     }
+
+    /**
+     *  회원 로그인 횟수 업
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    public boolean updUserLoginTotalCntUp(LoginVO vo) throws Exception{
+        return loginMapper.updUserLoginTotalCntUp(vo)>0;
+    }
+
 
     /**
      * 관리자페이지 접속 로그 저장
@@ -74,6 +96,15 @@ public class LoginService {
         }
     }
 
+    /**
+     * 회원 토큰 저장
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    public int setUserToken(LoginVO vo) throws Exception {
+        return loginMapper.setUserToken(vo);
+    }
 
     /**
      * Access Token 블랙 리스트 등록
@@ -108,4 +139,5 @@ public class LoginService {
     public int checkBlackToken(LoginVO vo) throws Exception {
         return loginMapper.checkBlackToken(vo);
     }
+
 }

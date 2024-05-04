@@ -59,8 +59,44 @@ dependencies {
 	implementation group: 'io.jsonwebtoken', name: 'jjwt-api', version: '0.11.2'
 	implementation 'io.jsonwebtoken:jjwt-impl:0.11.2'
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.2'
+
+	/**
+	 * Json
+	 */
+	implementation 'net.sf.json-lib:json-lib:2.4:jdk15'
+	implementation 'com.googlecode.json-simple:json-simple:1.1'
+
+	/**
+	 * Tika
+	 */
+	implementation 'org.apache.tika:tika-core:2.9.0'
+
+	/**
+	 * lucy
+	 */
+	implementation 'com.navercorp.lucy:lucy-xss:1.6.3'
+	implementation 'com.navercorp.lucy:lucy-xss-servlet:2.0.0'
+
+	/**
+	 * apache common
+	 */
+	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
+	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
+
 }
 
 tasks.named('test') {
 	useJUnitPlatform()
+}
+
+// gradle 은 main 에서 .java 만 빌드하며, xml 파일은 빌드하지 않음. ( intellij 에서 문제 발생 )
+// 따라서 resoureces 폴더에 xml 파일을 만들어줄 필요가 있지만, project 구조를 그대로 가져오기 위하여 빌드 시,
+// resources 폴더 아래에 xml 파일을 배치하도록 설정
+sourceSets {
+	main {
+		resources {
+			srcDirs = ["src/main/java", "src/main/resources"]
+			exclude "**/*.java"
+		}
+	}
 }

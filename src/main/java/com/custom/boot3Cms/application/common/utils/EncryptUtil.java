@@ -9,8 +9,20 @@ import java.security.NoSuchAlgorithmException;
 
 
 /**
- * 암호화 / 복호화 Util
- */
+ * 암호화 복호화 Util Class
+ * boot3Cms
+ *
+ * @author cms
+ * @version 1.0
+ * @see <pre>
+ *  Modification Information
+ *
+ * 	수정일     / 수정자   / 수정내용
+ * 	------------------------------------------
+ * 	2024-05-04 / cms  / 최초 생성
+ *
+ * </pre>
+ * @since 2024-05-04 */
 public class EncryptUtil {
 
     public static byte[] ivBytes = { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 };

@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.common.system.login.mapper.LoginLogMapper">
+
+	<!-- 회원 로그인 이력 조회 -->
+	<select id="getLastLoginLog" resultType="com.custom.boot3Cms.application.common.system.login.vo.LoginLogVO">
+		SELECT
+			TULL.USER_LOGIN_LOG_SEQ,
+			TULL.USER_ID,
+			TULL.SUC_YN,
+			TULL.ERR_CNT,
+			TULL.LOGIN_IP,
+			DATE_FORMAT(TULL.LAST_TRY_DATE, '%Y-%m-%d %H:%i:%s') AS LAST_TRY_DATE,
+			DATE_FORMAT(TULL.INPT_DATE, '%Y-%m-%d %H:%i:%s') AS INPT_DATE,
+			DATE_FORMAT(TULL.LOCK_UNTIL, '%Y-%m-%d %H:%i:%s') AS LOCK_UNTIL
+		FROM TB_USER_LOGIN_LOG TULL
+		WHERE
+			<choose>
+				<when test="user_login_log_seq != '' and user_login_log_seq != null">
+					TULL.USER_LOGIN_LOG_SEQ = #{user_login_log_seq}
+				</when>
+				<otherwise>
+					TULL.USER_ID = #{user_id}
+					AND TULL.LOGIN_IP = #{login_ip}
+				</otherwise>
+			</choose>
+		ORDER BY TULL.USER_LOGIN_LOG_SEQ DESC
+		LIMIT 1
+	</select>
+
+	<!-- 회원 로그인 일자 수정 -->
+	<insert id="setUserLoginLog" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginLogVO" useGeneratedKeys="true" keyProperty="user_login_log_seq">
+		INSERT INTO TB_USER_LOGIN_LOG
+		(
+			USER_ID,
+			SUC_YN,
+			ERR_CNT,
+			LOGIN_IP,
+			LAST_TRY_DATE,
+			INPT_DATE,
+			LOCK_UNTIL
+		)
+		VALUES
+		(
+			#{user_id},
+			#{suc_yn},
+			#{err_cnt},
+			#{login_ip},
+			now(),
+			now(),
+			#{lock_until}
+		)
+	</insert>
+
+	<!-- 회원 로그인 일자 수정 -->
+	<update id="updUserLoginLog" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginLogVO">
+		UPDATE TB_USER_LOGIN_LOG SET
+			SUC_YN = #{suc_yn},
+			ERR_CNT = #{err_cnt},
+			LAST_TRY_DATE = now(),
+			LOCK_UNTIL = #{lock_until}
+		WHERE USER_LOGIN_LOG_SEQ = #{user_login_log_seq}
+	</update>
+
+	<!-- 회원 로그인 오류 업데이트 -->
+	<update id="updUserLoginLogError" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginLogVO">
+		UPDATE TB_USER_LOGIN_LOG SET
+			SUC_YN = #{suc_yn},
+			ERR_CNT = COALESCE(ERR_CNT, 0) + 1,
+			LAST_TRY_DATE = now(),
+			LOCK_UNTIL = #{lock_until}
+		WHERE USER_LOGIN_LOG_SEQ = #{user_login_log_seq}
+	</update>
+
+	<!-- 잠금 기한 초기화 -->
+	<update id="updClearLockUntil" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginLogVO">
+		UPDATE TB_USER_LOGIN_LOG SET
+		  	LOCK_UNTIL = NULL,
+			SUC_YN = 'U'
+		WHERE USER_ID = #{user_id}
+		<if test="login_ip != null and login_ip != ''">
+			AND LOGIN_IP = #{login_ip}
+		</if>
+  	  	AND LOCK_UNTIL > '2000-01-01'
+	</update>
+
+</mapper>

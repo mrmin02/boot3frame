@@ -21,6 +21,7 @@ public class MainController {
 
         ResultVO rtnVO = new ResultVO(200);
         rtnVO.putResult("result",true);
+        rtnVO.putResult("test",mainService.test());
 
         return rtnVO;
     }

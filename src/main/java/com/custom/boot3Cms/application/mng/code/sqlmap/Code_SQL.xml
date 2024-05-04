@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.code.mapper.CodeMapper">
+
+    <!-- 코드 목록 -->
+    <select id="getCodeList" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        SELECT
+            CD.CODE_SEQ AS ID,
+    		CD.CODE_NM AS TEXT,
+    		CD.PRT_SEQ AS PARENT,
+    		CD.CODE,
+    		CD.ORD,
+    		CD.REMARK,
+    		CD.USE_YN
+        FROM TB_CODE CD
+        ORDER BY CD.ORD
+    </select>
+
+    <!-- 코드 상세보기 -->
+    <select id="getCodeDetail" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        SELECT
+            CD.CODE_SEQ,
+            CD.CODE,
+            CD.CODE_NM,
+            CD.PRT_SEQ,
+            CD.USE_YN,
+            CD.ORD,
+            CD.REMARK,
+            CD.INPT_SEQ,
+            CD.INPT_DATE,
+            CD.UPD_SEQ,
+            CD.UPD_DATE
+        FROM TB_CODE CD
+        WHERE 1=1
+        AND CD.CODE = #{code}
+    </select>
+
+    <!-- 코드 목록 (커스텀태그) -->
+    <select id="getCodeToTag" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        SELECT
+            CODE_SEQ,
+            CODE,
+            CODE_NM,
+            PRT_SEQ,
+            USE_YN,
+            ORD,
+            REMARK,
+            INPT_SEQ,
+            INPT_DATE,
+            UPD_SEQ,
+            UPD_DATE
+        FROM TB_CODE
+        WHERE PRT_SEQ = (SELECT CODE_SEQ FROM TB_CODE WHERE CODE = #{code})
+        AND USE_YN = 'Y'
+        ORDER BY ORD, CODE_SEQ ASC
+    </select>
+
+    <!-- 코드 목록 (커스텀태그) -->
+    <select id="getChildCodeSize" resultType="java.lang.Integer">
+        SELECT
+            COUNT(CODE_SEQ)
+        FROM TB_CODE
+        WHERE PRT_SEQ = (SELECT CODE_SEQ FROM TB_CODE WHERE CODE = #{code})
+        AND USE_YN = 'Y'
+    </select>
+
+    <!-- 코드 NAME 출력 (커스텀태그) -->
+    <select id="getCodeToText" resultType="java.lang.String">
+        SELECT
+            CODE_NM
+        FROM TB_CODE
+        WHERE CODE = #{code}
+        AND USE_YN = 'Y'
+    </select>
+    
+    <!-- 코드 중복 확인 -->
+    <select id="getCodeCheck" resultType="int">
+        SELECT COUNT(*) FROM TB_CODE WHERE CODE = LOWER(#{code})
+    </select>
+
+    <!-- 코드 등록 -->
+    <insert id="setCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        INSERT INTO TB_CODE
+        (
+            CODE,
+            CODE_NM,
+            PRT_SEQ,
+            USE_YN,
+            ORD,
+            REMARK,
+            INPT_SEQ,
+            INPT_DATE
+        )
+        VALUES
+        (
+            #{code},
+            #{code_nm},
+            #{prt_seq},
+            #{use_yn},
+            #{ord},
+            #{remark},
+            #{inpt_seq},
+            NOW()
+        )
+    </insert>
+
+    <!-- 코드 수정 -->
+    <update id="updCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        UPDATE TB_CODE SET
+            CODE = #{code},
+            CODE_NM = #{code_nm},
+            USE_YN = #{use_yn},
+            REMARK = #{remark},
+            ORD = #{ord},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = NOW()
+        WHERE CODE_SEQ = #{code_seq}
+    </update>
+
+    <!-- 코드 삭제 -->
+    <delete id="delCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        DELETE FROM TB_CODE WHERE CODE_SEQ = #{code_seq}
+    </delete>
+
+    <!-- 자식코드 삭제 -->
+    <delete id="delChildrenCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        DELETE FROM TB_CODE WHERE PRT_SEQ = #{code_seq}
+    </delete>
+
+    <!-- 코드 목록 by Searching -->
+    <select id="getCodeListByType" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        SELECT
+            CD.CODE,
+            CD.CODE_NM
+        FROM TB_CODE CD
+        WHERE CD.PRT_SEQ = ( SELECT SUB_CD.CODE_SEQ FROM TB_CODE SUB_CD
+                                WHERE SUB_CD.CODE = #{code})
+          AND CD.USE_YN = 'Y'
+        ORDER BY CD.ORD
+    </select>
+
+    <!--  산그림 홈페이지에 맞게 권한관리 구현을 위한 코드 목록 -->
+    <select id="getCodeToAuthConf" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+        SELECT
+            CODE_SEQ,
+            CODE,
+            CODE_NM,
+            PRT_SEQ,
+            USE_YN,
+            ORD,
+            REMARK,
+            INPT_SEQ,
+            INPT_DATE,
+            UPD_SEQ,
+            UPD_DATE
+        FROM TB_CODE
+        WHERE PRT_SEQ = (SELECT CODE_SEQ FROM TB_CODE WHERE CODE = #{code})
+          AND USE_YN = 'Y'
+    </select>
+
+</mapper>

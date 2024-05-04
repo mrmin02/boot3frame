@@ -63,7 +63,7 @@ public class MainControllerTests {
     }
 
     @Test
-    @WithMockUser // security 설정을 exclude 하여, 401 오류 발생 > MockUser 주입
+    @WithMockUser // security 설정을 exclude 하여, 기본설정으로 401 오류 발생 > MockUser 주입
     public void mainTest() throws Exception {
         //given
 

@@ -7,10 +7,8 @@
 		SELECT
 			  USER_ID
 			, OUT_YN
-			, USER_AUTH
-			, USER_STATUS
 			, USER_SEQ
-			, DECODE(USER_PWD,#{user_pwd},'Y','N') as pwd_check
+			, IF(USER_PWD=#{user_pwd},'Y','N') as pwd_check
 		FROM TB_USER_LIST
 		WHERE USER_ID = #{user_id}
 	</select>
@@ -20,6 +18,7 @@
 		SELECT
 			TUL.USER_SEQ,
 			TUL.USER_ID,
+			TUL.USER_AUTH,
 			TUL.LAST_LOGIN_DATE,
 			TUL.LAST_LOGIN_IP,
 			TUL.INPT_SEQ,
@@ -27,10 +26,8 @@
 			TUL.UPD_SEQ,
 			TUL.UPD_DATE,
 			TUL.OUT_YN,
-			TUL.USER_AUTH,
-			TUL.USER_STATUS,
 			TUD.USER_NAME,
-			TUD.USER_EMAIL
+		    TUD.EMAIL
 		FROM TB_USER_LIST TUL
 		INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
 		WHERE 1=1
@@ -38,31 +35,18 @@
 		AND TUL.OUT_YN = 'N'
 	</select>
 
-	<!--  회원 토큰 저장 -->
-	<insert id="setUserToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
-		INSERT INTO TB_USER_TOKEN
-		(
-		  	TOKEN_SEQ,
-	   		USER_ID,
-		    ACCESS_TOKEN,
-		 	REFRESH_TOKEN,
-		 	INPT_DATE
-		)
-		VALUES
-		(
-			TB_USER_TOKEN_SEQ.NEXTVAL,
-			#{user_id},
-			#{access_token},
-			#{refresh_token},
-			CURRENT_TIMESTAMP
-		)
-	</insert>
-
 	<!-- 회원 로그인 일자 및 IP 수정 -->
 	<update id="updUserLoginDateIp" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
 		UPDATE TB_USER_LIST SET
-			LAST_LOGIN_DATE = CURRENT_TIMESTAMP,
+			LAST_LOGIN_DATE = now(),
 			LAST_LOGIN_IP = #{last_login_ip}
+		WHERE USER_SEQ = #{user_seq}
+	</update>
+
+	<!-- 회원 로그인 일자 및 IP 수정 -->
+	<update id="updUserLoginTotalCntUp" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		UPDATE TB_USER_DETAIL SET
+			TOTAL_LOGIN_CNT = TOTAL_LOGIN_CNT + 1
 		WHERE USER_SEQ = #{user_seq}
 	</update>
 
@@ -77,13 +61,33 @@
 			INPT_DATE
 		)
 		VALUES
+			(
+				TB_ADMIN_LOG_SEQ.NEXTVAL,
+				#{user_seq},
+				#{user_id},
+				#{last_login_ip},
+				CURRENT_TIMESTAMP
+			)
+	</insert>
+
+	<!--  회원 토큰 저장 -->
+	<insert id="setUserToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+		INSERT INTO TB_USER_TOKEN
 		(
-			TB_ADMIN_LOG_SEQ.NEXTVAL,
-			#{user_seq},
-			#{user_id},
-			#{last_login_ip},
-			CURRENT_TIMESTAMP
+			TOKEN_SEQ,
+			USER_ID,
+			ACCESS_TOKEN,
+			REFRESH_TOKEN,
+			INPT_DATE
 		)
+		VALUES
+			(
+				TB_USER_TOKEN_SEQ.NEXTVAL,
+				#{user_id},
+				#{access_token},
+				#{refresh_token},
+				CURRENT_TIMESTAMP
+			)
 	</insert>
 
 	<!-- access token 블랙 리스트에 등록 -->
@@ -91,16 +95,16 @@
 		INSERT INTO TB_BLACK_TOKEN
 		(
 			TYPE,
-		 	TOKEN,
-		 	INPT_DATE,
-		 	INPT_IP
+			TOKEN,
+			INPT_DATE,
+			INPT_IP
 		) VALUES
-		(
-			'A',
-		 	#{access_token},
-			CURRENT_TIMESTAMP,
-			#{last_login_ip}
-		)
+			(
+				'A',
+				#{access_token},
+				CURRENT_TIMESTAMP,
+				#{last_login_ip}
+			)
 	</insert>
 
 	<!-- refresh token 블랙 리스트에 등록 -->
@@ -112,19 +116,20 @@
 			INPT_DATE,
 			INPT_IP
 		) VALUES
-		(
-			'R',
-			#{access_token},
-			CURRENT_TIMESTAMP,
-			#{last_login_ip}
-		)
+			(
+				'R',
+				#{access_token},
+				CURRENT_TIMESTAMP,
+				#{last_login_ip}
+			)
 	</insert>
 
 	<!-- 토큰 블랙리스트 검증 -->
 	<select id="checkBlackToken" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO" resultType="int">
 		SELECT
-		    COUNT(*)
+			COUNT(*)
 		FROM TB_BLACK_TOKEN
 		WHERE TOKEN = #{access_token}
 	</select>
+
 </mapper>
