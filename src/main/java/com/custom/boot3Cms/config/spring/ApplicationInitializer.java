@@ -11,12 +11,14 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 /**
  * Initializer
  */
-public class ApplicationInitializer implements WebApplicationInitializer {
+public class ApplicationInitializer  { //implements WebApplicationInitializer
 
-    @Override
-    public void onStartup(ServletContext servletContext) throws ServletException {
-        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
-        rootContext.register(MybatisConfig.class);
-        servletContext.addListener(new ContextLoaderListener(rootContext));
-    }
+//    @Override
+//    public void onStartup(ServletContext servletContext) throws ServletException {
+//        AnnotationConfigWebApplicationContext rootContext = new AnnotationConfigWebApplicationContext();
+//        rootContext.register(MybatisConfig.class);
+//        rootContext.register(SecurityConfig.class);
+//        rootContext.register(SwaggerConfig.class);
+//        servletContext.addListener(new ContextLoaderListener(rootContext));
+//    }
 }

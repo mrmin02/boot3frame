@@ -8,10 +8,6 @@ import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -57,21 +53,15 @@ public class JoinController {
      * @return
      * @throws Exception
      */
-    @ApiOperation(value = "회원 ID 중복확인",notes = "회원 ID 중복체크를 진행합니다.")
-    @Operation(summary = "회원 ID 중복 확인", description = "user_id 를 이용하여 ID 중복 확인",
-            responses = {
-            @ApiResponse(responseCode = "200", description = "중복확인 성공", content = @Content(schema = @Schema(implementation = ResultVO.class)))
-    })
+    @Operation(summary = "회원 ID 중복 확인", description = "user_id 를 이용하여 ID 중복 확인")
     @PostMapping(value = "/join/user/check")
-    public ResultVO getUserCheck(
-                                @Parameter(name="user_id", description = "아이디")
-                                @RequestBody String user_id,
+    public ResultVO getUserCheck(@RequestBody JoinVO joinVO,
                                  HttpServletRequest request,
                                  HttpServletResponse response,
                                  RedirectAttributes redirectAttributes) throws Exception {
         ResultVO resultVO = new ResultVO(200);
 
-        Map<String, Object> map = joinService.checkUserId(user_id);
+        Map<String, Object> map = joinService.checkUserId(joinVO.getUser_id());
         boolean result = (boolean) map.get("result");
 
         resultVO.setResultMsg(map.get("rMsg").toString());

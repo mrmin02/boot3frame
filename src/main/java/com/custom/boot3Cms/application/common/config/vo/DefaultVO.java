@@ -130,6 +130,7 @@ public class DefaultVO implements Serializable {
 		this.role_list = role_list;
 	}
 
+	@Schema(hidden = true)
 	private List<String> role_list;
 
 	public String getDel_file_count() { return del_file_count; }

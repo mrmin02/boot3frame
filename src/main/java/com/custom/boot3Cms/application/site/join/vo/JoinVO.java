@@ -59,7 +59,7 @@ public class JoinVO extends UserVO {
     private String upd_date; // 수정일자
     @Schema(description = "회원 이름")
     private String user_name; // 회원 이름
-    @Schema(description = "전화번호")
+    @Schema(description = "전화번호", example = "010-1234-1234")
     private String phone_number;
 
     @Schema(hidden = true)
