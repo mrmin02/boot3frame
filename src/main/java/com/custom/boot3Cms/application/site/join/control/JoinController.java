@@ -2,18 +2,26 @@ package com.custom.boot3Cms.application.site.join.control;
 
 import com.custom.boot3Cms.application.common.result.vo.ResultVO;
 import com.custom.boot3Cms.application.mng.user.service.UserMngService;
-import com.custom.boot3Cms.application.mng.user.vo.UserVO;
 import com.custom.boot3Cms.application.site.join.service.JoinService;
 import com.custom.boot3Cms.application.site.join.vo.JoinVO;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.ui.ModelMap;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.security.Principal;
 import java.util.Map;
 
@@ -43,7 +51,6 @@ public class JoinController {
 
     /**
      * 회원 ID 중복확인
-     * @param userVO
      * @param request
      * @param response
      * @param redirectAttributes
@@ -51,14 +58,20 @@ public class JoinController {
      * @throws Exception
      */
     @ApiOperation(value = "회원 ID 중복확인",notes = "회원 ID 중복체크를 진행합니다.")
+    @Operation(summary = "회원 ID 중복 확인", description = "user_id 를 이용하여 ID 중복 확인",
+            responses = {
+            @ApiResponse(responseCode = "200", description = "중복확인 성공", content = @Content(schema = @Schema(implementation = ResultVO.class)))
+    })
     @PostMapping(value = "/join/user/check")
-    public ResultVO getUserCheck(@RequestBody UserVO userVO,
+    public ResultVO getUserCheck(
+                                @Parameter(name="user_id", description = "아이디")
+                                @RequestBody String user_id,
                                  HttpServletRequest request,
                                  HttpServletResponse response,
                                  RedirectAttributes redirectAttributes) throws Exception {
         ResultVO resultVO = new ResultVO(200);
 
-        Map<String, Object> map = userMngService.userProc(userVO);
+        Map<String, Object> map = joinService.checkUserId(user_id);
         boolean result = (boolean) map.get("result");
 
         resultVO.setResultMsg(map.get("rMsg").toString());
@@ -80,8 +93,16 @@ public class JoinController {
      * @throws Exception
      */
     @ApiOperation(value = "회원가입 프로세스", notes = "회원가입 프로세스 입니다.")
+    @ApiImplicitParams({
+            @ApiImplicitParam(name="user_id_check", value = "중복체크 여부 yn", required = true),
+            @ApiImplicitParam(name="user_id", value = "가입할 아이디", required = true),
+            @ApiImplicitParam(name="email", value = "가입할 email", required = true),
+            @ApiImplicitParam(name="user_name", value = "사용자 이름", required = true),
+            @ApiImplicitParam(name="user_pwd", value = "사용자 비밀번호", required = true)
+    })
     @PostMapping(value = "/join/proc")
-    public ResultVO joinProc(@RequestBody JoinVO joinVO,
+    public ResultVO joinProc(
+            @RequestBody JoinVO joinVO,
                            HttpServletRequest request,
                            HttpServletResponse response,
                            ModelMap model,
@@ -96,15 +117,16 @@ public class JoinController {
 
         if(joinVO.getUser_id_check().equals("N")){
             resultVO.setResultMsg("올바르지 않은 시도입니다.");
-        }
-        int userResult = joinService.userProc(joinVO);
+        }else{
+            int userResult = joinService.userProc(joinVO);
 
-        switch (userResult){
-            case 1 -> result = true;
-            case 2,3,4 -> rtnMsg = "회원가입 중 오류가 발생하였습니다.";
-            case 5 -> rtnMsg = "이미 가입된 ID 입니다.";
-            case 6 -> rtnMsg = "이미 가입된 이메일 입니다.";
-            default -> rtnMsg = "알 수 없는 오류가 발생하였습니다.";
+            switch (userResult){
+                case 1 -> result = true;
+                case 2,3,4 -> rtnMsg = "회원가입 중 오류가 발생하였습니다.";
+                case 5 -> rtnMsg = "이미 가입된 ID 입니다.";
+                case 6 -> rtnMsg = "이미 가입된 이메일 입니다.";
+                default -> rtnMsg = "알 수 없는 오류가 발생하였습니다.";
+            }
         }
 
         resultVO.setResultMsg(rtnMsg);

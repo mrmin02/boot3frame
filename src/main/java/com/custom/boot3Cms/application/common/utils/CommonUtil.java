@@ -201,47 +201,6 @@ public class CommonUtil {
     }
 
     /**
-     *
-     * 썸네일 파일정보 List를 반환한다.
-     * obj : 대상객체 VO, table_nm : 테이블 명, table_seq : 테이블의 시퀀스, table_file_order : 파일순서, fileDirPath : 파일경로, subDirPath : 파일서브경로, inpt_seq : 등록자, mime_type : 허용 할 mime_type (사용안할시 "" OR null)
-     * 단, 해당 VO에서 DefaultVO를 상속받아야 한다.
-     * @param obj
-     * @param table_nm
-     * @param table_seq
-     * @param fileDirPath
-     * @param subDirPath
-     * @param inpt_seq
-     * @param mime_type
-     * @return
-     * @throws Exception
-     */
-    public static List<FileMngVO> fn_getThumbnailnfo(Object obj, String table_nm, String table_seq, String fileDirPath, String subDirPath, String inpt_seq, String mime_type) throws Exception{
-        List<FileMngVO> rtnList = new ArrayList<>();
-        DefaultVO vo = new DefaultVO();
-        BeanUtils.copyProperties(vo, obj);
-        boolean fileResult = false;
-        if(StringUtil.isNotEmpty(mime_type)){
-            fileResult = fn_checkFileMime(obj, mime_type);
-        }else{
-            fileResult = true;
-        }
-        if(fileResult){
-            if(vo.getThumbnail() != null){
-                for (MultipartFile file : vo.getThumbnail()) {
-                    if(StringUtil.isNotEmpty(file.getOriginalFilename())){
-                        String mime = new Tika().detect(file.getInputStream());
-                        EgovFormBasedFileVo egovFileVO = EgovFileUploadUtil.uploadFile_noValid(file, fileDirPath, subDirPath+table_seq+"/", false, 0, 0, table_nm);
-                        if(egovFileVO.isFileFlag()){
-                            rtnList.add(new FileMngVO(table_nm, table_seq, mime, egovFileVO.getPhysicalName(), egovFileVO.getFileName(), egovFileVO.getServerSubPath(), inpt_seq, egovFileVO.isFileFlag()));
-                        }
-                    }
-                }
-            }
-        }
-        return rtnList;
-    }
-
-    /**
      * 파일 삭제 정보를 반환한다.
      * true / 삭제완료, false / 삭제실패
      * @param filePath

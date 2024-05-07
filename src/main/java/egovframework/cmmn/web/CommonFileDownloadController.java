@@ -38,8 +38,7 @@ public class CommonFileDownloadController {
 
     /**
      * 첨부파일로 등록된 파일에 대하여 다운로드를 제공한다.
-     * 
-     * @param commandMap
+     *
      * @param response
      * @throws Exception
      */

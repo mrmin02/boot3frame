@@ -1,26 +1,29 @@
 package com.custom.boot3Cms.application.common.config.vo;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.Serializable;
 import java.util.List;
 
+
 /**
- * @Class Name : DefaultVO.java
- * @Description : DefaultVO Class
- * @Modification Information
- * @
- * @  수정일      수정자              수정내용
- * @ ---------   ---------   -------------------------------
- * @ 2009.03.16           최초생성
+ * 공통 DTO
+ * boot3Cms
  *
- * @author 개발프레임웍크 실행환경 개발팀
- * @since 2009. 03.16
+ * @author cms
  * @version 1.0
- * @see
+ * @see <pre>
+ *  Modification Information
  *
- */
+ * 	수정일     / 수정자   / 수정내용
+ * 	------------------------------------------
+ * 	2024-05-07 / cms  / 최초 생성
+ *
+ * </pre>
+ * @since 2024-05-07 */
+@Schema(description = "공통 DTO")
 public class DefaultVO implements Serializable {
 	public String getInpt_user_name() {
 		return inpt_user_name;
@@ -43,116 +46,81 @@ public class DefaultVO implements Serializable {
 	 */
 	private static final long serialVersionUID = -858838578081269359L;
 
-	/** 검색조건 */
+	@Schema(description = "검색 조건")
 	private String searchCondition;
 
-	/** 검색Keyword */
+	@Schema(description = "검색어")
 	private String searchKeyword;
 
-	/** 검색사용여부 */
+	@Schema(description = "검색 사용 여부", example = "Y or N")
 	private String searchUseYn = "";
 
-	/** 검색정렬 */
+	@Schema(description = "검색 정렬 기준")
 	private String searchOrderBy;
 
-	/** 현재페이지 */
+	@Schema(description = "현재 페이지")
 	private int pageIndex = 1;
 
-	/** 페이지갯수 */
+	@Schema(description = "페이지 개수")
 	private int pageUnit = 10;
 
-	/** 페이지사이즈 */
+	@Schema(description = "페이지 사이즈", hidden = true)
 	private int pageSize = 10;
 
-	/** firstIndex */
+	@Schema(description = "첫번째 페이지", hidden = true)
 	private int firstIndex = 1;
 
-	/** lastIndex */
+	@Schema(description = "마지막 페이지", hidden = true)
 	private int lastIndex = 1;
 
-	/** recordCountPerPage */
+	@Schema(description = "페이지 당 노출 개수", hidden = true)
 	private int recordCountPerPage = 10;
 
-	/** 확장목록 */
+	@Schema(description = "확장목록", hidden = true)
 	private String extensionPage;
 
+	@Schema(description = "전체 개수", hidden = true)
 	private int totalCount = 1;
 
-	private String notIn="";
-
-	private String page = "";
-
-	/** 날짜 검색 타입 **/
-	private String searchDateType = "";
-
-	/** 날짜 검색 시작일 **/
-	private String searchDateStart = "";
-
-	/** 날짜 검색 종료일 **/
-	private String searchDateEnd = "";
-
-	/** 날짜 검색 년 **/
-	private int searchDateYear;
-
-	/** 날짜 검색 월 **/
-	private String searchDateMonth = "";
-
-	/** 날짜 검색 월 **/
-	private String searchDateDay = "";
-
-	private String searchDateYearMonth = "";
-
-	private String searchDate = "";
-
-	private String searchParam = "";
-
-	private int rowNum = 1;
-
+	@Schema(description = "검색결과 순번", hidden = true)
 	private int rNum = 1;
 
-	private String formMode;
+//	private String formMode;
+//
+//	private String replyMode;
+//
+//	private String validCheck;
 
-	private String replyMode;
+//	private String flag;
 
-	private String validCheck;
+//	private String mode;
 
-	private String flag;
-
-	private String mode;
-
+	@Schema(description = "파일이름", hidden = true)
 	private String file_nm;
 
+	@Schema(description = "파일 물리 이름", hidden = true)
 	private String file_sys_nm;
 
+	@Schema(description = "파일 경로", hidden = true)
 	private String file_path;
 
+	@Schema(description = "파일 배열", hidden = true)
 	private MultipartFile[] file;
 
-	private MultipartFile[] pic_book_file;
-
-	private MultipartFile[] thumbnail;
-
-	private boolean super_user;
-
+	@Schema(description = "회원 타입", hidden = true)
 	private String user_type;
 
+	@Schema(description = "삭제할 파일 시퀀스 배열", hidden = true)
 	private String[] del_file_seq;
 
+	@Schema(description = "삭제할 파일 개수", hidden = true)
 	private String del_file_count;
 
+	@Schema(description = "작성자 이름", hidden = true)
 	private String inpt_user_name;
 
+	@Schema(description = "수정자 이름", hidden = true)
 	private String upd_user_name;
-
-	private String[] del_img_seq;
-
-	public String[] getDel_img_seq() {
-		return del_img_seq;
-	}
-
-	public void setDel_img_seq(String[] del_img_seq) {
-		this.del_img_seq = del_img_seq;
-	}
 
 	public List<String> getRole_list() {
 		return role_list;
@@ -172,36 +140,12 @@ public class DefaultVO implements Serializable {
 
 	public void setDel_file_seq(String[] del_file_seq) { this.del_file_seq = del_file_seq; }
 
-	public String getSearchDate() {
-		return searchDate;
-	}
-
-	public void setSearchDate(String searchDate) {
-		this.searchDate = searchDate;
-	}
-
-	public String getSearchDateYearMonth() {
-		return searchDateYearMonth;
-	}
-
-	public void setSearchDateYearMonth(String searchDateYearMonth) {
-		this.searchDateYearMonth = searchDateYearMonth;
-	}
-
 	public String getUser_type() {
 		return user_type;
 	}
 
 	public void setUser_type(String user_type) {
 		this.user_type = user_type;
-	}
-
-	public boolean isSuper_user() {
-		return super_user;
-	}
-
-	public void setSuper_user(boolean super_user) {
-		this.super_user = super_user;
 	}
 
 	public String getFile_nm() {
@@ -236,36 +180,12 @@ public class DefaultVO implements Serializable {
 		this.file = file;
 	}
 
-	public String getFlag() {
-		return flag;
-	}
-
-	public void setFlag(String flag) {
-		this.flag = flag;
-	}
-
-	public String getMode() {
-		return mode;
-	}
-
-	public void setMode(String mode) {
-		this.mode = mode;
-	}
-
 	public int getrNum() {
 		return rNum;
 	}
 
 	public void setrNum(int rNum) {
 		this.rNum = rNum;
-	}
-
-	public String getSearchParam() {
-		return searchParam;
-	}
-
-	public void setSearchParam(String searchParam) {
-		this.searchParam = searchParam;
 	}
 
 	public String getExtensionPage() {
@@ -276,103 +196,12 @@ public class DefaultVO implements Serializable {
 		this.extensionPage = extensionPage;
 	}
 
-	public String getValidCheck() {
-		return validCheck;
-	}
-
-	public void setValidCheck(String validCheck) {
-		this.validCheck = validCheck;
-	}
-
-	public String getReplyMode() {
-		return replyMode;
-	}
-
-	public void setReplyMode(String replyMode) {
-		this.replyMode = replyMode;
-	}
-
-	public String getSearchDateMonth() {
-		return searchDateMonth;
-	}
-
-
-	public void setSearchDateMonth(String searchDateMonth) {
-		this.searchDateMonth = searchDateMonth;
-	}
-
-
-	public String getSearchDateDay() {
-		return searchDateDay;
-	}
-
-
-	public void setSearchDateDay(String searchDateDay) {
-		this.searchDateDay = searchDateDay;
-	}
-
-	public String getFormMode() {
-		return formMode;
-	}
-
-	public void setFormMode(String formMode) {
-		this.formMode = formMode;
-	}
-
-	public int getRowNum() {
-		return rowNum;
-	}
-
-	public void setRowNum(int rowNum) {
-		this.rowNum = rowNum;
-	}
-
-	public String getSearchDateStart() {
-		return searchDateStart;
-	}
-
-	public void setSearchDateStart(String searchDateStart) {
-		this.searchDateStart = searchDateStart;
-	}
-
-	public String getSearchDateEnd() {
-		return searchDateEnd;
-	}
-
-	public void setSearchDateEnd(String searchDateEnd) {
-		this.searchDateEnd = searchDateEnd;
-	}
-
-	public String getSearchDateType() {
-		return searchDateType;
-	}
-
-	public void setSearchDateType(String searchDateType) {
-		this.searchDateType = searchDateType;
-	}
-
-	public String getPage() {
-		return page;
-	}
-
-	public void setPage(String page) {
-		this.page = page;
-	}
-
 	public int getTotalCount() {
 		return totalCount;
 	}
 
 	public void setTotalCount(int totalCount) {
 		this.totalCount = totalCount;
-	}
-
-	public String getNotIn() {
-		return notIn;
-	}
-
-	public void setNotIn(String notIn) {
-		this.notIn = notIn;
 	}
 
 	public int getFirstIndex() {
@@ -387,14 +216,6 @@ public class DefaultVO implements Serializable {
 	public int getLastIndex() {
 		lastIndex = ((this.getPageIndex()-1) * this.getRecordCountPerPage() + this.getRecordCountPerPage());
 		return lastIndex;
-	}
-
-	public int getSearchDateYear() {
-		return searchDateYear;
-	}
-
-	public void setSearchDateYear(int searchDateYear) {
-		this.searchDateYear = searchDateYear;
 	}
 
 	public void setLastIndex(int lastIndex) {
@@ -463,22 +284,6 @@ public class DefaultVO implements Serializable {
 
 	public void setSearchOrderBy(String searchOrderBy) {
 		this.searchOrderBy = searchOrderBy;
-	}
-
-	public MultipartFile[] getThumbnail() {
-		return thumbnail;
-	}
-
-	public void setThumbnail(MultipartFile[] thumbnail) {
-		this.thumbnail = thumbnail;
-	}
-
-	public MultipartFile[] getPic_book_file() {
-		return pic_book_file;
-	}
-
-	public void setPic_book_file(MultipartFile[] pic_book_file) {
-		this.pic_book_file = pic_book_file;
 	}
 
 	@Override
