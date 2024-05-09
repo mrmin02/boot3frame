@@ -72,41 +72,50 @@ public class JoinService {
      * @throws Exception
      */
     public int userProc(UserVO vo) throws Exception{
-        boolean result = false;
-        if (StringUtil.isNotEmpty(vo.getUser_id())) {
-            // 아이디 중복검사
-            result = userMngMapper.checkUserId(vo.getUser_id()) == 0;
-            if(result){
-            } else {
-                return 5;
-            }
-        }
-        if (StringUtil.isNotEmpty(vo.getEmail())) {
-            // 이메일 중복검사
-            result = userMngMapper.checkUserEmail(vo.getEmail()) == 0;
-            if(result){
-            } else {
-                return 6;
-            }
-        }
-        // 회원생성
-        vo.setInpt_seq("1");
-        vo.setUser_auth("ROLE_USER");
-        result = userMngMapper.setUserList(vo) > 0;
-        if(result){
-            result = userMngMapper.setUserDetail(vo) > 0;
-            if(result){
-                return 1;  // 가입 성공
-            }else{
-                result = userMngMapper.delUserList(vo.getUser_seq()) > 0;
-                if(result){
-                    return 2;  // 가입 실패
-                }else{
-                    return 3;  // 가입 중 오류 발생
+        try{
+            boolean result = false;
+            if (StringUtil.isNotEmpty(vo.getUser_id())) {
+                // 아이디 중복검사
+                result = userMngMapper.checkUserId(vo.getUser_id()) == 0;
+                if(!result){
+                    return 5;
                 }
+                
+                if (StringUtil.isNotEmpty(vo.getUser_email())) {
+                    // 이메일 중복검사
+                    result = userMngMapper.checkUserEmail(vo.getUser_email()) == 0;
+                    if(result){
+                    } else {
+                        return 6;
+                    }
+                    // 회원생성
+                    vo.setInpt_seq("1");
+                    vo.setUser_auth("ROLE_USER");
+                    result = userMngMapper.setUserList(vo) > 0;
+                    if(result){
+                        result = userMngMapper.setUserDetail(vo) > 0;
+                        if(result){
+                            return 1;  // 가입 성공
+                        }else{
+                            result = userMngMapper.delUserList(vo.getUser_seq()) > 0;
+                            if(result){
+                                return 2;  // 가입 실패
+                            }else{
+                                return 3;  // 가입 중 오류 발생
+                            }
+                        }
+                    }else{
+                        return 4;  // 가입 실패
+                    }
+                }else{
+                    return 7; // 필수값 누락
+                }
+            }else{
+                return 7; // 필수값 누락
             }
-        }else{
-            return 4;  // 가입 실패
+        }catch (Exception e){
+            e.printStackTrace();
+            return 0;
         }
     }
 }

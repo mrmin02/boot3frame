@@ -17,7 +17,7 @@
         SELECT
             TUL.USER_SEQ,
             TUL.USER_ID,
-            TUD.EMAIL,
+            TUD.USER_EMAIL,
             TUL.USER_AUTH,
             TUL.LAST_LOGIN_DATE,
             TUL.LAST_LOGIN_IP,
@@ -67,7 +67,7 @@
             TUL.OUT_YN,
             TUL.USER_AUTH,
             TUD.USER_NAME,
-            TUD.EMAIL
+            TUD.USER_EMAIL
         FROM TB_USER_LIST TUL
         INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
         WHERE 1=1
@@ -88,9 +88,9 @@
             TUL.OUT_YN,
             TUL.USER_AUTH,
             TUD.USER_NAME,
-            TUD.EMAIL
+            TUD.USER_EMAIL
         FROM TB_USER_LIST TUL
-                 INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+         INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
         WHERE 1=1
           AND TUL.USER_ID = #{user_id}
     </select>
@@ -98,7 +98,7 @@
     <!-- 회원 아이디 중복검사 -->
     <select id="checkUserId" resultType="java.lang.Integer">
         SELECT
-            COUNT(USER_SEQ)
+            COUNT(*)
         FROM TB_USER_LIST
         WHERE 1=1
         AND USER_ID = #{user_id}
@@ -107,10 +107,10 @@
     <!-- 회원 이메일 중복검사 -->
     <select id="checkUserEmail" resultType="java.lang.Integer">
         SELECT
-        COUNT(USER_SEQ)
+            COUNT(USER_SEQ)
         FROM TB_USER_DETAIL
         WHERE 1=1
-        AND EMAIL = #{email}
+        AND USER_EMAIL = #{user_email}
     </select>
 
     <!-- 관리자 회원 목록 조회 -->
@@ -126,10 +126,13 @@
     </select>
 
     <!-- 회원 등록 (목록) -->
-    <insert id="setUserList" parameterType="com.custom.boot3Cms.application.mng.user.vo.UserVO"
-            useGeneratedKeys="true" keyProperty="user_seq" >
+    <insert id="setUserList" parameterType="com.custom.boot3Cms.application.mng.user.vo.UserVO">
+        <selectKey keyProperty="user_seq" resultType="String" order="BEFORE">
+            SELECT TB_USER_LIST_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_USER_LIST
         (
+            USER_SEQ,
             USER_ID,
             USER_PWD,
             INPT_SEQ,
@@ -139,10 +142,11 @@
         )
         VALUES
         (
+            #{user_seq},
             #{user_id},
             #{user_pwd},
             #{inpt_seq},
-            NOW(),
+            SYSDATE,
             #{user_auth},
             'N'
         )
@@ -154,13 +158,13 @@
         (
             USER_SEQ,
             USER_NAME,
-            EMAIL
+            USER_EMAIL
         )
         VALUES
         (
             #{user_seq},
             #{user_name},
-            #{email}
+            #{user_email}
         )
     </insert>
 
@@ -171,7 +175,7 @@
                 USER_PWD = #{user_pwd},
             </if>
             UPD_SEQ = #{upd_seq},
-            UPD_DATE = NOW()
+            UPD_DATE = SYSDATE
         WHERE USER_SEQ = #{user_seq}
     </update>
 
@@ -179,7 +183,7 @@
     <update id="updUserDetail" parameterType="com.custom.boot3Cms.application.mng.user.vo.UserVO">
         UPDATE TB_USER_DETAIL SET
             USER_NAME = #{user_name},
-            EMAIL = #{email}
+            USER_EMAIL = #{user_email}
         WHERE USER_SEQ = #{user_seq}
     </update>
 
@@ -187,7 +191,7 @@
     <update id="updUserOut" parameterType="com.custom.boot3Cms.application.mng.user.vo.UserVO">
         UPDATE TB_USER_LIST SET
             OUT_YN = #{out_yn},
-            UPD_DATE = NOW(),
+            UPD_DATE = SYSDATE,
             UPD_SEQ = #{upd_seq}
         WHERE USER_SEQ = #{user_seq}
     </update>
@@ -234,7 +238,7 @@
             USER_PWD = #{user_pwd},
         </if>
         UPD_SEQ = #{upd_seq},
-        UPD_DATE = NOW()
+        UPD_DATE = SYSDATE
         WHERE USER_SEQ = #{user_seq}
     </update>
 
@@ -294,7 +298,7 @@
                 LAST_UPLOAD_DATE = #{inpt_date}
             </when>
             <otherwise>
-                LAST_UPLOAD_DATE = now()
+                LAST_UPLOAD_DATE = SYSDATE
             </otherwise>
         </choose>
         WHERE USER_SEQ = #{author_seq}

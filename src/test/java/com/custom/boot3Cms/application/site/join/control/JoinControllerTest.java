@@ -101,7 +101,7 @@ class JoinControllerTest {
         JoinVO givenVO = new JoinVO();
         givenVO.setUser_id("test");
         givenVO.setUser_id_check("Y");
-        givenVO.setEmail("test@test.com");
+        givenVO.setUser_email("test@test.com");
         givenVO.setUser_name("test_name");
         givenVO.setUser_pwd("1234");
 

@@ -3,18 +3,16 @@ package com.custom.boot3Cms.application.site.join.vo;
 import com.custom.boot3Cms.application.common.utils.EncryptUtil;
 import com.custom.boot3Cms.application.mng.user.vo.UserVO;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 @EqualsAndHashCode(callSuper = false)
 @Data
 @Getter
 @Setter
 @Schema(name = "회원가입 DTO")
+@ToString
 public class JoinVO extends UserVO {
-
+// lombok
     /**
      * 로그인
      */

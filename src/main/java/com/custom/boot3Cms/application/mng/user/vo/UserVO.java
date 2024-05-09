@@ -62,7 +62,7 @@ public class UserVO extends DefaultVO {
     @Schema(description ="전화번호", hidden = true)
     String tel;
     @Schema(description ="이메일", hidden = true)
-    String email;
+    String user_email;
     @Schema(description ="관리자 메모", hidden = true)
     String admin_memo;
     @Schema(description ="전체 로그인 카운트", hidden = true)
@@ -121,7 +121,7 @@ public class UserVO extends DefaultVO {
     @Builder(builderMethodName = "UserVO_detail", buildMethodName = "UserVO_detail")
     public UserVO(String USER_SEQ, String USER_NAME, String NICKNAME, String GENDER, String BIRTH,
                   String ZIPCODE, String ADDR, String ADDR_DETAIL, String PHONE_NUMBER, String TEL,
-                  String EMAIL, String ADMIN_MEMO, String TOTAL_LOGIN_CNT, String DUP_INFO, String FLAG) {
+                  String USER_EMAIL, String ADMIN_MEMO, String TOTAL_LOGIN_CNT, String DUP_INFO, String FLAG) {
         this.user_seq = USER_SEQ;
         this.user_name = USER_NAME;
         this.nickname = NICKNAME;
@@ -132,7 +132,7 @@ public class UserVO extends DefaultVO {
         this.addr_detail = ADDR_DETAIL;
         this.phone_number = PHONE_NUMBER;
         this.tel = TEL;
-        this.email = EMAIL;
+        this.user_email = USER_EMAIL;
         this.admin_memo = ADMIN_MEMO;
         this.total_login_cnt = TOTAL_LOGIN_CNT;
         this.dup_info = DUP_INFO;
