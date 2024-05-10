@@ -2,6 +2,7 @@ package com.custom.boot3Cms.application.site.join.vo;
 
 import com.custom.boot3Cms.application.common.utils.EncryptUtil;
 import com.custom.boot3Cms.application.mng.user.vo.UserVO;
+import com.fasterxml.jackson.annotation.JsonView;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -16,15 +17,16 @@ public class JoinVO extends UserVO {
     /**
      * 로그인
      */
-    @Schema(description = "회원 이름")
+    @Schema(description = "회원 이름", hidden = true)
     private String username;
-    @Schema(description = "회원 비밀번호")
+    @Schema(description = "회원 비밀번호", hidden = true)
     private String password;
 
     /**
      * 회원 구조체
      */
     @Schema(description = "아이디")
+//    @JsonView
     private String user_id;
     @Schema(description = "이메일")
     private String user_email;
@@ -66,4 +68,6 @@ public class JoinVO extends UserVO {
     public void setUser_pwd(String user_pwd) {
         this.user_pwd = EncryptUtil.fn_encryptSHA256(user_pwd);
     }
+
+
 }

@@ -5,10 +5,13 @@ import com.custom.boot3Cms.application.mng.user.service.UserMngService;
 import com.custom.boot3Cms.application.site.join.service.JoinService;
 import com.custom.boot3Cms.application.site.join.vo.JoinVO;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +54,17 @@ public class JoinController {
      * @return
      * @throws Exception
      */
-    @Operation(summary = "회원 ID 중복 확인", description = "user_id 를 이용하여 ID 중복 확인")
+    @Operation(summary = "회원 ID 중복 확인", description = "user_id 를 이용하여 ID 중복 확인",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            required = true,
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE,
+                    schema = @Schema(
+                            allOf = {JoinVO.class},
+                            requiredProperties = {"user_id"}
+                    )
+            )
+    ))
     @PostMapping(value = "/join/user/check")
     public ResultVO getUserCheck(@RequestBody JoinVO joinVO,
                                  HttpServletRequest request,
@@ -86,7 +99,18 @@ public class JoinController {
      * @return
      * @throws Exception
      */
-    @Operation(summary = "회원가입 프로세스", description = "회원가입 프로세스 입니다.")
+    @Operation(summary = "회원가입 프로세스", description = "회원가입 프로세스 입니다.",
+    requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+            content = @Content(
+                    mediaType = MediaType.APPLICATION_JSON_UTF8_VALUE,
+                    schema = @Schema(
+                            allOf = {JoinVO.class},
+                            requiredProperties = {
+                                    "user_id_check","user_id","user_name","user_email","user_pwd"
+                            }
+                    )
+            )
+    ))
     @PostMapping(value = "/join/proc")
     public ResultVO joinProc(
             @RequestBody JoinVO joinVO,

@@ -138,6 +138,7 @@
             INPT_SEQ,
             INPT_DATE,
             USER_AUTH,
+            USER_STATUS,
             OUT_YN
         )
         VALUES
@@ -148,6 +149,7 @@
             #{inpt_seq},
             SYSDATE,
             #{user_auth},
+            'UST_002',
             'N'
         )
     </insert>
