@@ -8,7 +8,8 @@
 			  USER_ID
 			, OUT_YN
 			, USER_SEQ
-			, IF(USER_PWD=#{user_pwd},'Y','N') as pwd_check
+			, DECODE(USER_PWD,#{user_pwd},'Y','N') as pwd_check
+			, USER_STATUS
 		FROM TB_USER_LIST
 		WHERE USER_ID = #{user_id}
 	</select>
@@ -26,8 +27,7 @@
 			TUL.UPD_SEQ,
 			TUL.UPD_DATE,
 			TUL.OUT_YN,
-			TUD.USER_NAME,
-		    TUD.EMAIL
+			TUD.USER_NAME
 		FROM TB_USER_LIST TUL
 		INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
 		WHERE 1=1

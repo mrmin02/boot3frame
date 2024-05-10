@@ -1,9 +1,7 @@
 package com.custom.boot3Cms.application.site.join.control;
 
-import com.custom.boot3Cms.application.common.config.security.SecurityAuthenticationFilter;
 import com.custom.boot3Cms.application.common.config.security.jwt.JwtAuthenticationFilter;
 import com.custom.boot3Cms.application.mng.user.service.UserMngService;
-import com.custom.boot3Cms.application.mng.user.vo.UserVO;
 import com.custom.boot3Cms.application.site.join.service.JoinService;
 import com.custom.boot3Cms.application.site.join.vo.JoinVO;
 import com.custom.boot3Cms.config.spring.SecurityConfig;
@@ -25,7 +23,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -36,7 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         excludeFilters = {
                 // WebMvcTest 의 경우, MVC 에만 중점을 두기 때문에, @Service 등의 어노테이션에 대한 Bean 등록이 이루어지지 않아 Security 관련 Filter 를 제외합니다.
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityConfig.class),
-                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityAuthenticationFilter.class),
+//                @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = SecurityAuthenticationFilter.class),
                 @ComponentScan.Filter(type = FilterType.ASSIGNABLE_TYPE, classes = JwtAuthenticationFilter.class),
         }
 )

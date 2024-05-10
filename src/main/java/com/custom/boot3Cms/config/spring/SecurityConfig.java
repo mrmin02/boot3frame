@@ -1,13 +1,11 @@
 package com.custom.boot3Cms.config.spring;
 
-import com.custom.boot3Cms.application.common.config.security.*;
 import com.custom.boot3Cms.application.common.config.security.jwt.JwtAuthenticationFilter;
 import com.custom.boot3Cms.application.common.config.security.jwt.JwtErrorHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -35,16 +33,16 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @ComponentScan(basePackages = {"com.custom.boot3Cms.application.common.config.security", "com.custom.boot3Cms.application.common.system.login.**"})
 public class SecurityConfig {
 
-    private final AuthenticationConfiguration configuration;
-
-    @Autowired
-    private LoginSuccessHandler loginSuccessHandler;
+//    private final AuthenticationConfiguration configuration;
 //
-    @Autowired
-    private LoginFailureHandler loginFailureHandler;
-//
-    @Autowired
-    private LogoutSuccessHandler logoutSuccessHandler;
+//    @Autowired
+//    private LoginSuccessHandler loginSuccessHandler;
+////
+//    @Autowired
+//    private LoginFailureHandler loginFailureHandler;
+////
+//    @Autowired
+//    private LogoutSuccessHandler logoutSuccessHandler;
 
     /**
      * 토큰 검증 필터
@@ -58,9 +56,9 @@ public class SecurityConfig {
     @Autowired
     private JwtErrorHandler jwtErrorHandler;
 
-    public SecurityConfig(AuthenticationConfiguration configuration) {
-        this.configuration = configuration;
-    }
+//    public SecurityConfig(AuthenticationConfiguration configuration) {
+//        this.configuration = configuration;
+//    }
 
     /**
      * 2024-04-15 cms
@@ -70,21 +68,21 @@ public class SecurityConfig {
      * @return
      * @throws Exception
      */
-    @Bean
-    public SecurityAuthenticationFilter securityAuthenticationFilter() throws Exception {
-
-        SecurityAuthenticationFilter filter = new SecurityAuthenticationFilter();
-        filter.setFilterProcessesUrl("/login/proc");
-        filter.setAuthenticationManager(configuration.getAuthenticationManager());
-        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
-        filter.setAuthenticationFailureHandler(loginFailureHandler);
-
-        return filter;
-    }
+//    @Bean
+//    public SecurityAuthenticationFilter securityAuthenticationFilter() throws Exception {
+//
+//        SecurityAuthenticationFilter filter = new SecurityAuthenticationFilter();
+//        filter.setFilterProcessesUrl("/login/proc");
+//        filter.setAuthenticationManager(configuration.getAuthenticationManager());
+//        filter.setAuthenticationSuccessHandler(loginSuccessHandler);
+//        filter.setAuthenticationFailureHandler(loginFailureHandler);
+//
+//        return filter;
+//    }
 
     @Bean
     public WebSecurityCustomizer webSecurityCustomizer() {
-        return (web) -> web.ignoring().requestMatchers("/resources/**", "/**.jsp", "/images/**", "/css/**", "/cmmn/**", "/js/**", "/file/ckeditorFileupload");
+        return (web) -> web.ignoring().requestMatchers("/resources/**", "/images/**", "/css/**", "/cmmn/**", "/js/**", "/file/ckeditorFileupload");
     }
 
     @Bean
@@ -111,9 +109,12 @@ public class SecurityConfig {
              * ( UsernamePasswordAuthenticationFilter.class 를 상속 )
              * 일반적으로 토큰 검증만 filter 에서 하고, controller 에서 로그인 로직 처리..
              * [ UsernamePasswordAuthenticationFilter.class 는 동작하지 않지만 명시 )
+             *
+             * FIXME Swagger 및 관리를 위해 Security Filter Chain 로그인 방식에서 REST API 방식으로 변경
              */
-            .addFilterBefore(jwtAuthenticationFilter, SecurityAuthenticationFilter.class)
-            .addFilterBefore(securityAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class)
+            .addFilterBefore(jwtAuthenticationFilter,UsernamePasswordAuthenticationFilter.class)
+//            .addFilterBefore(jwtAuthenticationFilter, SecurityAuthenticationFilter.class)
+//            .addFilterBefore(securityAuthenticationFilter(),UsernamePasswordAuthenticationFilter.class)
             /**
              *  로그인 실패 및 jwt 토큰 오류를 jwtErrorHandler 에서 처리
              *  jwt 에서는 success fail handler 처리를 일반적으로 하지 않고,
@@ -127,9 +128,9 @@ public class SecurityConfig {
                         .authenticationEntryPoint(jwtErrorHandler)
                         .accessDeniedHandler(jwtErrorHandler);
             });
-        http.logout((logout)->logout
-                .logoutSuccessHandler(logoutSuccessHandler)
-        );
+//        http.logout((logout)->logout
+//                .logoutSuccessHandler(logoutSuccessHandler)
+//        );
         return http.build();
     }
 }

@@ -16,6 +16,7 @@ public class Boot3CmsApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(Boot3CmsApplication.class, args);
+		System.out.println("----- Application Started -----");
 	}
 
 }

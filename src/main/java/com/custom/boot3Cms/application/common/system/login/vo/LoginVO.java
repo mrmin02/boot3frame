@@ -124,6 +124,10 @@ public class LoginVO implements UserDetails {
         this.user_pwd = EncryptUtil.fn_encryptSHA256(password);
     }
 
+    public void setUser_pwd(String user_pwd){
+        this.user_pwd = EncryptUtil.fn_encryptSHA256(user_pwd);
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         List<GrantedAuthority> authorities = new ArrayList<GrantedAuthority>();

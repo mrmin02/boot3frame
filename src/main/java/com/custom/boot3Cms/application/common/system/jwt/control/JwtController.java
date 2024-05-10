@@ -38,7 +38,7 @@ public class JwtController {
         ResultVO rtnVO = new ResultVO();
 
         if(StringUtil.isNotEmpty(jwtVO.getRefresh_token())){
-
+            // TODO 토큰 REFRESH 로직 추가
         }else{
             rtnVO.setResultMsg("토큰정보가 누락되었습니다.");
             rtnVO.putResult("result",false);
