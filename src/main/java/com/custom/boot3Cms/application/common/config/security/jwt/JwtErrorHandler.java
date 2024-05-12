@@ -16,21 +16,20 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
- * fileName       : JwtAuthenticationEntryPoint
- * author         : crlee
- * date           : 2023/06/11
- * description    :
- * ===========================================================
- * DATE              AUTHOR             NOTE
- * -----------------------------------------------------------
- * 2023/06/11        crlee       최초 생성
- */
-
-/**
- * 2024-04-15 cms
- * Spring Security Error Control
- * 스프링 시큐리티  JWT 필터에서 에러 발생 시..
- */
+ * Jwt Error Handler
+ * boot3Cms
+ *
+ * @author cms
+ * @version 1.0
+ * @see <pre>
+ *  Modification Information
+ *
+ * 	수정일     / 수정자   / 수정내용
+ * 	------------------------------------------
+ * 	2024-05-10 / cms  / 최초 생성
+ *
+ * </pre>
+ * @since 2024-05-10 */
 @Component
 public class JwtErrorHandler implements AuthenticationEntryPoint, AccessDeniedHandler {
 

@@ -38,7 +38,7 @@
 	<!-- 회원 로그인 일자 및 IP 수정 -->
 	<update id="updUserLoginDateIp" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
 		UPDATE TB_USER_LIST SET
-			LAST_LOGIN_DATE = now(),
+			LAST_LOGIN_DATE = SYSDATE,
 			LAST_LOGIN_IP = #{last_login_ip}
 		WHERE USER_SEQ = #{user_seq}
 	</update>

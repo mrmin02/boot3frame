@@ -233,7 +233,7 @@ public class CommonUtil {
      * @return
      */
     public static LoginVO fn_getUserAuth(Principal principal) {
-        return (LoginVO)((Authentication) principal).getDetails();
+        return (LoginVO)((Authentication) principal).getPrincipal();
     }
 
     /**

@@ -46,6 +46,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     LoginService loginService;
 
     public final String ACCESS_TOKEN_HEADER;
+    @Value("${Globals.jwt.header.access.prefix}") String ACCESS_TOKEN_HEADER_PREFIX;
 
     private JwtAuthenticationFilter(@Value("${Globals.jwt.header.access}") String ACCESS_TOKEN_HEADER){
         this.ACCESS_TOKEN_HEADER = ACCESS_TOKEN_HEADER;
@@ -69,21 +70,32 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             /**
              * 토큰 검증
              */
-            id = jwtTokenUtil.getUserIdFromToken(jwtToken);
-            if (id == null) {
-                logger.debug("jwtToken not validate");
-                verificationFlag =  false;
-            }
+            if(StringUtil.isNotEmpty(jwtToken)){
+                if(jwtToken.split(ACCESS_TOKEN_HEADER_PREFIX +" ").length > 1){
+                    jwtToken = jwtToken.split(ACCESS_TOKEN_HEADER_PREFIX +" ")[1];
 
-            /**
-             * 블랙 리스트에 등록된 토큰인지 검사
-             */
-            LoginVO tmpVO = new LoginVO();
-            tmpVO.setAccess_token(jwtToken);
-            if(loginService.checkBlackToken(tmpVO) > 0){
+                    id = jwtTokenUtil.getUserIdFromToken(jwtToken);
+                    if (id == null) {
+                        logger.debug("jwtToken not validate");
+                        verificationFlag =  false;
+                    }else{
+                        /**
+                         * 블랙 리스트에 등록된 토큰인지 검사
+                         */
+                        LoginVO tmpVO = new LoginVO();
+                        tmpVO.setAccess_token(jwtToken);
+                        if(loginService.checkBlackToken(tmpVO) > 0){
+                            verificationFlag = false;
+                        }else{
+                            logger.debug("===>>> id = " + id);
+                        }
+                    }
+                }else{
+                    verificationFlag = false;
+                }
+            }else{
                 verificationFlag = false;
             }
-            logger.debug("===>>> id = " + id);
         } catch (IllegalArgumentException | ExpiredJwtException | MalformedJwtException | UnsupportedJwtException | SignatureException e) {
             /**
              * 검증 및 만료.. 등 의 오류 발생
@@ -106,15 +118,17 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
              * 인가
              */
             logger.debug("jwtToken validated");
+            loginVO.setUser_seq(jwtTokenUtil.getInfoFromToken("user_seq",jwtToken));
             loginVO.setUser_id(id);
             loginVO.setUser_name( jwtTokenUtil.getInfoFromToken("user_name",jwtToken) );
+            loginVO.setUser_auth(jwtTokenUtil.getInfoFromToken("user_role",jwtToken));
 
             /**
              * TODO 유저 권한 체크
              */
             UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(loginVO, null,
 //                    Arrays.asList(new SimpleGrantedAuthority("ROLE_USER"))
-                    Arrays.asList(new SimpleGrantedAuthority(jwtTokenUtil.getInfoFromToken("user_role",jwtToken)))
+                    Arrays.asList(new SimpleGrantedAuthority(loginVO.getUser_auth()))
             );
             authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(req));
             SecurityContextHolder.getContext().setAuthentication(authentication);

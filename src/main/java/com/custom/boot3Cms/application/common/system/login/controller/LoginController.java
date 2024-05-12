@@ -8,6 +8,7 @@ import com.custom.boot3Cms.application.common.utils.StringUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,7 @@ import java.util.Map;
  * </pre>
  * @since 2024-05-10 */
 @RestController
+@Tag(name = "로그인 컨트롤러")
 public class LoginController {
 
     @Resource(name = "loginService")
@@ -45,7 +47,7 @@ public class LoginController {
 
     @Value("${Globals.jwt.header.access}") String ACCESS_TOKEN_HEADER;
     @Value("${Globals.jwt.header.refresh}") String REFRESH_TOKEN_HEADER;
-
+    @Value("${Globals.jwt.header.access.prefix}") String ACCESS_TOKEN_HEADER_PREFIX;
 
     /**
      * 로그인 프로세스
@@ -90,7 +92,7 @@ public class LoginController {
                 /**
                  * 토큰 생성
                  */
-                userVO.setAccess_token(egovJwtTokenUtil.generateAccessToken(userVO));
+                userVO.setAccess_token(ACCESS_TOKEN_HEADER_PREFIX + " " + egovJwtTokenUtil.generateAccessToken(userVO));
                 userVO.setRefresh_token(egovJwtTokenUtil.generateRefreshToken(userVO));
 
                 try {
@@ -141,6 +143,12 @@ public class LoginController {
         return resultVO;
     }
 
+    /**
+     * 로그아웃 REST API
+     * @param request
+     * @return
+     * @throws Exception
+     */
     @Operation(summary = "로그아웃 API", description = "로그아웃을 위한 REST API")
     @PostMapping(value = "/api/logout")
     public ResultVO logout(HttpServletRequest request) throws Exception {

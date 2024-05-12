@@ -139,6 +139,7 @@ public class EgovJwtTokenUtil {
     private String doGenerateAccessToken(LoginVO loginVO, String subject) {
 
         Map<String, Object> claims = new HashMap<>();
+        claims.put("user_seq", loginVO.getUser_seq() );
         claims.put("user_id", loginVO.getUser_id() );
         claims.put("user_name", loginVO.getUser_name() );
         claims.put("user_role", loginVO.getUser_auth() );
@@ -165,8 +166,10 @@ public class EgovJwtTokenUtil {
      */
     private String doGenerateRefreshToken(LoginVO loginVO, String subject) {
         Map<String, Object> claims = new HashMap<>();
+        claims.put("user_seq", loginVO.getUser_seq() );
         claims.put("user_id", loginVO.getUser_id() );
         claims.put("user_name", loginVO.getUser_name() );
+        claims.put("user_role", loginVO.getUser_auth() );
         claims.put("type", subject);
         return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration(new Date(System.currentTimeMillis() + ((long)((1 * 60 * 60) / 60) * getJwtRefreshValidity()) * 1000))

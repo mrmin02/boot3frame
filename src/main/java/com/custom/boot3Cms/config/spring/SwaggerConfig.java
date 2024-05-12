@@ -3,11 +3,14 @@ package com.custom.boot3Cms.config.spring;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
+
+import java.util.Arrays;
 
 /**
  * Swagger Config
@@ -51,17 +54,21 @@ public class SwaggerConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
+
+        SecurityRequirement securityRequirement = new SecurityRequirement().addList(env.getProperty("Globals.jwt.header.access"));
+
         return new OpenAPI()
                 .info(new Info()
                         .title("REST API 명세")
                         .description("REST API 명세 with Swagger")
                         .version("1.0.0"))
-                        .components(new Components()
-                                .addSecuritySchemes(env.getProperty("Globals.jwt.header.access"),
-                                        new io.swagger.v3.oas.models.security.SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .in(SecurityScheme.In.HEADER)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")));
+                .components(new Components()
+                        .addSecuritySchemes(env.getProperty("Globals.jwt.header.access"),
+                                new io.swagger.v3.oas.models.security.SecurityScheme()
+                                        .type(SecurityScheme.Type.HTTP)
+                                        .in(SecurityScheme.In.HEADER)
+                                        .scheme("bearer")
+                                        .bearerFormat("JWT")))
+                .security(Arrays.asList(securityRequirement));
     }
 }

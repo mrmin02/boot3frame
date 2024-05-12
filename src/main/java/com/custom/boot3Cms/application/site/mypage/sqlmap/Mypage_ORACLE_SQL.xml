@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.site.mypage.mapper.MypageMapper">
+
+    <!-- 회원 정보 상세 -->
+    <select id="getUserDetail" resultType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+        SELECT
+            TUL.USER_SEQ,
+            TUL.USER_ID,
+            TUL.LAST_LOGIN_IP,
+            TUL.INPT_SEQ,
+            TUL.UPD_SEQ,
+            TUL.OUT_YN,
+            TUL.USER_STATUS,
+            TUD.USER_NAME,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TUL.INPT_SEQ) AS INPT_USER_NAME,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TUL.UPD_SEQ) AS UPD_USER_NAME,
+            TUL.USER_AUTH AS USER_AUTH
+        FROM TB_USER_LIST TUL
+                 INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+        WHERE 1=1
+          AND TUL.USER_SEQ = #{user_seq}
+    </select>
+
+    <!--회원 수정 - 비밀번호 수정 -->
+    <update id="updPwd" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER_LIST SET
+            USER_PWD   = #{user_pwd}
+        WHERE USER_SEQ = #{user_seq}
+    </update>
+
+
+    <!--회원 수정 -->
+    <update id="updDetail" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER_DETAIL SET
+            USER_NAME       = #{user_name},
+            USER_EMAIL      = #{user_email}
+        WHERE USER_SEQ  = #{user_seq}
+    </update>
+
+    <update id="updInfo" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER_LIST SET
+          UPD_SEQ = #{upd_seq} ,
+          UPD_DATE = SYSDATE
+        WHERE USER_SEQ  = #{user_seq}
+    </update>
+
+    <!-- 비밀번호 확인 - 회원 탈퇴 -->
+    <select id="checkMyInfoPwd" resultType="java.lang.Integer">
+        SELECT
+            COUNT(*)
+        FROM TB_USER_LIST TUL
+        INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+        WHERE 1=1 AND TUL.USER_SEQ = #{user_seq}
+                AND TUL.USER_PWD = #{user_pwd}
+    </select>
+
+
+    <!--회원 탈퇴 -->
+    <update id="accountDelProc" parameterType="com.custom.boot3Cms.application.common.system.login.vo.LoginVO">
+        UPDATE TB_USER_LIST
+            SET OUT_YN = 'Y',
+                UPD_SEQ = #{upd_seq} ,
+                UPD_DATE = SYSDATE
+        WHERE USER_SEQ = #{user_seq}
+    </update>
+
+</mapper>
