@@ -13,23 +13,12 @@
             FILE_NM,
             FILE_PATH,
             INPT_SEQ,
-            INPT_DATE,
-            THUMBNAIL_YN
+            INPT_DATE
         FROM TB_FILES TF
         WHERE 1=1
         AND TF.TABLE_NM = #{table_nm}
         AND TF.TABLE_SEQ = #{table_seq}
-        <if test="thumbnail_yn != null and thumbnail_yn != ''">
-            <choose>
-                <when test='thumbnail_yn == "Y"'>
-                    AND TF.THUMBNAIL_YN = 'Y'
-                </when>
-                <otherwise>
-                    AND TF.THUMBNAIL_YN = 'N'
-                </otherwise>
-            </choose>
-        </if>
-        ORDER BY TF.THUMBNAIL_YN DESC, TF.FILE_SEQ ASC
+        ORDER BY TF.FILE_SEQ ASC
     </select>
 
     <!-- 파일 단건 정보 가져오기 -->
@@ -59,8 +48,7 @@
             FILE_NM,
             FILE_PATH,
             INPT_SEQ,
-            INPT_DATE,
-            THUMBNAIL_YN
+            INPT_DATE
         )
         VALUES
         (
@@ -71,8 +59,7 @@
             #{file_nm},
             #{file_path},
             #{inpt_seq},
-            now(),
-            #{thumbnail_yn}
+            SYSDATE
         )
     </insert>
 

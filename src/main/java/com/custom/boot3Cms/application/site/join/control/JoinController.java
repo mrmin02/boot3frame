@@ -7,6 +7,7 @@ import com.custom.boot3Cms.application.site.join.vo.JoinVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,6 +38,7 @@ import java.util.Map;
  * @since 2024-05-04
  */
 @RestController
+@Tag(name = "회원가입 컨트롤러")
 public class JoinController {
 
     @Resource(name = "userMngService")
@@ -65,7 +67,7 @@ public class JoinController {
                     )
             )
     ))
-    @PostMapping(value = "/join/user/check")
+    @PostMapping(value = "/api/join/user/check")
     public ResultVO getUserCheck(@RequestBody JoinVO joinVO,
                                  HttpServletRequest request,
                                  HttpServletResponse response,
@@ -111,7 +113,7 @@ public class JoinController {
                     )
             )
     ))
-    @PostMapping(value = "/join/proc")
+    @PostMapping(value = "/api/join/proc")
     public ResultVO joinProc(
             @RequestBody JoinVO joinVO,
             HttpServletRequest request,

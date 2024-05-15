@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.bbs.mapper.BbsMngMapper">
+
+    <!-- 게시판 목록 -->
+    <select id="getBbsList" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBI.BBS_INFO_SEQ,
+            TBI.BBS_CD,
+            TBI.BBS_NM,
+            TBI.BBS_REMARK,
+            TBI.BBS_DEL_YN,
+            TBI.BBS_USE_YN,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TBI.INPT_SEQ) AS INPT_USER_NAME,
+            TBI.INPT_DATE,
+            TBD.BBS_TYPE,
+            TBD.ATTACH_FILE_USE_YN,
+            TBD.COMMENT_USE_YN,
+            TBD.REPLY_USE_YN,
+            TBD.NOTICE_USE_YN,
+            TBD.SECRET_USE_YN,
+            TBD.CATEGORY_USE_YN,
+            TBD.PWD_USE_YN,
+            TC.CODE_NM AS SITE_TYPE
+        FROM TB_BBS_INFO TBI
+        INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        INNER JOIN TB_CODE TC ON TBI.SITE_TYPE = TC.CODE
+        WHERE 1=1
+        AND TBI.BBS_DEL_YN = 'N'
+        ORDER BY TBI.BBS_INFO_SEQ DESC
+    </select>
+
+    <!-- 게시판 목록 (메뉴) -->
+    <select id="getBbsTitleList" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBI.BBS_CD,
+            TBI.BBS_NM
+        FROM TB_BBS_INFO TBI,
+        TB_BBS_DETAIL TBD
+        WHERE 1=1
+        AND TBI.BBS_DEL_YN = 'N'
+        AND TBI.SITE_TYPE = #{type}
+        AND TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        AND TBD.BBS_TYPE NOT IN ('BBS_005')
+        ORDER BY TBI.BBS_INFO_SEQ DESC
+    </select>
+
+    <!-- 게시판 코드 중복검사 -->
+    <select id="checkBbsCode" resultType="java.lang.Integer">
+        SELECT
+            COUNT(TBI.BBS_INFO_SEQ)
+        FROM TB_BBS_INFO TBI
+        WHERE 1=1
+        AND TBI.BBS_CD = #{bbs_cd}
+    </select>
+
+    <!-- 게시판 정보 상세보기 -->
+    <select id="getBbsDetail" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBI.BBS_INFO_SEQ,
+            TBI.BBS_CD,
+            TBI.BBS_NM,
+            TBI.BBS_REMARK,
+            TBI.BBS_USE_YN,
+            TBI.BBS_DEL_YN,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TBI.UPD_SEQ) AS UPD_USER_NAME,
+            TBI.INPT_DATE,
+            TBI.UPD_DATE,
+            TBD.FILE_CNT,
+            TBD.BBS_TYPE,
+            TBD.BBS_DFT_LIST_CNT,
+            TBD.BBS_PAGE_CNT,
+            TBD.ATTACH_FILE_USE_YN,
+            TBD.COMMENT_USE_YN,
+            TBD.REPLY_USE_YN,
+            TBD.NOTICE_USE_YN,
+            TBD.SECRET_USE_YN,
+            TBD.CATEGORY_USE_YN,
+            TBD.BBS_DFT_LIST_CNT AS RECORDCOUNTPERPAGE
+        FROM TB_BBS_INFO TBI
+        INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        WHERE 1=1
+        AND TBI.BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+        AND TBI.BBS_DEL_YN = 'N'
+    </select>
+
+    <!-- 게시판 카테고리 정보 -->
+    <select id="getBbsCategory" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBC.BBS_INFO_SEQ,
+            TBC.CATEGORY_NM,
+            TBC.CATEGORY_ORDER,
+            TBC.CATEGORY_CD
+        FROM TB_BBS_CATEGORY TBC
+        WHERE 1=1
+        AND TBC.BBS_INFO_SEQ = #{bbs_info_seq}
+        ORDER BY TBC.CATEGORY_ORDER ASC
+    </select>
+
+    <!-- 게시판 파일 정보 -->
+    <select id="getBbsFileInfo" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBFI.BBS_INFO_SEQ,
+            TBFI.FILE_TYPE,
+            TBFI.FILE_SIZE
+        FROM TB_BBS_FILE_INFO TBFI
+        WHERE 1=1
+        AND TBFI.BBS_INFO_SEQ = #{bbs_info_seq}
+    </select>
+
+
+    <!-- 게시판 권한 정보 -->
+    <select id="getBbsAuth" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            TBA.BBS_INFO_SEQ,
+            TBA.USER_AUTH,
+            TBA.READ_YN,
+            TBA.WRITE_YN,
+            TBA.UPDATE_YN,
+            TBA.DELETE_YN
+        FROM TB_BBS_AUTH TBA
+        WHERE 1=1
+        AND TBA.BBS_INFO_SEQ = #{bbs_info_seq}
+        ORDER BY TBA.USER_AUTH ASC
+    </select>
+
+    <!-- 게시판 기본정보 등록 -->
+    <insert id="setBbsInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO"
+            useGeneratedKeys="true" keyProperty="bbs_info_seq" >
+        INSERT INTO TB_BBS_INFO
+        (
+            BBS_CD,
+            BBS_NM,
+            BBS_REMARK,
+            BBS_USE_YN,
+            BBS_DEL_YN,
+            INPT_SEQ,
+            INPT_DATE,
+            SITE_TYPE
+        )
+        VALUES
+        (
+            #{bbs_cd},
+            #{bbs_nm},
+            #{bbs_remark},
+            #{bbs_use_yn},
+            'N',
+            #{inpt_seq},
+            SYSDATE,
+          #{site_type}
+        )
+    </insert>
+
+    <!-- 게시판 설정정보 등록 -->
+    <insert id="setBbsDetail" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        INSERT INTO TB_BBS_DETAIL
+        (
+            BBS_INFO_SEQ,
+            FILE_CNT,
+            BBS_TYPE,
+            BBS_DFT_LIST_CNT,
+            BBS_PAGE_CNT,
+            ATTACH_FILE_USE_YN,
+            COMMENT_USE_YN,
+            REPLY_USE_YN,
+            NOTICE_USE_YN,
+            SECRET_USE_YN,
+            CATEGORY_USE_YN,
+            PWD_USE_YN,
+            DATE_RANGE_USE_YN
+
+        )
+        VALUES
+        (
+            #{bbs_info_seq},
+            #{file_cnt},
+            #{bbs_type},
+            #{bbs_dft_list_cnt},
+            #{bbs_page_cnt},
+            #{attach_file_use_yn},
+            #{comment_use_yn},
+            #{reply_use_yn},
+            #{notice_use_yn},
+            #{secret_use_yn},
+            #{category_use_yn},
+            #{pwd_use_yn},
+            #{data_range_use_yn}
+
+        )
+    </insert>
+
+    <!-- 게시판 카테고리 정보 등록 -->
+    <insert id="setBbsCategory" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        INSERT INTO TB_BBS_CATEGORY
+        (
+            BBS_INFO_SEQ,
+            CATEGORY_NM,
+            CATEGORY_ORDER,
+            CATEGORY_CD
+        )
+        VALUES
+        (
+            #{bbs_info_seq},
+            #{category_nm},
+            #{category_order},
+            #{category_cd}
+        )
+    </insert>
+
+    <!-- 게시판 파일 설정정보 등록 -->
+    <insert id="setBbsFileInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        INSERT INTO TB_BBS_FILE_INFO
+        (
+            BBS_INFO_SEQ,
+            FILE_SIZE,
+            FILE_TYPE
+        )
+        VALUES
+        (
+            #{bbs_info_seq},
+            #{file_size},
+            #{file_type}
+        )
+    </insert>
+
+    <!-- 게시판 권한정보 등록 -->
+    <insert id="setBbsAuth" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        INSERT INTO TB_BBS_AUTH
+        (
+            BBS_INFO_SEQ,
+            USER_AUTH,
+            READ_YN,
+            WRITE_YN,
+            UPDATE_YN,
+            DELETE_YN
+        )
+        VALUES
+        (
+            #{bbs_info_seq},
+            #{user_auth},
+            #{read_yn},
+            #{write_yn},
+            #{update_yn},
+            #{delete_yn}
+        )
+    </insert>
+
+    <!-- 게시판 삭제 (논리삭제) -->
+    <insert id="delBbs" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_INFO SET
+            BBS_DEL_YN = 'Y',
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </insert>
+
+    <!-- 게시판 기본정보 수정 -->
+    <update id="updBbsInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_INFO SET
+            <if test="bbs_cd != '' and bbs_cd != null">
+                BBS_CD = #{bbs_cd},
+            </if>
+            BBS_NM = #{bbs_nm},
+            BBS_REMARK = #{bbs_remark},
+            BBS_USE_YN = #{bbs_use_yn},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE,
+            SITE_TYPE = #{site_type}
+        WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </update>
+
+    <!-- 게시판 상세정보 수정 -->
+    <update id="updBbsDetail" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        UPDATE TB_BBS_DETAIL SET
+            FILE_CNT = #{file_cnt},
+            BBS_TYPE = #{bbs_type},
+            BBS_DFT_LIST_CNT = #{bbs_dft_list_cnt},
+            BBS_PAGE_CNT = #{bbs_page_cnt},
+            ATTACH_FILE_USE_YN = #{attach_file_use_yn},
+            COMMENT_USE_YN = #{comment_use_yn},
+            REPLY_USE_YN = #{reply_use_yn},
+            NOTICE_USE_YN = #{notice_use_yn},
+            SECRET_USE_YN = #{secret_use_yn},
+            CATEGORY_USE_YN = #{category_use_yn},
+            PWD_USE_YN = #{pwd_use_yn},
+            DATE_RANGE_USE_YN = #{date_range_use_yn}
+        WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </update>
+
+
+    <!-- 게시판 파일 정보 삭제 (삭제 후 등록으로 수정) -->
+    <delete id="delBbsFileInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_FILE_INFO WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+    <!-- 게시판 권한 정보 삭제 (삭제 후 등록으로 수정) -->
+    <delete id="delBbsAuth" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_AUTH WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+
+    <!-- 게시판 카테고리 정보 삭제 (삭제 후 등록으로 수정) -->
+    <delete id="delBbsCategory" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_CATEGORY WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+    <!-- 게시판 상세정보 삭제 -->
+    <delete id="delBbsDetail" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_DETAIL WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+    <!-- 게시판 기본정보 삭제 -->
+    <delete id="delBbsInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        DELETE FROM TB_BBS_INFO WHERE BBS_INFO_SEQ = #{bbs_info_seq}
+    </delete>
+
+    <!-- BBS_INFO_SEQ로 게시판 존재여부 확인 -->
+    <select id="getBbsCnt" resultType="java.lang.String">
+        SELECT COUNT(*)
+        FROM TB_BBS_INFO
+        WHERE 1=1
+        AND BBS_CD = #{bbs_info_seq}
+        AND BBS_USE_YN = 'Y'
+        AND BBS_DEL_YN = 'N'
+    </select>
+
+
+</mapper>

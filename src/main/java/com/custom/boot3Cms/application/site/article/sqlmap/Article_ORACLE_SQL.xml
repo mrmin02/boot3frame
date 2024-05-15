@@ -1,0 +1,690 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.site.article.mapper.ArticleMapper">
+
+    <sql id="articleWhere">
+        <if test="searchCondition != null and searchCondition != '' and searchKeyword != null and searchKeyword != ''">
+            <choose>
+                <when test="searchCondition == 'TA.ALL'">
+                    AND (TA.SUBJECT LIKE CONCAT('%',#{searchKeyword},'%'))
+                </when>
+                <otherwise>
+                    AND #{searchCondition} LIKE CONCAT('%',#{searchKeyword},'%')
+                </otherwise>
+            </choose>
+        </if>
+        <if test="category_cd != null and category_cd != ''">
+            AND category_cd = #{category_cd}
+        </if>
+    </sql>
+
+    <!-- 메인 게시글 목록  -->
+    <select id="getMainArticleList" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            articleList.*
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY TA.INPT_DATE DESC, TA.PRT_SEQ DESC, TA.BBS_ORDER ASC NULLS FIRST) AS rNum,
+                TA.ARTICLE_SEQ,
+                TA.BBS_INFO_SEQ,
+                (SELECT TBC.CATEGORY_NM
+                FROM TB_BBS_CATEGORY TBC
+                WHERE TBC.CATEGORY_CD = TA.CATEGORY_CD AND TBC.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS CATEGORY_NM,
+                TA.SUBJECT,
+                TBI.BBS_CD,
+                TBI.BBS_NM,
+                TO_CHAR(TA.ARTICLE_START_DATE, 'YYYY-MM-DD') AS ARTICLE_START_DATE,
+                TO_CHAR(TA.ARTICLE_END_DATE, 'YYYY-MM-DD') AS ARTICLE_END_DATE,
+                TA.SECRET_YN,
+                TA.NOTICE_YN,
+                TA.PRT_SEQ,
+                TA.BBS_ORDER,
+                TA.INPT_IP,
+                TA.UPD_IP,
+                TA.READ_CNT,
+                TA.INPT_USER_NAME,
+                TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+                TA.UPD_USER_NAME,
+                TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+                CASE WHEN TA.SUMMARY_DATE >= NVL(TA.UPD_DATE, TA.INPT_DATE) THEN TA.SUMMARY ELSE TA.CONTENT END AS CONTENT,
+                CASE WHEN TA.SUMMARY_DATE >= NVL(TA.UPD_DATE, TA.INPT_DATE) THEN 'Y' ELSE 'N' END AS SUMMARY_YN,
+                TA.LINK_URL
+            FROM TB_ARTICLES TA
+            INNER JOIN TB_BBS_INFO TBI ON TA.BBS_INFO_SEQ = TBI.BBS_INFO_SEQ
+            WHERE 1 = 1
+            AND TA.DEL_YN = 'N'
+            AND TA.BBS_INFO_SEQ =
+            <choose>
+                <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                    #{bbs_info_seq}
+                    </when>
+                <otherwise>
+                    (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+                </otherwise>
+            </choose>
+            <include refid="articleWhere"/>
+        ) articleList
+        WHERE articleList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+    </select>
+
+
+    <!-- 게시글 목록  -->
+    <select id="getArticleList" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            articleList.*
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY TA.INPT_DATE DESC, TA.PRT_SEQ DESC, TA.BBS_ORDER ASC NULLS FIRST) AS rNum,
+                TA.ARTICLE_SEQ,
+                TA.BBS_INFO_SEQ,
+                (SELECT TBC.CATEGORY_NM
+                FROM TB_BBS_CATEGORY TBC
+                WHERE TBC.CATEGORY_CD = TA.CATEGORY_CD AND TBC.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS CATEGORY_NM,
+                TA.SUBJECT,
+                TA.SECRET_YN,
+                TA.NOTICE_YN,
+                TA.PRT_SEQ,
+                TA.BBS_ORDER,
+                TA.INPT_IP,
+                TA.UPD_IP,
+                TA.READ_CNT,
+                TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+                TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+                <if test="bbs_type == 'BBS_005' or bbs_type == 'BBS_001' or bbs_type == 'BBS_002'">
+                    (SELECT TF.FILE_PATH FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES'  ORDER BY FILE_SEQ DESC LIMIT 0,1 ) AS FILE_PATH,
+                    (SELECT TF.FILE_SYS_NM FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES'   ORDER BY FILE_SEQ DESC LIMIT 0,1 ) AS FILE_SYS_NM,
+                    (SELECT TF.FILE_SEQ FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES'  ORDER BY FILE_SEQ DESC LIMIT 0,1 ) AS FILE_SEQ,
+                </if>
+                (SELECT COUNT(COMMENT_SEQ) FROM TB_ARTICLE_COMMENTS TAC WHERE TAC.ARTICLE_SEQ = TA.ARTICLE_SEQ AND TAC.DEL_YN = 'N') AS COMMENT_CNT,
+                (SELECT COUNT(FILE_SEQ) FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_CNT
+            FROM TB_ARTICLES TA
+            INNER JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
+            WHERE 1 = 1
+            AND TA.DEL_YN = 'N'
+            AND TA.BBS_INFO_SEQ =
+            <choose>
+                <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                    #{bbs_info_seq}
+                </when>
+                <otherwise>
+                    (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+                </otherwise>
+            </choose>
+            <include refid="articleWhere"/>
+        ) articleList
+        WHERE articleList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+
+    </select>
+
+
+    <!-- 게시글 공지사항 목록 -->
+    <select id="getArticlenNoticeList" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            articleList.*
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY TA.INPT_DATE DESC, TA.PRT_SEQ DESC, TA.BBS_ORDER ASC NULLS FIRST) AS rNum,
+                TA.ARTICLE_SEQ,
+                TA.BBS_INFO_SEQ,
+                (SELECT TBC.CATEGORY_NM
+                    FROM TB_BBS_CATEGORY TBC
+                    WHERE TBC.CATEGORY_CD = TA.CATEGORY_CD AND TBC.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS CATEGORY_NM,
+                TA.SUBJECT,
+                TA.SECRET_YN,
+                TA.NOTICE_YN,
+                TA.PRT_SEQ,
+                TA.BBS_ORDER,
+                TA.INPT_IP,
+                TA.UPD_IP,
+                TA.READ_CNT,
+                TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+                TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+                TA.CONTENT,
+                (SELECT COUNT(COMMENT_SEQ) FROM TB_ARTICLE_COMMENTS TAC WHERE TAC.ARTICLE_SEQ = TA.ARTICLE_SEQ AND TAC.DEL_YN = 'N') AS COMMENT_CNT,
+                (SELECT COUNT(FILE_SEQ) FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_CNT
+            FROM TB_ARTICLES TA
+            INNER JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
+            WHERE 1 = 1
+            AND TA.DEL_YN = 'N'
+            AND TA.BBS_INFO_SEQ =
+            <choose>
+                <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                    #{bbs_info_seq}
+                </when>
+                <otherwise>
+                    (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+                </otherwise>
+            </choose>
+            AND TA.NOTICE_YN = 'Y'
+            <include refid="articleWhere"/>
+        ) articleList
+        WHERE articleList.rNum BETWEEN 1 AND 7
+    </select>
+
+    <!-- 게시글 Cnt -->
+    <select id="getArticleCnt" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+        AND DEL_YN ='N'
+        <include refid="articleWhere"/>
+    </select>
+
+    <!-- 게시글 상세보기 -->
+    <select id="getArticle" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            TA.ARTICLE_SEQ,
+            TA.BBS_INFO_SEQ,
+            TA.CATEGORY_CD,
+            (SELECT TBC.CATEGORY_NM FROM TB_BBS_CATEGORY TBC WHERE TBC.CATEGORY_CD = TA.CATEGORY_CD AND TBC.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS CATEGORY_NM,
+            TA.SUBJECT,
+            TA.CONTENT,
+            TA.DEL_YN,
+            TA.SECRET_YN,
+            TA.NOTICE_YN,
+            TA.PRT_SEQ,
+            TA.BBS_ORDER,
+            TA.INPT_IP,
+            TA.UPD_IP,
+            TA.READ_CNT,
+            TA.INPT_USER_NAME as user_name,
+            TA.INPT_SEQ,
+            TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+            TA.UPD_USER_NAME,
+            TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+            (SELECT COUNT(COMMENT_SEQ) FROM TB_ARTICLE_COMMENTS TAC WHERE TAC.ARTICLE_SEQ = TA.ARTICLE_SEQ) AS COMMENT_CNT,
+            (SELECT TUA.USER_AUTH FROM tb_user_list TUA WHERE TUA.USER_SEQ = TA.INPT_SEQ) AS USER_AUTH,
+            TBD.CATEGORY_USE_YN,
+            TBD.ATTACH_FILE_USE_YN,
+            (SELECT COUNT(ARTICLE_SEQ) FROM TB_ARTICLES TAS WHERE TAS.PRT_SEQ = #{article_seq}) AS REPLY_CNT
+        FROM TB_ARTICLES TA
+        INNER JOIN TB_BBS_DETAIL TBD ON TA.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        LEFT JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
+        WHERE 1=1
+        AND TA.DEL_YN = 'N'
+        AND TA.BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+        AND TA.ARTICLE_SEQ = #{article_seq}
+    </select>
+
+
+    <!-- 게시글 답변 상세보기 -->
+    <select id="getReply" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            TA.ARTICLE_SEQ,
+            TA.BBS_INFO_SEQ,
+            TA.SUBJECT,
+            TA.CONTENT,
+            TA.DEL_YN,
+            TA.INPT_SEQ,
+            TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+            TA.UPD_USER_NAME,
+            TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+            (SELECT COUNT(ARTICLE_SEQ) FROM TB_ARTICLES TAS WHERE TAS.PRT_SEQ = #{article_seq}) AS REPLY_CNT
+        FROM TB_ARTICLES TA
+        INNER JOIN TB_BBS_DETAIL TBD ON TA.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+        WHERE 1=1
+        AND TA.DEL_YN = 'N'
+        AND TA.BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+        AND TA.PRT_SEQ = #{article_seq}
+    </select>
+
+    <!-- 게시글 코멘트 목록 -->
+    <select id="getCommentList" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            (SELECT COUNT(*) AS TOTALCOUNT FROM TB_ARTICLE_COMMENTS  WHERE 1=1 AND ARTICLE_SEQ = #{article_seq}) AS TOTALCOUNT ,
+            TAC.COMMENT_SEQ,
+            TAC.ARTICLE_SEQ,
+            TAC.CONTENT,
+            TAC.PRT_SEQ,
+            TAC.REPL_ORDER,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TAC.INPT_SEQ) AS  INPT_USER_NAME,
+            TAC.INPT_SEQ,
+            TO_CHAR(TAC.INPT_DATE, 'YYYY-MM-DD %T') AS INPT_DATE,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TAC.UPD_SEQ) AS UPD_USER_NAME,
+            TO_CHAR(TAC.UPD_DATE, 'YYYY-MM-DD %T') AS UPD_DATE,
+            DEL_YN,
+            (SELECT TUA.USER_AUTH FROM tb_user_list TUA WHERE TUA.USER_SEQ = TAC.INPT_SEQ )
+            AS USER_AUTH,
+            TUD.USER_NAME
+        FROM TB_ARTICLE_COMMENTS TAC
+        LEFT JOIN TB_USER_DETAIL TUD ON tac.INPT_SEQ = TUD.USER_SEQ
+        WHERE 1=1
+        AND TAC.ARTICLE_SEQ = #{article_seq}
+        <choose>
+            <when test="searchOrderBy == 'asc'">
+                ORDER BY TAC.COMMENT_SEQ ASC
+            </when>
+            <otherwise>
+                ORDER BY TAC.PRT_SEQ, TAC.REPL_ORDER
+            </otherwise>
+        </choose>
+    </select>
+
+    <!-- 게시글 순번 조회 -->
+    <select id="getArticleOrder" resultType="java.lang.String">
+        SELECT
+            articleList.*
+        FROM (
+             SELECT
+                 ROW_NUMBER() OVER (ORDER BY ARTICLE_SEQ DESC) AS rNum,
+                 BBS_ORDER
+             FROM TB_ARTICLES
+             WHERE PRT_SEQ = #{prt_seq}
+        ) articleList
+        WHERE articleList.rNum = 1
+    </select>
+
+    <!-- 댓글 순번 조회 -->
+    <select id="getCommentOrder" resultType="java.lang.String">
+        SELECT
+            articleList.*
+        FROM (
+             SELECT
+                 ROW_NUMBER() OVER(ORDER BY REPL_ORDER DESC ) AS rNum,
+                 NVL(REPL_ORDER,0)+1 AS REPL_ORDER
+             FROM TB_ARTICLE_COMMENTS
+             WHERE PRT_SEQ = #{prt_seq}
+             ORDER BY REPL_ORDER DESC
+         ) articleList
+        WHERE articleList.rNum = 1
+    </select>
+
+    <!-- 게시글 컨텐츠 등록 -->
+    <insert id="setArticle" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        <selectKey keyProperty="article_seq" resultType="String" order="BEFORE">
+            SELECT TB_ARTICLE_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_ARTICLES
+        (
+            ARTICLE_SEQ,
+            BBS_INFO_SEQ,
+            CATEGORY_CD,
+            SUBJECT,
+            CONTENT,
+            DEL_YN,
+            SECRET_YN,
+            NOTICE_YN,
+            INPT_SEQ,
+            PRT_SEQ,
+            BBS_ORDER,
+            INPT_IP,
+            INPT_DATE,
+            READ_CNT,
+            INPT_USER_NAME,
+            USER_ID,
+            USER_PWD
+        ) VALUES
+        (
+            #{article_seq},
+            #{bbs_info_seq},
+            #{category_cd},
+            #{subject},
+            #{content},
+            'N',
+            #{secret_yn},
+            #{notice_yn},
+            #{inpt_seq},
+            <choose>
+                <when test="prt_seq != null and prt_seq != ''">
+                    #{prt_seq},
+                </when>
+                <otherwise>
+                    0,
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="bbs_order != null and bbs_order != ''">
+                    #{bbs_order},
+                </when>
+                <otherwise>
+                    NULL,
+                </otherwise>
+            </choose>
+            #{inpt_ip},
+            SYSDATE,
+            0,
+            #{inpt_user_name},
+            #{user_id},
+            #{user_pwd}
+        )
+    </insert>
+
+    <!-- 게시글 컨텐츠 등록 (답글이 아닐 경우 prt_grp에 본인 seq를 넣어준다.)  -->
+    <update id="setArticlePrtGrp" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            PRT_SEQ = #{article_seq}
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 댓글 등록 (답글이 아닐 경우 prt_grp에 본인 seq를 넣어준다.)  -->
+    <update id="setCommentPrtGrp" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLE_COMMENTS
+        SET
+            PRT_SEQ = #{comment_seq}
+        WHERE COMMENT_SEQ = #{comment_seq}
+    </update>
+
+    <!--  댓글 정보 get  -->
+    <select id="getCommentInfo" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            COMMENT_SEQ,
+            ARTICLE_SEQ,
+            INPT_SEQ
+        FROM TB_ARTICLE_COMMENTS
+        WHERE COMMENT_SEQ = #{comment_seq}
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 댓글 등록 -->
+    <insert id="setComment" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        <selectKey keyProperty="comment_seq" resultType="String" order="BEFORE">
+            SELECT TB_ARTICLE_COMMNETS_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_ARTICLE_COMMENTS
+        (
+            COMMENT_SEQ,
+            ARTICLE_SEQ,
+            CONTENT,
+            PRT_SEQ,
+            REPL_ORDER,
+            INPT_SEQ,
+            DEL_YN,
+            INPT_DATE
+        )
+        VALUES
+        (
+            #{comment_seq},
+            #{article_seq},
+            #{content},
+            <choose>
+                <when test="prt_seq != null and prt_seq != ''">
+                    #{prt_seq},
+                </when>
+                <otherwise>
+                    #{comment_seq},
+                </otherwise>
+            </choose>
+            <choose>
+                <when test="repl_order != null">
+                    #{repl_order},
+                </when>
+                <otherwise>
+                    0,
+                </otherwise>
+            </choose>
+            #{inpt_seq},
+            'N',
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 댓글 수정 -->
+    <insert id="updComment" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLE_COMMENTS
+        SET
+            CONTENT = #{content},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE COMMENT_SEQ = #{comment_seq}
+    </insert>
+
+
+    <!-- 조회수 수정 -->
+    <update id="updArticleReadCNT" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES SET
+            READ_CNT = READ_CNT+1
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 요약문 수정 -->
+    <update id="updArticleSummary" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES SET
+            SUMMARY = #{summary},
+            SUMMARY_DATE = SYSDATE
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 수정 -->
+    <update id="updArticle" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            CATEGORY_CD = #{category_cd},
+            SUBJECT = #{subject},
+            CONTENT = #{content},
+            SECRET_YN = #{secret_yn},
+            NOTICE_YN = #{notice_yn},
+            USER_PWD = #{user_pwd},
+            UPD_SEQ = #{upd_seq},
+            UPD_IP = #{upd_ip},
+            UPD_DATE = SYSDATE,
+            UPD_USER_NAME = #{upd_user_name}
+        WHERE ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 삭제 -->
+    <update id="delArticle" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLES
+        SET
+            DEL_YN = 'Y',
+            UPD_DATE = SYSDATE,
+            UPD_SEQ  = #{upd_seq},
+            UPD_IP = #{upd_ip},
+            UPD_USER_NAME = #{upd_user_name}
+        WHERE ARTICLE_SEQ = #{article_seq}
+        AND BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+    </update>
+
+    <!-- 댓글 삭제/복원 -->
+    <update id="delComment" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        UPDATE TB_ARTICLE_COMMENTS
+        SET
+            DEL_YN = #{del_yn}
+        WHERE COMMENT_SEQ = #{comment_seq}
+        AND ARTICLE_SEQ = #{article_seq}
+    </update>
+
+    <!-- 게시글 물리 삭제 -->
+    <delete id="delArticleReal" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        DELETE FROM TB_ARTICLES WHERE ARTICLE_SEQ = #{article_seq} AND BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+    </delete>
+
+    <!-- 댓글 물리 삭제 -->
+    <delete id="delCommentReal" parameterType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        DELETE FROM TB_ARTICLE_COMMENTS WHERE COMMENT_SEQ = #{comment_seq} AND ARTICLE_SEQ = #{article_seq}
+    </delete>
+
+    <!-- 게시판 권한 조회 -->
+    <select id="getAuth" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            USER_AUTH,
+            READ_YN,
+            WRITE_YN,
+            UPDATE_YN,
+            DELETE_YN
+        FROM TB_BBS_AUTH
+        WHERE BBS_INFO_SEQ = (SELECT BBS_INFO_SEQ
+        FROM TB_BBS_INFO
+        WHERE BBS_CD = #{bbs_cd})
+    </select>
+
+    <!-- 게시판 권한 확인 -->
+    <select id="getArticleBbsAuth" resultType="hashmap">
+        SELECT
+          TBA.READ_YN AS "read_yn",
+          TBA.WRITE_YN AS "write_yn",
+          TBA.UPDATE_YN AS "update_yn",
+          TBA.DELETE_YN AS "delete_yn"
+        FROM TB_BBS_AUTH TBA
+        WHERE 1=1
+        AND TBA.BBS_INFO_SEQ = #{bbs_info_seq}
+        AND TBA.USER_AUTH = #{user_auth}
+    </select>
+
+    <!-- 게시글 TOTAL COUNT -->
+    <select id="getArticleListCNT" resultType="java.lang.Integer">
+        SELECT
+            COUNT(TA.ARTICLE_SEQ) AS TOTALCOUNT
+        FROM TB_ARTICLES TA
+        WHERE 1 = 1
+
+        AND TA.BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+
+        <include refid="articleWhere"/>
+    </select>
+
+
+    <!-- 게시판 카테고리 목록 -->
+    <select id="getCategory" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+          CATEGORY_NM,
+          CATEGORY_ORDER,
+          CATEGORY_CD
+        FROM TB_BBS_CATEGORY
+        WHERE BBS_INFO_SEQ = (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+
+    </select>
+
+    <!-- QNA 게시글 목록 -->
+    <select id="getArticleQnaList" resultType="com.custom.boot3Cms.application.site.article.vo.ArticleVO">
+        SELECT
+            articleList.*
+        FROM (
+                SELECT
+                    ROW_NUMBER() ORVER(ORDER BY bbsList.PRT_SEQ DESC, bbsList.BBS_ORDER) AS rNum,
+                    TA.ARTICLE_SEQ,
+                    TA.BBS_INFO_SEQ,
+                    (SELECT TBC.CATEGORY_NM
+                    FROM TB_BBS_CATEGORY TBC
+                    WHERE TBC.CATEGORY_CD = TA.CATEGORY_CD AND TBC.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS CATEGORY_NM,
+                    TA.SUBJECT,
+                    TO_CHAR(TA.ARTICLE_START_DATE, 'YYYY-MM-DD') AS ARTICLE_START_DATE,
+                    TO_CHAR(TA.ARTICLE_END_DATE, 'YYYY-MM-DD') AS ARTICLE_END_DATE,
+                    TA.SECRET_YN,
+                    TA.NOTICE_YN,
+                    TA.PRT_SEQ,
+                    TA.BBS_ORDER,
+                    TA.INPT_IP,
+                    TA.UPD_IP,
+                    TA.READ_CNT,
+                    TA.INPT_USER_NAME,
+                    TA.INPT_SEQ,
+                    TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
+                    TA.UPD_USER_NAME,
+                    TO_CHAR(TA.UPD_DATE, 'YYYY-MM-DD') AS UPD_DATE,
+                    TA.CONTENT,
+                    (SELECT COUNT(COMMENT_SEQ) FROM TB_ARTICLE_COMMENTS TAC WHERE TAC.ARTICLE_SEQ = TA.ARTICLE_SEQ AND TAC.DEL_YN = 'N') AS COMMENT_CNT,
+                    (SELECT COUNT(FILE_SEQ) FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_CNT,
+                    (SELECT FILE_PATH FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_PATH,
+                    (SELECT FILE_SYS_NM FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_SYS_NM,
+                    (SELECT COUNT(ARTICLE_SEQ) FROM TB_ARTICLES TAS WHERE TAS.PRT_SEQ = TA.ARTICLE_SEQ AND TAS.DEL_YN='N') AS REPLY_CNT
+                FROM TB_ARTICLES TA
+                INNER JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
+                WHERE 1 = 1
+                AND TA.DEL_YN = 'N'
+                AND TA.PRT_SEQ = 0
+                <if test="inpt_seq != null and inpt_seq != ''">
+                    AND TA.INPT_SEQ = #{inpt_seq}
+                </if>
+                AND TA.BBS_INFO_SEQ =
+                <choose>
+                    <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                        #{bbs_info_seq}
+                    </when>
+                    <otherwise>
+                        (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+                    </otherwise>
+                </choose>
+                <include refid="articleWhere"/>
+                ) articleList
+        WHERE 1=1
+        AND articleList.rNum BETWEEN #{firstIndex} AND 10
+    </select>
+
+    <!-- QNA 게시글 Cnt -->
+    <select id="getArticleQnaCnt" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND TA.PRT_SEQ = TA.ARTICLE_SEQ
+        AND BBS_INFO_SEQ =
+        <choose>
+            <when test="bbs_info_seq != null and bbs_info_seq != ''">
+                #{bbs_info_seq}
+            </when>
+            <otherwise>
+                (SELECT STBI.BBS_INFO_SEQ FROM TB_BBS_INFO STBI WHERE STBI.BBS_CD = #{bbs_cd})
+            </otherwise>
+        </choose>
+        AND DEL_YN = 'N'
+        <include refid="articleWhere"/>
+    </select>
+
+    <!-- Q&A 비밀번호 체크 -->
+    <select id="checkPwd" resultType="java.lang.Integer">
+        SELECT
+            count(*)
+        FROM TB_ARTICLES TA
+        WHERE 1=1
+        AND ARTICLE_SEQ = #{article_seq}
+        AND USER_PWD = #{user_pwd}
+    </select>
+
+    <!-- 대댓글 COUNT -->
+    <select id="commentCommentCnt" resultType="java.lang.Integer">
+        SELECT count(*)
+        FROM tb_article_comments
+        WHERE PRT_SEQ = #{comment_seq} AND REPL_ORDER IS NOT NULL
+        ORDER BY COMMENT_SEQ DESC
+    </select>
+
+</mapper>

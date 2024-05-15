@@ -233,7 +233,14 @@ public class CommonUtil {
      * @return
      */
     public static LoginVO fn_getUserAuth(Principal principal) {
-        return (LoginVO)((Authentication) principal).getPrincipal();
+        if(principal != null){
+            return (LoginVO)((Authentication) principal).getPrincipal();
+        }else{
+            LoginVO loginVO = new LoginVO();
+            loginVO.setUser_auth("ROLE_ANON");
+            loginVO.setUser_name("비회원");
+            return loginVO;
+        }
     }
 
     /**

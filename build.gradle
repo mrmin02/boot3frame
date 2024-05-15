@@ -20,6 +20,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-aop'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.security:spring-security-test'
+	implementation 'org.springframework.boot:spring-boot-starter-log4j2'
 
 	// 내장 톰캣
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -84,6 +85,21 @@ dependencies {
 	implementation group: 'commons-beanutils', name: 'commons-beanutils', version: '1.9.4'
 	implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.5'
 
+	/**
+	 * log4j
+	 */
+	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
+
+}
+
+/**
+ * 스프링 부트는 클래스 경로에 있는 경우 로깅 구성을 위해 Log4j2를 지원한다.
+ * 종속 항목을 조립하기 위해 starter를 사용하는 경우 Logback을 제외하고 log4j2를 포함해야 한다.
+ */
+configurations {
+	all {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 }
 
 tasks.named('test') {
