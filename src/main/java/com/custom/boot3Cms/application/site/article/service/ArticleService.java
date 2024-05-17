@@ -134,19 +134,55 @@ public class ArticleService {
             int pageIndex = vo.getPageIndex();
             CommonUtil.fn_copyClassByFilterBeanName(vo, bbsMngVO, "inpt_user_name", "upd_user_name", "inpt_seq", "upd_seq", "user_id");
 
-            String pwd_check_yn = vo.getPwd_check_yn();
+            /**
+             * 비밀번호 검증을 위함
+             */
+            ArticleVO tmpVO = new ArticleVO();
+            tmpVO.setArticle_seq(vo.getArticle_seq());
+            tmpVO.setNotEncUser_pwd(vo.getUser_pwd());
+
             String searchCondition = vo.getSearchCondition();
             String searchKeyword = vo.getSearchKeyword();
             if(StringUtil.isNotEmpty(vo.getArticle_seq())){
-                articleMapper.updArticleReadCNT(vo);
                 vo = articleMapper.getArticle(vo);
-                if(vo.getContent() != null){
-                    vo.setContent(vo.getContent().replaceAll("<br>","\r\n"));
-                }
-                vo.setPwd_check_yn(pwd_check_yn);
-                vo.setBbs_cd(bbsMngVO.getBbs_cd());
-                vo.setBbs_type(bbsMngVO.getBbs_type());
                 if(vo != null){
+                    /**
+                     * 비밀글일 때, 관리자가 아니면 비밀번호 체크
+                     */
+                    if(vo.getSecret_yn().equals("Y")){
+                        LoginVO loginVO = CommonUtil.fn_getUserAuth(principal);
+                        boolean result = false;
+                        // 권한체크
+                        /**
+                         *  작성자 검증 및 관리자 권한 검증
+                         */
+                        /**
+                         * 비회원 글은 inpt_seq 가 null
+                         */
+                        if(vo.getInpt_seq() != null){ // 회원 작성글
+                            if(loginVO.getUser_auth().equals("ROLE_ADMIN") || vo.getInpt_seq().equals(loginVO.getUser_seq())){
+                                result = true;
+                            }
+                        }else{ // 비회원 작성글
+                            if(loginVO.getUser_auth().equals("ROLE_ADMIN")){
+                                result = true;
+                            }else if(articleMapper.checkPwd(tmpVO) > 0){
+                                // 관리자가 아닐때는 패스워드 체크
+                                result = true;
+                            }
+                        }
+
+                        if(!result){
+                            return CommonUtil.fn_getDetail(null);
+                        }
+                    }
+                    articleMapper.updArticleReadCNT(vo);
+
+                    if(vo.getContent() != null){
+                        vo.setContent(vo.getContent().replaceAll("<br>","\r\n"));
+                    }
+                    vo.setBbs_cd(bbsMngVO.getBbs_cd());
+                    vo.setBbs_type(bbsMngVO.getBbs_type());
                     vo.setSearchCondition(searchCondition);
                     vo.setSearchKeyword(searchKeyword);
                     vo.setPageIndex(pageIndex);
@@ -157,7 +193,6 @@ public class ArticleService {
                     if ("Y".equals(vo.getAttach_file_use_yn())) {
                         rtnMap.put("fileList", fileMngMapper.getFileList(new FileMngVO("TB_ARTICLES", vo.getArticle_seq(), "", null)));
                     }
-
                 }else{
                     rtnMap = CommonUtil.fn_getDetail(null);
                 }

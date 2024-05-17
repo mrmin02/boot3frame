@@ -156,6 +156,8 @@ public class ArticleVO extends BbsMngVO {
         this.fileList = fileList;
     }
 
-
+    public void setNotEncUser_pwd(String user_pwd){
+        this.user_pwd = user_pwd;
+    }
 
 }
