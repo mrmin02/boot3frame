@@ -104,7 +104,7 @@ public class DefaultVO implements Serializable {
 	@Schema(description = "파일 경로", hidden = true)
 	private String file_path;
 
-	@Schema(description = "파일 배열", hidden = true)
+	@Schema(description = "파일 배열")
 	private MultipartFile[] file;
 
 	@Schema(description = "회원 타입", hidden = true)

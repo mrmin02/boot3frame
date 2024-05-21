@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -327,7 +328,8 @@ public class ArticleController {
      * @throws Exception
      */
     @Operation(summary = "게시글 및 답변 등록")
-    @PostMapping("/api/article/{bbs_cd}/proc")
+    @PostMapping(value={"/api/article/{bbs_cd}/proc"}
+            , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultVO setArticle(@RequestBody ArticleVO articleVO,
                                 @PathVariable("bbs_cd") String bbs_cd,
                                 HttpServletRequest request,
@@ -387,7 +389,8 @@ public class ArticleController {
      * @throws Exception
      */
     @Operation(summary = "게시글 및 답변 수정")
-    @PatchMapping("/api/article/{bbs_cd}/proc")
+    @PatchMapping(value={"/api/article/{bbs_cd}/proc"}
+            , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResultVO updateArticle(@RequestBody ArticleVO articleVO,
                                @PathVariable("bbs_cd") String bbs_cd,
                                HttpServletRequest request,

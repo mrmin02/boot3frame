@@ -1,16 +1,31 @@
 package com.custom.boot3Cms.config.spring;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
+import jakarta.servlet.http.HttpServletRequest;
+import org.springdoc.core.properties.SwaggerUiConfigParameters;
+import org.springdoc.core.properties.SwaggerUiConfigProperties;
+import org.springdoc.webmvc.api.OpenApiResource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-
+import org.springframework.core.io.ClassPathResource;
+import springfox.documentation.swagger.web.InMemorySwaggerResourcesProvider;
+import springfox.documentation.swagger.web.SwaggerResource;
+import springfox.documentation.swagger.web.SwaggerResourcesProvider;
+//import io.swagger.v3.oas.integration.SwaggerUiConfigParametersBuilder;
+import org.springdoc.core.customizers.OpenApiCustomizer;
+import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Swagger Config
@@ -52,9 +67,32 @@ public class SwaggerConfig {
 //                .build();
 //    }
 
-    @Bean
-    public OpenAPI customOpenAPI() {
+//    @Bean
+//    public OpenAPI customOpenAPI() {
+//        return new OpenAPIV3Parser().readLocation("classpath:/swagger/api-docs.yaml", null, null).getOpenAPI();
+//    }
 
+    @Bean
+    public OpenAPI customOpenAPI() throws Exception {
+
+        String swagger_mode = env.getProperty("Globals.swagger.mode");
+        String swagger_yaml_location = env.getProperty("Globals.swagger.yaml.location");
+
+        if(swagger_mode.equals("yaml")) {
+            if(new ClassPathResource(swagger_yaml_location).exists()){
+                try (InputStream inputStream = new ClassPathResource(swagger_yaml_location).getInputStream()) {
+                    System.out.println("###### Swagger try import yaml #######");
+                    return Yaml.mapper().readValue(inputStream, OpenAPI.class);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        System.out.println("###### Swagger default auto generate #######");
+        /**
+         * swagger auto generate
+         */
         SecurityRequirement securityRequirement = new SecurityRequirement().addList(env.getProperty("Globals.jwt.header.access"));
 
         return new OpenAPI()
@@ -70,5 +108,19 @@ public class SwaggerConfig {
                                         .scheme("bearer")
                                         .bearerFormat("JWT")))
                 .security(Arrays.asList(securityRequirement));
+
+
+
+
+        // parser 는 java 11 까지 지원
+//        try{
+//            OpenAPI yamlOpenAPI = new OpenAPIV3Parser().read("src/main/resources/swagger/api-docs.yaml");
+//            openAPI.getPaths().putAll(yamlOpenAPI.getPaths());
+//            openAPI.getComponents().getSchemas().putAll(yamlOpenAPI.getComponents().getSchemas());
+//        }catch (Exception e){
+//            e.printStackTrace();
+//            System.err.println("#### Swagger OpenAPI read Error !! ####");
+//        }
     }
+
 }

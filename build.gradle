@@ -35,12 +35,18 @@ dependencies {
 	// Swagger 3.0.0
 	implementation group: 'io.springfox', name: 'springfox-boot-starter', version: '3.0.0'
 	implementation group: 'io.springfox', name: 'springfox-swagger-ui', version: '3.0.0'
+	//
+//	implementation group: 'org.springdoc', name: 'springdoc-openapi-data-rest', version: '1.6.9'
+	// Swagger use yaml
+//	implementation 'io.swagger.core.v3:swagger-models:2.2.21'
+//	implementation 'io.swagger.parser.v3:swagger-parser:2.0.31'
+//	implementation group: 'javax.xml.bind', name: 'jaxb-api', version: '2.3.1'
 	// swagger 3.0.0 호환 문제로 validation 추가
 	// implementation 'org.springframework.boot:spring-boot-starter-validation:2.7.0'
 
 	// swagger 관련 api dependency
-	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.0.2'
-	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.1.0'
+//	implementation group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.7.0'
 
 	// mybatis
 	implementation group: 'org.mybatis.spring.boot', name: 'mybatis-spring-boot-starter', version: '3.0.3'
@@ -90,6 +96,15 @@ dependencies {
 	 */
 	implementation 'org.bgee.log4jdbc-log4j2:log4jdbc-log4j2-jdbc4.1:1.16'
 
+
+	modules {
+		module("io.swagger.core.v3:swagger-annotations") {
+			replacedBy("io.swagger.core.v3:swagger-annotations-jakarta")
+		}
+		module("io.swagger.core.v3:swagger-models") {
+			replacedBy("io.swagger.core.v3:swagger-models-jakarta")
+		}
+	}
 }
 
 /**
@@ -105,6 +120,19 @@ configurations {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+//openApi { // json 파일을 얻어냄
+//	apiDocsUrl.set("http://localhost:8080/api-docs")
+//	outputDir.set(file("$rootDir/docs"))
+//	outputFileName.set("swagger.json")
+//	waitTimeInSeconds.set(5)
+//}
+//
+//openApi { // yaml 파일을 얻어냄
+//	apiDocsUrl.set("http://localhost:8080/api-docs.yaml")
+//	outputDir.set(file("$rootDir/docs"))
+//	outputFileName.set("swagger.yaml")
+//	waitTimeInSeconds.set(5)
+//}
 
 // gradle 은 main 에서 .java 만 빌드하며, xml 파일은 빌드하지 않음. ( intellij 에서 문제 발생 )
 // 따라서 resoureces 폴더에 xml 파일을 만들어줄 필요가 있지만, project 구조를 그대로 가져오기 위하여 빌드 시,
