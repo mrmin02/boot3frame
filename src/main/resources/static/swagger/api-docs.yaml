@@ -1,4 +1,4 @@
-openapi: 3.0.1
+openapi: 3.0.3
 info:
   title: REST API 명세 ( yaml )
   description: REST API 명세 with Swagger ( yaml )
@@ -283,20 +283,30 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ArticleVO'
-            examples:
-              test:
-                value:
-                  subject: "테스트 제목"
-                  content: "내용"
-                  user_id: "비회원"
-                  user_pwd: "2222"
-              guide:
-                value:
-                  subject: "제목"
-                  content: "내용"
-                  user_id: "비회원일 때, 작성자 이름"
-                  user_pwd: "게시글 비밀번호"
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                user_id:
+                  description: "비회원 아이디"
+                  default: "test"
+                  type: string
+                user_pwd:
+                  description: "비회원 비밀번호"
+                  default: "2222"
+                  type: string
         required: true
       responses:
         "200":
@@ -351,20 +361,30 @@ paths:
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/ArticleVO'
-            examples:
-              test:
-                value:
-                  article_seq : "8"
-                  subject: "수정 테스트 제목"
-                  content: "수정 내용"
-                  user_pwd: "2222"
-              guide:
-                value:
-                  article_seq: "게시글 순번"
-                  subject: "제목"
-                  content: "내용"
-                  user_pwd: "비밀번호"
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                article_seq:
+                  description: "게시글 순번"
+                  default: "8"
+                  type: string
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                user_pwd:
+                  description: "게시글 비밀번호"
+                  default: "2222"
+                  type: string
         required: true
       responses:
         "200":
@@ -615,6 +635,110 @@ paths:
         required: true
         schema:
           type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/page/{html_seq}:
+    get:
+      tags:
+        - Html 페이지 컨트롤러
+      summary: 페이지 정보 GET
+      description: Html 페이지 정보를 가져옵니다.
+      operationId: pageDetail
+      parameters:
+        - name: html_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/list:
+    get:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 메뉴 조회
+      description: 대메뉴 + 서브메뉴
+      operationId: getMenuList
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/first:
+    get:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 대메뉴 조회
+      description: 대메뉴 조회
+      operationId: getfirstMenu
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/upTree:
+    post:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 계층형 메뉴 조회 up
+      description: 계층형 메뉴 조회 ( up tree )
+      operationId: menuUpTree
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuVO'
+            examples:
+              test:
+                value:
+                  menu_type: "MNT_001"
+                  menu_link: "/info/exhibition/list"
+              guide:
+                value:
+                  menu_type: "메뉴 타입 ( MNT_001 ~ 004 )"
+                  menu_link: "메뉴 링크"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/downTree:
+    post:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 계층형 메뉴 조회 down
+      description: 계층형 메뉴 조회 down
+      operationId: menuDownTree
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuVO'
+            examples:
+              test:
+                value:
+                  menu_seq: "1576718683454"
+              guide:
+                value:
+                  menu_seq: "메뉴 순번"
+        required: true
       responses:
         "200":
           description: OK
@@ -1897,6 +2021,53 @@ components:
         user_pwd:
           type: string
           description: 사용자 비밀번호
+    MenuVO:
+      type: object
+      properties:
+        menu_seq:
+          type: string
+        menu_title:
+          type: string
+        menu_type:
+          type: string
+        menu_link:
+          type: string
+        menu_link_type:
+          type: string
+        prt_seq:
+          type: string
+        use_yn:
+          type: string
+        ord:
+          type: string
+        remark:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        user_auth:
+          type: string
+        access_code:
+          type: string
+        menu_json:
+          type: string
+        menu_order:
+          type: string
+        menu_depth:
+          type: string
+        menu_link_seq:
+          type: string
+        menu_link_title:
+          type: string
+        sub_menu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuVO'
     CodeVO:
       type: object
       properties:

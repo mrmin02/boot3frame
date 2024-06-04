@@ -2,6 +2,7 @@ package com.custom.boot3Cms.config.spring;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.fasterxml.jackson.dataformat.yaml.YAMLGenerator;
 import io.swagger.v3.core.util.Yaml;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -78,11 +79,20 @@ public class SwaggerConfig {
         String swagger_mode = env.getProperty("Globals.swagger.mode");
         String swagger_yaml_location = env.getProperty("Globals.swagger.yaml.location");
 
+        // FIXME Yaml 파일을 import 해도, 프로젝트 내부에 swagger 관련 어노테이션 존재하면, 두 내용이 섞임..
+        // FIXME swagger/index.html 에서 FIXME resource 경로로 접근해서 yaml 파일 import
         if(swagger_mode.equals("yaml")) {
             if(new ClassPathResource(swagger_yaml_location).exists()){
                 try (InputStream inputStream = new ClassPathResource(swagger_yaml_location).getInputStream()) {
                     System.out.println("###### Swagger try import yaml #######");
                     return Yaml.mapper().readValue(inputStream, OpenAPI.class);
+//                    YAMLFactory factory = new YAMLFactory();
+//                    factory.disable(YAMLGenerator.Feature.WRITE_DOC_START_MARKER);
+//                    factory.enable(YAMLGenerator.Feature.MINIMIZE_QUOTES);
+//                    factory.enable(YAMLGenerator.Feature.SPLIT_LINES);
+//                    factory.enable(YAMLGenerator.Feature.ALWAYS_QUOTE_NUMBERS_AS_STRINGS);
+//                    ObjectMapper mapper = new ObjectMapper(factory);
+//                    return mapper.readValue(inputStream, OpenAPI.class);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -41,6 +41,7 @@
     <insert id="setFile" parameterType="com.custom.boot3Cms.application.common.system.file.vo.FileMngVO">
         INSERT INTO TB_FILES
         (
+            FILE_SEQ,
             TABLE_NM,
             TABLE_SEQ,
             FILE_TYPE,
@@ -52,6 +53,7 @@
         )
         VALUES
         (
+            TB_FILES_SEQ.nextval,
             #{table_nm},
             #{table_seq},
             #{file_type},

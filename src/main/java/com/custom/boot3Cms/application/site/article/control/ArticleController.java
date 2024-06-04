@@ -330,7 +330,7 @@ public class ArticleController {
     @Operation(summary = "게시글 및 답변 등록")
     @PostMapping(value={"/api/article/{bbs_cd}/proc"}
             , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResultVO setArticle(@RequestBody ArticleVO articleVO,
+    public ResultVO setArticle(@ModelAttribute ArticleVO articleVO,
                                 @PathVariable("bbs_cd") String bbs_cd,
                                 HttpServletRequest request,
                                 HttpServletResponse response,
@@ -391,7 +391,7 @@ public class ArticleController {
     @Operation(summary = "게시글 및 답변 수정")
     @PatchMapping(value={"/api/article/{bbs_cd}/proc"}
             , consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResultVO updateArticle(@RequestBody ArticleVO articleVO,
+    public ResultVO updateArticle(@ModelAttribute ArticleVO articleVO,
                                @PathVariable("bbs_cd") String bbs_cd,
                                HttpServletRequest request,
                                HttpServletResponse response,

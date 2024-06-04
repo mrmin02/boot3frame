@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.site.menu.mapper.MenuMapper">
+
+    <!-- 대메뉴 조회 -->
+    <select id="getFirstMenu" resultType="com.custom.boot3Cms.application.site.menu.vo.MenuVO">
+        SELECT MENU_DEPTH
+             ,  MENU_TITLE
+             ,  MENU_TYPE
+             ,  MENU_LINK
+             ,  MENU_LINK_TYPE
+        FROM TB_MENU
+        WHERE 1=1
+          AND USE_YN = 'Y'
+          AND MENU_DEPTH = 0
+          AND MENU_TITLE != '서비스'
+        ORDER BY MENU_ORDER
+    </select>
+
+    <!-- 메뉴 조회 -->
+    <select id="getMenu" resultType="com.custom.boot3Cms.application.site.menu.vo.MenuVO">
+        SELECT MENU_TITLE
+             ,  MENU_TYPE
+             ,  MENU_LINK
+             ,  MENU_LINK_TYPE
+             ,  MENU_DEPTH
+             ,  PRT_SEQ
+        FROM TB_MENU
+        WHERE 1=1
+          AND USE_YN = 'Y'
+            START WITH MENU_DEPTH = 0 AND MENU_TITLE != '서비스'
+        CONNECT BY PRIOR MENU_SEQ = PRT_SEQ
+        ORDER BY MENU_ORDER
+    </select>
+
+    <!--  메뉴 계층형 조회(UP tree)  -->
+    <select id="getMenuUptree" resultType="com.custom.boot3Cms.application.site.menu.vo.MenuVO">
+        SELECT MENU_SEQ
+             ,  MENU_TITLE
+             ,  MENU_TYPE
+             ,  MENU_LINK
+             ,  MENU_LINK_TYPE
+             ,  MENU_DEPTH
+             ,  REMARK
+        FROM TB_MENU
+        WHERE 1=1
+          AND USE_YN = 'Y'
+            START WITH MENU_TYPE = #{menu_type} AND MENU_LINK = #{menu_link}
+        CONNECT BY PRIOR PRT_SEQ = MENU_SEQ
+        ORDER BY MENU_DEPTH ASC
+    </select>
+
+    <!--  메뉴 계층형 조회(DOWN tree)  -->
+    <select id="getMenuDowntree" resultType="com.custom.boot3Cms.application.site.menu.vo.MenuVO">
+        SELECT MENU_SEQ
+             ,  MENU_TITLE
+             ,  MENU_TYPE
+             ,  MENU_LINK
+             ,  MENU_LINK_TYPE
+             ,  MENU_DEPTH
+        FROM TB_MENU
+        WHERE USE_YN = 'Y'
+            START WITH MENU_SEQ = #{menu_seq}
+        CONNECT BY PRIOR MENU_SEQ = PRT_SEQ
+        ORDER BY MENU_ORDER ASC
+    </select>
+
+</mapper>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.site.page.mapper.PageMapper">
+    <!-- html 페이지 정보 -->
+    <select id="getPageDetail" resultType="com.custom.boot3Cms.application.site.page.vo.PageVO">
+        SELECT
+            HTML_TITLE,
+            HTML_CONTENT,
+            INPT_SEQ,
+            INPT_DATE,
+            UPD_SEQ,
+            UPD_DATE
+        FROM TB_HTML_CONTENT
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        AND HTML_SEQ = #{html_seq}
+    </select>
+</mapper>
