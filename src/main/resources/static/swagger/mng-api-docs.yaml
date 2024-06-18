@@ -1184,6 +1184,224 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
+  /api/mng/popup/proc:
+    put:
+      tags:
+        - 팝업 관리 컨트롤러
+      summary: 팝업 수정
+      operationId: popupUpdateProc
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                getDel_file_seq:
+                  description: "삭제할 파일 순번(seq)"
+                  type: array
+                  items:
+                    type: string
+                popup_seq:
+                  description: "팝업 순번"
+                  default: "1"
+                  type: string
+                popup_title:
+                  description: "팝업 제목"
+                  default: "제목"
+                  type: string
+                popup_type:
+                  description: "팝업 타입 (이미지 : I , HTML : H)"
+                  default: "I"
+                  type: string
+                popup_order:
+                  description: "팝업 순서"
+                  default: "1"
+                  type: string
+                content:
+                  description: "팝업 내용 (HTML)"
+                  default: "팝업 html 내용"
+                  type: string
+                link_type:
+                  description: "링크 타입 (현재창 : N , 새창 : B)"
+                  default: "테스트 테스트 내용"
+                  type: string
+                link_url:
+                  description: "링크 URL"
+                  default: "http://localhost:8080"
+                  type: string
+                remark:
+                  description: "메모"
+                  default: "팝업 메모"
+                  type: string
+                del_yn:
+                  description: "삭제여부 (Y, N)"
+                  default: "N"
+                  type: string
+                use_yn:
+                  description: "사용 여부 (Y, N)"
+                  default: "Y"
+                  type: string
+                popup_start_date:
+                  description: "게시 시작일"
+                  default: "2024-01-01 00:00:00"
+                  type: string
+                popup_end_date:
+                  description: "게시 종료일"
+                  default: "2024-12-31 00:00:00"
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 팝업 관리 컨트롤러
+      summary: 팝업 등록
+      operationId: popupInsertProc
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                popup_title:
+                  description: "팝업 제목"
+                  default: "제목"
+                  type: string
+                popup_type:
+                  description: "팝업 타입 (이미지 : I , HTML : H)"
+                  default: "I"
+                  type: string
+                popup_order:
+                  description: "팝업 순서"
+                  default: "1"
+                  type: string
+                content:
+                  description: "팝업 내용 (HTML)"
+                  default: "팝업 html 내용"
+                  type: string
+                link_type:
+                  description: "링크 타입 (현재창 : N , 새창 : B)"
+                  default: "테스트 테스트 내용"
+                  type: string
+                link_url:
+                  description: "링크 URL"
+                  default: "http://localhost:8080"
+                  type: string
+                remark:
+                  description: "메모"
+                  default: "팝업 메모"
+                  type: string
+                del_yn:
+                  description: "삭제여부 (Y, N)"
+                  default: "N"
+                  type: string
+                use_yn:
+                  description: "사용 여부 (Y, N)"
+                  default: "Y"
+                  type: string
+                popup_start_date:
+                  description: "게시 시작일"
+                  default: "2024-01-01 00:00:00"
+                  type: string
+                popup_end_date:
+                  description: "게시 종료일"
+                  default: "2024-12-31 00:00:00"
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 팝업 관리 컨트롤러
+      summary: 팝업 삭제
+      operationId: popupDeleteProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/PopupMngVO'
+            examples:
+              test:
+                value:
+                  popup_seq: "1"
+              guide:
+                value:
+                  popup_seq: "팝업 순번"
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/popup/list:
+    get:
+      tags:
+        - 팝업 관리 컨트롤러
+      summary: 팝업 리스트
+      operationId: popupList
+      parameters:
+        - name: popupMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/PopupMngVO'
+          examples:
+            test:
+              value:
+                pageIndex: "1"
+                searchKeyword: "팝업1"
+            guide:
+              value:
+                pageIndex: "팝업 순번"
+                searchKeyword: "검색 키워드 (제목)"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/popup/detail/{popup_seq}:
+    get:
+      tags:
+        - 팝업 관리 컨트롤러
+      summary: 팝업 상세정보
+      operationId: popupDetail
+      parameters:
+        - name: popup_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
 components:
   schemas:
     사용자 DTO:
@@ -1586,6 +1804,82 @@ components:
         del_yn:
           type: string
         flag:
+          type: string
+    PopupMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        inpt_user_name:
+          type: string
+        upd_user_name:
+          type: string
+        popup_seq:
+          type: string
+        popup_title:
+          type: string
+        popup_type:
+          type: string
+        popup_order:
+          type: string
+        content:
+          type: string
+        link_type:
+          type: string
+        link_url:
+          type: string
+        remark:
+          type: string
+        del_yn:
+          type: string
+        use_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        popup_start_date:
+          type: string
+        popup_end_date:
+          type: string
+        flag:
+          type: string
+        file_PATH:
+          type: string
+        file_SYS_NM:
+          type: string
+        file_NM:
+          type: string
+        table_SEQ:
           type: string
   securitySchemes:
     Authorization:

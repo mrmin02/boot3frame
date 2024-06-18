@@ -35,7 +35,7 @@ import java.util.Map;
 @Transactional
 public class UserMngService {
 
-    @Resource(name = "userMngMapper")
+    @Resource
     UserMngMapper userMngMapper;
 
     @Resource(name = "loginLogMapper")

@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.popup.mapper.PopupMngMapper">
+
+    <sql id="popupWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND ( POPUP_TITLE LIKE '%'||#{searchKeyword}||'%' )
+        </if>
+    </sql>
+
+    <!-- 팝업 조회 (List) CNT -->
+    <select id="getPopupListCNT" parameterType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO" resultType="int">
+        SELECT
+            count(*)
+        FROM TB_POPUP
+        WHERE 1=1
+          AND DEL_YN='N'
+    </select>
+
+    <!-- 팝업 조회 (List)-->
+    <select id="getPopupList" resultType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        SELECT
+            popupList.*
+        FROM (
+             SELECT
+                 ROW_NUMBER() OVER(ORDER BY POPUP_SEQ DESC, POPUP_ORDER ASC) AS rNum,
+                 POPUP_SEQ,
+                 POPUP_TITLE,
+                 POPUP_TYPE,
+                 POPUP_ORDER,
+                 CONTENT,
+                 LINK_TYPE,
+                 LINK_URL,
+                 REMARK,
+                 USE_YN,
+                 POPUP_START_DATE,
+                 POPUP_END_DATE,
+                 DEL_YN,
+                 INPT_SEQ,
+                 INPT_DATE,
+                 INPT_DATE,
+                 UPD_SEQ,
+                 UPD_DATE,
+                 (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME
+             FROM TB_POPUP
+             WHERE 1=1
+             AND DEL_YN='N'
+             <include refid="popupWhere"/>
+         ) popupList
+        WHERE popupList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+    </select>
+    
+    <!-- 팝업 조회 (One)-->
+    <select id="getPopupDetail" resultType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        SELECT
+          POPUP_SEQ,
+          POPUP_TITLE,
+          POPUP_TYPE,
+          POPUP_ORDER,
+          CONTENT,
+          LINK_TYPE,
+          LINK_URL,
+          REMARK,
+          DEL_YN,
+          USE_YN,
+          POPUP_START_DATE,
+          POPUP_END_DATE,
+          INPT_SEQ,
+          INPT_DATE,
+          UPD_SEQ,
+          UPD_DATE,
+          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME,
+          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = UPD_SEQ) AS UPD_USER_NAME
+        FROM TB_POPUP
+        WHERE POPUP_SEQ = #{popup_seq}
+        AND DEL_YN = 'N'
+    </select>
+
+    <!-- 팝업 생성 -->
+    <insert id="setPopup" parameterType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        <selectKey keyProperty="popup_seq" resultType="String" order="BEFORE">
+            SELECT TB_POPUP_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_POPUP
+        (
+            POPUP_SEQ,
+            POPUP_TITLE,
+            POPUP_TYPE,
+            POPUP_ORDER,
+            CONTENT,
+            LINK_TYPE,
+            LINK_URL,
+            REMARK,
+            DEL_YN,
+            USE_YN,
+            INPT_SEQ,
+            INPT_DATE,
+            POPUP_START_DATE,
+            POPUP_END_DATE
+        )
+        VALUES
+            (
+                #{popup_seq},
+                #{popup_title},
+                #{popup_type},
+                #{popup_order},
+                #{content},
+                #{link_type},
+                #{link_url},
+                #{remark},
+                'N',
+                #{use_yn},
+                #{inpt_seq},
+                SYSDATE,
+                #{popup_start_date},
+                #{popup_end_date}
+            )
+    </insert>
+
+    <!-- 팝업 수정 -->
+    <update id="updPopup" parameterType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        UPDATE TB_POPUP
+        SET
+            POPUP_TITLE = #{popup_title},
+            POPUP_TYPE = #{popup_type},
+            POPUP_ORDER = #{popup_order},
+            CONTENT = #{content},
+            LINK_TYPE = #{link_type},
+            LINK_URL = #{link_url},
+            REMARK = #{remark},
+            USE_YN = #{use_yn},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE,
+            POPUP_START_DATE = #{popup_start_date},
+            POPUP_END_DATE = #{popup_end_date}
+        WHERE POPUP_SEQ = #{popup_seq}
+    </update>
+
+    <!-- 팝업 삭제 (UPDATE) -->
+    <update id="delPopup" parameterType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        UPDATE TB_POPUP SET
+            DEL_YN='Y',
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE POPUP_SEQ = #{popup_seq}
+    </update>
+
+    <!-- 팝업 완전 삭제 (팝업글 등록 후 파일업로드 실패시 사용)-->
+    <delete id="deletePopup" parameterType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        DELETE FROM TB_POPUP WHERE POPUP_SEQ = #{popup_seq}
+    </delete>
+
+    <!-- 메인화면 팝업 출력 -->
+    <select id="showPopup" resultType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
+        SELECT
+          TP.POPUP_TITLE,
+          TP.POPUP_TYPE,
+          TP.POPUP_ORDER,
+          TP.CONTENT,
+          TP.LINK_TYPE,
+          TP.LINK_URL,
+          TF.TABLE_SEQ,
+          TF.FILE_SYS_NM,
+          TF.FILE_NM,
+          TF.FILE_PATH
+        FROM TB_POPUP TP
+        LEFT OUTER JOIN (
+                            SELECT
+                                TABLE_SEQ,
+                                FILE_SYS_NM,
+                                FILE_NM,
+                                FILE_PATH
+                            FROM TB_FILES
+                            WHERE TABLE_NM = 'TB_POPUP'
+                         ) TF
+        ON TP.POPUP_SEQ = TF.TABLE_SEQ
+        WHERE 1=1
+        AND TP.DEL_YN = 'N'
+        AND TP.USE_YN = 'Y'
+        AND DATE_FORMAT(SYSDATE, 'YYYY-MM-DD') BETWEEN TP.POPUP_START_DATE AND TP.POPUP_END_DATE
+				ORDER BY TP.POPUP_ORDER
+    </select>
+</mapper>

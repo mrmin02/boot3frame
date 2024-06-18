@@ -3,7 +3,6 @@ package com.custom.boot3Cms.application.site.article.control;
 
 
 import com.custom.boot3Cms.application.common.result.vo.ResultVO;
-import com.nhncorp.lucy.security.xss.XssFilter;
 import com.custom.boot3Cms.application.common.system.file.service.FileMngService;
 import com.custom.boot3Cms.application.common.system.login.vo.LoginVO;
 import com.custom.boot3Cms.application.common.utils.CommonUtil;
@@ -13,24 +12,17 @@ import com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO;
 import com.custom.boot3Cms.application.mng.code.service.CodeService;
 import com.custom.boot3Cms.application.site.article.service.ArticleService;
 import com.custom.boot3Cms.application.site.article.vo.ArticleVO;
+import com.nhncorp.lucy.security.xss.XssFilter;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import javax.xml.transform.Result;
-import java.net.URLEncoder;
 import java.security.Principal;
 import java.util.HashMap;
 import java.util.List;

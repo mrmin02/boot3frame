@@ -29,7 +29,7 @@ import java.util.Map;
 @Service("htmlMngService")
 public class HtmlMngService {
 
-    @Resource(name = "htmlMngMapper")
+    @Resource
     HtmlMngMapper htmlMngMapper;
 
     public int getHtmlListCNT(HtmlMngVO vo) throws Exception {
