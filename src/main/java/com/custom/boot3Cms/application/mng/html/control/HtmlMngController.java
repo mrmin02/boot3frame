@@ -109,7 +109,7 @@ public class HtmlMngController {
                 result = true;
                 resultVO.putResult("data",map.get("value"));
             }else{
-                rMsg = map.get("rMsg").toString();
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
         }catch (Exception e){
             e.printStackTrace();
@@ -156,8 +156,9 @@ public class HtmlMngController {
             if((boolean)map.get("result")){
                 result = true;
                 resultVO.putResult("data",map.get("value"));
+            }else{
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -203,8 +204,9 @@ public class HtmlMngController {
             if((boolean)map.get("result")){
                 result = true;
                 resultVO.putResult("data",map.get("value"));
+            }else{
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -250,8 +252,9 @@ public class HtmlMngController {
             if((boolean)map.get("result")){
                 result = true;
                 resultVO.putResult("data",map.get("value"));
+            }else{
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();

@@ -77,7 +77,7 @@ public class JoinController {
             Map<String, Object> map = joinService.checkUserId(joinVO.getUser_id());
             boolean result = (boolean) map.get("result");
 
-            resultVO.setResultMsg(map.get("rMsg").toString());
+            resultVO.setResultMsg(String.valueOf(map.get("rMsg").toString()));
             resultVO.putResult("result", result);
         }catch (Exception e){
             e.printStackTrace();

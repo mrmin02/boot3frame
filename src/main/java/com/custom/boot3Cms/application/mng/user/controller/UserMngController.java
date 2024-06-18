@@ -179,9 +179,8 @@ public class UserMngController {
                 result = true;
             }else{
                 code = 404;
+                rMsg = String.valueOf(map.get("rMsg"));
             }
-
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -229,9 +228,8 @@ public class UserMngController {
                 result = true;
             }else{
                 code = 404;
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();
@@ -279,9 +277,8 @@ public class UserMngController {
                 result = true;
             }else{
                 code = 404;
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-
-            rMsg = map.get("rMsg").toString();
 
         }catch (Exception e){
             e.printStackTrace();

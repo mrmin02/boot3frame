@@ -183,7 +183,7 @@ public class MypageController {
                 }else{
                     code = 404;
                 }
-                rMsg = rtnMap.get("rMsg").toString();
+                rMsg = String.valueOf(rtnMap.get("rMsg").toString());
             }else{
                 code = 403;
                 rMsg = "회원정보가 없습니다.";

@@ -90,7 +90,7 @@ public class PopupMngService {
         // [팝업 삭제]
         if ("d".equals(vo.getFlag())) {
             result = popupMngMapper.delPopup(vo) > 0;
-            rtnMsg = popupMngMapper.delPopup(vo) > 0 ? "팝업 삭제가 완료되었습니다." : "팝업 삭제 중 오류가 발생했습니다.<br/>잠시 후 다시 시도하거나, 현상이 반복 될 경우 개발사에 문의 바랍니다.";
+            rtnMsg = result ? "팝업 삭제가 완료되었습니다." : "팝업 삭제 중 오류가 발생했습니다.<br/>잠시 후 다시 시도하거나, 현상이 반복 될 경우 개발사에 문의 바랍니다.";
 
         // [팝업 등록] = (글 등록 + 첨부파일 등록)
         }else if ("c".equals(vo.getFlag())) {
@@ -98,80 +98,82 @@ public class PopupMngService {
             if (result) { // POPUP 테이블에 글입력 성공했다면, 아래 로직에서 파일 업로드 수행
                 // 첨부파일에 파일이 들어있는지 확인하는 로직
                 boolean isFileAdd = false;
-                for(MultipartFile file : vo.getFile()){
-                    if(StringUtil.isNotEmpty(file.getOriginalFilename())){
-                        isFileAdd = true;
-                        break;
-                    }
-                }
-
-                // 첨부파일이 있다면
-                if (isFileAdd) {
-                    List<FileMngVO> fileMngVoList = CommonUtil.fn_getFileInfo(vo, "TB_POPUP", vo.getPopup_seq(), FILE_PATH, POPUP_PATH, vo.getInpt_seq(), "image"); // 파일 업로드
-                    if (fileMngVoList.size() > 0) { // 파일업로드에 성공했다면
-                        boolean fileUplaodResult = false;
-                        for (FileMngVO list : fileMngVoList) {
-                            fileUplaodResult = list.isFileResult();
-                            if(fileUplaodResult) {
-                                result = fileMngService.setFile(list);
-                                if(!result) break;
-                            } else
-                                break;;
+                if(vo.getFile() != null){
+                    for(MultipartFile file : vo.getFile()){
+                        if(StringUtil.isNotEmpty(file.getOriginalFilename())){
+                            isFileAdd = true;
+                            break;
                         }
+                    }
 
-                        if(!fileUplaodResult){
-                            result = popupMngMapper.delPopup(vo) > 0;
+                    // 첨부파일이 있다면
+                    if (isFileAdd) {
+                        List<FileMngVO> fileMngVoList = CommonUtil.fn_getFileInfo(vo, "TB_POPUP", vo.getPopup_seq(), FILE_PATH, POPUP_PATH, vo.getInpt_seq(), "image"); // 파일 업로드
+                        if (fileMngVoList.size() > 0) { // 파일업로드에 성공했다면
+                            boolean fileUplaodResult = false;
+                            for (FileMngVO list : fileMngVoList) {
+                                fileUplaodResult = list.isFileResult();
+                                if(fileUplaodResult) {
+                                    result = fileMngService.setFile(list);
+                                    if(!result) break;
+                                } else
+                                    break;;
+                            }
+
+                            if(!fileUplaodResult){
+                                result = popupMngMapper.delPopup(vo) > 0;
+                                if(result){
+                                    rtnHeader = "에러!";
+                                    rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일 업로드중 에러가 발생했습니다. 개발사에 문의 바랍니다.)";
+                                    // 이 이후의 처리는 에러로 간주함.
+                                }else{
+                                    rtnHeader = "에러!";
+                                    rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 데이터 삭제에 실패하였습니다.)";
+                                    // 이 이후의 처리는 에러로 간주함.
+                                }
+                                result = false;
+                            }else {
+
+                                if (!result) { // 파일 정보를 TB_FILES 테이블에 등록 실패시
+                                    result = popupMngMapper.delPopup(vo) > 0;
+                                    if (result) {
+                                        result = fileMngService.delFiles(new FileMngVO("TB_POPUP", vo.getPopup_seq(), ""));
+                                        if (result) {
+                                            rtnHeader = "에러!";
+                                            rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일 업로드에 실패하였습니다.)";
+                                        } else {
+                                            rtnHeader = "에러!";
+                                            rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 파일데이터 삭제에 실패하였습니다.)";
+                                        }
+                                        result = false;
+                                    } else { // 기존 팝업글 삭제 실패시
+                                        rtnHeader = "에러!";
+                                        rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 데이터 삭제에 실패하였습니다.)";
+                                    }
+                                    vo.setPopup_seq("");
+                                    vo.setFlag("c");
+                                } else {
+                                    rtnHeader = "알림!";
+                                    rtnMsg = "팝업 등록이 완료되었습니다.";
+                                }
+                            }
+                        } else {
+                            result = popupMngMapper.deletePopup(vo) > 0; // 파일 업로드에 실패했지만 게시글은 등록되어있는 상태이므로 게시글 삭제
+                            vo.setPopup_seq("");
+                            vo.setFlag("c");
                             if(result){
                                 rtnHeader = "에러!";
-                                rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일 업로드중 에러가 발생했습니다. 개발사에 문의 바랍니다.)";
-                                // 이 이후의 처리는 에러로 간주함.
+                                rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일이 존재하지 않습니다.)";
                             }else{
                                 rtnHeader = "에러!";
                                 rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 데이터 삭제에 실패하였습니다.)";
                                 // 이 이후의 처리는 에러로 간주함.
                             }
                             result = false;
-                        }else {
-
-                            if (!result) { // 파일 정보를 TB_FILES 테이블에 등록 실패시
-                                result = popupMngMapper.delPopup(vo) > 0;
-                                if (result) {
-                                    result = fileMngService.delFiles(new FileMngVO("TB_POPUP", vo.getPopup_seq(), ""));
-                                    if (result) {
-                                        rtnHeader = "에러!";
-                                        rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일 업로드에 실패하였습니다.)";
-                                    } else {
-                                        rtnHeader = "에러!";
-                                        rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 파일데이터 삭제에 실패하였습니다.)";
-                                    }
-                                    result = false;
-                                } else { // 기존 팝업글 삭제 실패시
-                                    rtnHeader = "에러!";
-                                    rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 데이터 삭제에 실패하였습니다.)";
-                                }
-                                vo.setPopup_seq("");
-                                vo.setFlag("c");
-                            } else {
-                                rtnHeader = "알림!";
-                                rtnMsg = "팝업 등록이 완료되었습니다.";
-                            }
                         }
-                    } else {
-                        result = popupMngMapper.deletePopup(vo) > 0; // 파일 업로드에 실패했지만 게시글은 등록되어있는 상태이므로 게시글 삭제
-                        vo.setPopup_seq("");
-                        vo.setFlag("c");
-                        if(result){
-                            rtnHeader = "에러!";
-                            rtnMsg = "팝업 등록에 실패하였습니다.<br/>(첨부파일이 존재하지 않습니다.)";
-                        }else{
-                            rtnHeader = "에러!";
-                            rtnMsg = "팝업 등록에 실패하였습니다.<br/>(더미 데이터 삭제에 실패하였습니다.)";
-                            // 이 이후의 처리는 에러로 간주함.
-                        }
-                        result = false;
                     }
-
                 }
+
                 if(result){
                     rtnHeader = "알림!";
                     rtnMsg = "팝업 등록이 완료되었습니다.";

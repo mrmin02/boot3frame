@@ -115,8 +115,9 @@ public class PopupMngController {
             if((boolean)map.get("result")) {
                 resultVO.putResult("data",map.get("value"));
                 result = true;
+            }else{
+                rMsg = String.valueOf(map.get("rMsg").toString());
             }
-            rMsg = map.get("rMsg").toString();
         }catch (Exception e){
             e.printStackTrace();
             result = false;
@@ -163,8 +164,9 @@ public class PopupMngController {
                 Map<String, Object> map = popupMngService.popupProc(popupMngVO);
                 if((boolean)map.get("result")) {
                     result = true;
+                }else{
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             }else{
                 rMsg = "로그인 정보가 없습니다.";
             }
@@ -172,7 +174,7 @@ public class PopupMngController {
             e.printStackTrace();
             result = false;
             code = 404;
-            rMsg = "팝업 조회 중 오류가 발생하였습니다.";
+            rMsg = "팝업 등록 중 오류가 발생하였습니다.";
         }
 
         resultVO.setResultMsg(rMsg);
@@ -212,8 +214,9 @@ public class PopupMngController {
                 Map<String, Object> map = popupMngService.popupProc(popupMngVO);
                 if((boolean)map.get("result")) {
                     result = true;
+                }else{
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             }else{
                 rMsg = "로그인 정보가 없습니다.";
             }
@@ -241,7 +244,7 @@ public class PopupMngController {
      */
     @Operation(summary = "팝업 삭제")
     @DeleteMapping("/api/mng/popup/proc")
-    public ResultVO popupDeleteProc(@ModelAttribute("PopupMngVO") PopupMngVO popupMngVO
+    public ResultVO popupDeleteProc(@RequestBody PopupMngVO popupMngVO
             , HttpServletRequest request
             , HttpServletResponse response
             , Principal principal ) throws Exception{
@@ -260,8 +263,9 @@ public class PopupMngController {
                 Map<String, Object> map = popupMngService.popupProc(popupMngVO);
                 if((boolean)map.get("result")) {
                     result = true;
+                }else{
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             }else{
                 rMsg = "로그인 정보가 없습니다.";
             }

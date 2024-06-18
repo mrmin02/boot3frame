@@ -4,7 +4,7 @@
 
     <sql id="popupWhere">
         <if test="searchKeyword != null and searchKeyword != ''">
-            AND ( POPUP_TITLE LIKE '%'||#{searchKeyword}||'%' )
+            AND ( TP.POPUP_TITLE LIKE '%'||#{searchKeyword}||'%' )
         </if>
     </sql>
 
@@ -24,27 +24,26 @@
         FROM (
              SELECT
                  ROW_NUMBER() OVER(ORDER BY POPUP_SEQ DESC, POPUP_ORDER ASC) AS rNum,
-                 POPUP_SEQ,
-                 POPUP_TITLE,
-                 POPUP_TYPE,
-                 POPUP_ORDER,
-                 CONTENT,
-                 LINK_TYPE,
-                 LINK_URL,
-                 REMARK,
-                 USE_YN,
-                 POPUP_START_DATE,
-                 POPUP_END_DATE,
-                 DEL_YN,
-                 INPT_SEQ,
-                 INPT_DATE,
-                 INPT_DATE,
-                 UPD_SEQ,
-                 UPD_DATE,
-                 (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME
-             FROM TB_POPUP
+                 TP.POPUP_SEQ,
+                 TP.POPUP_TITLE,
+                 TP.POPUP_TYPE,
+                 TP.POPUP_ORDER,
+                 TP.CONTENT,
+                 TP.LINK_TYPE,
+                 TP.LINK_URL,
+                 TP.REMARK,
+                 TP.USE_YN,
+                 TP.POPUP_START_DATE,
+                 TP.POPUP_END_DATE,
+                 TP.DEL_YN,
+                 TP.INPT_SEQ,
+                 TP.INPT_DATE,
+                 TP.UPD_SEQ,
+                 TP.UPD_DATE,
+                 (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TP.INPT_SEQ) AS INPT_USER_NAME
+             FROM TB_POPUP TP
              WHERE 1=1
-             AND DEL_YN='N'
+             AND TP.DEL_YN='N'
              <include refid="popupWhere"/>
          ) popupList
         WHERE popupList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
@@ -53,25 +52,25 @@
     <!-- 팝업 조회 (One)-->
     <select id="getPopupDetail" resultType="com.custom.boot3Cms.application.mng.popup.vo.PopupMngVO">
         SELECT
-          POPUP_SEQ,
-          POPUP_TITLE,
-          POPUP_TYPE,
-          POPUP_ORDER,
-          CONTENT,
-          LINK_TYPE,
-          LINK_URL,
-          REMARK,
-          DEL_YN,
-          USE_YN,
-          POPUP_START_DATE,
-          POPUP_END_DATE,
-          INPT_SEQ,
-          INPT_DATE,
-          UPD_SEQ,
-          UPD_DATE,
-          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME,
-          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = UPD_SEQ) AS UPD_USER_NAME
-        FROM TB_POPUP
+          TP.POPUP_SEQ,
+          TP.POPUP_TITLE,
+          TP.POPUP_TYPE,
+          TP.POPUP_ORDER,
+          TP.CONTENT,
+          TP.LINK_TYPE,
+          TP.LINK_URL,
+          TP.REMARK,
+          TP.DEL_YN,
+          TP.USE_YN,
+          TP.POPUP_START_DATE,
+          TP.POPUP_END_DATE,
+          TP.INPT_SEQ,
+          TP.INPT_DATE,
+          TP.UPD_SEQ,
+          TP.UPD_DATE,
+          (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TP.INPT_SEQ) AS INPT_USER_NAME,
+          (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TP.UPD_SEQ) AS UPD_USER_NAME
+        FROM TB_POPUP TP
         WHERE POPUP_SEQ = #{popup_seq}
         AND DEL_YN = 'N'
     </select>

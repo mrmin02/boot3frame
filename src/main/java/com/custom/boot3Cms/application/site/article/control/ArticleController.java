@@ -352,8 +352,8 @@ public class ArticleController {
                     result = true;
                 }else{
                     code = 404;
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             } else {
               code = 403;
               rMsg = "권한이 없습니다.";
@@ -413,8 +413,8 @@ public class ArticleController {
                     result = true;
                 }else{
                     code = 404;
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             } else {
                 code = 403;
                 rMsg = "권한이 없습니다.";
@@ -473,8 +473,8 @@ public class ArticleController {
                     result = true;
                 }else{
                     code = 404;
+                    rMsg = String.valueOf(map.get("rMsg").toString());
                 }
-                rMsg = map.get("rMsg").toString();
             } else {
                 code = 403;
                 rMsg = "권한이 없습니다.";
@@ -523,7 +523,7 @@ public class ArticleController {
 
         Map<String, Object> map = articleService.setComment(articleVO);
 
-        rMsg = map.get("rMsg").toString();
+        rMsg = String.valueOf(map.get("rMsg").toString());
         if((boolean) map.get("result")){
             code = 200;
             result = true;
@@ -568,7 +568,7 @@ public class ArticleController {
 
         Map<String, Object> map = articleService.updateComment(articleVO, principal);
 
-        rMsg = map.get("rMsg").toString();
+        rMsg = String.valueOf(map.get("rMsg").toString());
         if((boolean) map.get("result")){
             code = 200;
             result = true;
@@ -613,7 +613,7 @@ public class ArticleController {
 
         Map<String, Object> map = articleService.updateComment(articleVO, principal);
 
-        rMsg = map.get("rMsg").toString();
+        rMsg = String.valueOf(map.get("rMsg").toString());
         if((boolean) map.get("result")){
             code = 200;
             result = true;

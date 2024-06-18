@@ -1202,7 +1202,7 @@ paths:
                   items:
                     type: string
                     format: binary
-                getDel_file_seq:
+                del_file_seq:
                   description: "삭제할 파일 순번(seq)"
                   type: array
                   items:
@@ -1229,7 +1229,7 @@ paths:
                   type: string
                 link_type:
                   description: "링크 타입 (현재창 : N , 새창 : B)"
-                  default: "테스트 테스트 내용"
+                  default: "N"
                   type: string
                 link_url:
                   description: "링크 URL"
@@ -1297,7 +1297,7 @@ paths:
                   type: string
                 link_type:
                   description: "링크 타입 (현재창 : N , 새창 : B)"
-                  default: "테스트 테스트 내용"
+                  default: "N"
                   type: string
                 link_url:
                   description: "링크 URL"
