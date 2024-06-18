@@ -5,9 +5,8 @@
     <sql id="userWhere">
         <if test="searchKeyword != null and searchKeyword != ''">
             AND (
-                TUL.USER_ID LIKE CONCAT('%',#{searchKeyword},'%')
-                OR TUD.USER_NAME LIKE CONCAT('%',#{searchKeyword},'%')
-                OR TUD.PHONE_NUMBER LIKE CONCAT('%',#{searchKeyword},'%')
+                TUL.USER_ID LIKE '%'||#{searchKeyword}||'%'
+                OR TUD.USER_NAME LIKE '%'||#{searchKeyword}||'%'
             )
         </if>
     </sql>
@@ -15,22 +14,26 @@
     <!-- 회원 목록 -->
     <select id="getUserList" resultType="com.custom.boot3Cms.application.mng.user.vo.UserVO">
         SELECT
-            TUL.USER_SEQ,
-            TUL.USER_ID,
-            TUD.USER_EMAIL,
-            TUL.USER_AUTH,
-            TUL.LAST_LOGIN_DATE,
-            TUL.LAST_LOGIN_IP,
-            TUL.INPT_SEQ,
-            TUL.INPT_DATE,
-            TUL.OUT_YN,
-            TUD.USER_NAME
-        FROM TB_USER_LIST TUL
-        INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
-        WHERE 1=1
-        <include refid="userWhere"/>
-        ORDER BY TUL.INPT_DATE DESC
-
+            userList.*
+        FROM (
+            SELECT
+                ROW_NUMBER() OVER(ORDER BY TUL.INPT_DATE DESC) AS rNum,
+                TUL.USER_SEQ,
+                TUL.USER_ID,
+                TUD.USER_EMAIL,
+                TUL.USER_AUTH,
+                TUL.LAST_LOGIN_DATE,
+                TUL.LAST_LOGIN_IP,
+                TUL.INPT_SEQ,
+                TUL.INPT_DATE,
+                TUL.OUT_YN,
+                TUD.USER_NAME
+            FROM TB_USER_LIST TUL
+            INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+            WHERE 1=1
+            <include refid="userWhere"/>
+        ) userList
+        WHERE userList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
     </select>
 
     <!-- 회원 COUNT -->
@@ -42,13 +45,7 @@
                 TUL.USER_SEQ
             FROM TB_USER_LIST TUL
             INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
-            WHERE 1 = 1  AND TUL.USER_AUTH != 'ROLE_ADMIN'
-            <if test="user_auth != null and user_auth != ''">
-                AND TUL.USER_AUTH = #{user_auth}
-            </if>
-            <if test="out_yn != null and out_yn != ''">
-                AND TUL.OUT_YN = 'Y'
-            </if>
+            WHERE 1 = 1
             <include refid="userWhere"/>
         ) main2
     </select>
@@ -176,6 +173,7 @@
             <if test="user_pwd != '' and user_pwd != null and user_pwd_req != '' and user_pwd_req != ''">
                 USER_PWD = #{user_pwd},
             </if>
+            USER_AUTH = #{user_auth},
             UPD_SEQ = #{upd_seq},
             UPD_DATE = SYSDATE
         WHERE USER_SEQ = #{user_seq}

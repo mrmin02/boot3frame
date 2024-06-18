@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.html.mapper.HtmlMngMapper">
+
+    <sql id="htmlWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND ( HTML_TITLE LIKE '%'||#{searchKeyword}||'%' )
+        </if>
+    </sql>
+
+    <!-- Html 조회 (List) cnt -->
+    <select id="getHtmlListCNT" parameterType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO" resultType="int">
+        SELECT
+            count(*)
+        FROM
+            TB_HTML_CONTENT
+        WHERE 1=1
+        AND DEL_YN = 'N'
+        <include refid="htmlWhere"/>
+    </select>
+
+    <!-- Html 조회 (List) -->
+    <select id="getHtmlList" resultType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO">
+        SELECT
+            htmlList.*
+        FROM (
+             SELECT
+                 ROW_NUMBER() OVER(ORDER BY HTML_SEQ DESC) AS rNum,
+                 HTML_SEQ,
+                 HTML_TITLE,
+                 HTML_CONTENT,
+                 INPT_SEQ,
+                 INPT_DATE,
+                 UPD_SEQ,
+                 UPD_DATE,
+                 (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME,
+                 (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = UPD_SEQ) AS UPD_USER_NAME
+             FROM
+                 TB_HTML_CONTENT
+             WHERE 1=1
+             AND DEL_YN = 'N'
+             <include refid="htmlWhere"/>
+        ) htmlList
+        WHERE htmlList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+    </select>
+
+    <!-- Html 상세보기 (One) -->
+    <select id="getHtmlDetail" resultType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO">
+        SELECT
+          HTML_SEQ,
+          HTML_TITLE,
+          HTML_CONTENT,
+          INPT_SEQ,
+          INPT_DATE,
+          UPD_SEQ,
+          UPD_DATE,
+          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = INPT_SEQ) AS INPT_USER_NAME,
+          (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = UPD_SEQ) AS UPD_USER_NAME
+        FROM
+          TB_HTML_CONTENT
+        WHERE 1=1
+        AND HTML_SEQ = #{html_seq}
+        AND DEl_YN = 'N'
+    </select>
+
+    <!-- Html 등록 -->
+    <insert id="setHtml" parameterType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO">
+        <selectKey keyProperty="html_seq" resultType="String" order="BEFORE">
+            SELECT TB_HTML_CONTENT_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_HTML_CONTENT
+            (
+                HTML_SEQ,
+                HTML_TITLE,
+                HTML_CONTENT,
+                INPT_SEQ,
+                INPT_DATE,
+                DEL_YN
+            )
+        VALUES
+            (
+                #{html_seq},
+                #{html_title},
+                #{html_content},
+                #{inpt_seq},
+                SYSDATE,
+                'N'
+            )
+    </insert>
+
+    <!-- Html 수정 -->
+    <update id="updHtml" parameterType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO">
+        UPDATE TB_HTML_CONTENT SET
+            HTML_TITLE = #{html_title},
+            HTML_CONTENT = #{html_content},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE
+          HTML_SEQ = #{html_seq}
+    </update>
+
+    <!-- Html 삭제 (UPDATE) -->
+    <update id="delHtml" parameterType="com.custom.boot3Cms.application.mng.html.vo.HtmlMngVO">
+        UPDATE TB_HTML_CONTENT SET
+            DEL_YN = 'Y',
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE HTML_SEQ = #{html_seq}
+    </update>
+
+    <!-- HTML_SEQ로 HTML 존재여부 확인 -->
+    <select id="getHtmlCnt" resultType="java.lang.String">
+        SELECT COUNT(*)
+        FROM TB_HTML_CONTENT
+        WHERE 1=1
+        AND HTML_SEQ = #{html_seq}
+        AND DEL_YN = 'N'
+    </select>
+</mapper>

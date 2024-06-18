@@ -87,9 +87,9 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-
         http.authorizeRequests()
                 .requestMatchers("/mng/**").hasRole("ADMIN")
+                .requestMatchers("/api/mng/**").hasRole("ADMIN")
                 .anyRequest().permitAll()
                 .and()
             .formLogin(AbstractHttpConfigurer::disable)

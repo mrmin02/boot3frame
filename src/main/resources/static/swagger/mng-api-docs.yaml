@@ -1,0 +1,1594 @@
+openapi: 3.0.3
+info:
+  title: 관리자 REST API 명세 ( yaml )
+  description: 관리자 REST API 명세 with Swagger ( yaml )
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+security:
+  - Authorization: []
+paths:
+  /api/mng/user/list:
+    get:
+      tags:
+        - 관리자 회원 컨트롤러
+      summary: 회원 목록
+      description: 회원 목록 조회
+      operationId: userList
+      parameters:
+        - name: userVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/사용자 DTO'
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+              examples:
+                test:
+                  value:
+                    searchKeyword: "2222"
+                    pageIndex: "1"
+                guide:
+                  value:
+                    searchKeyword: "회원 PWD"
+                    pageIndex: "회원 순번"
+  /api/mng/user/proc:
+    put:
+      tags:
+        - 관리자 회원 컨트롤러
+      summary: 회원 수정
+      description: 회원 수정
+      operationId: userUpdateProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+            examples:
+              test:
+                value:
+                  user_seq: "5"
+                  user_pwd: "2222"
+                  user_auth: "ROLE_USER"
+                  user_name: "테스트"
+                  user_email: "test@test.com"
+              guide:
+                value:
+                  user_seq: "회원 순번"
+                  user_pwd: "회원 PWD"
+                  user_auth: "회원 권한"
+                  user_name: "회원 이름"
+                  user_email: "회원 이메일"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 관리자 회원 컨트롤러
+      summary: 회원 등록
+      description: 회원 등록
+      operationId: userSetProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+            examples:
+              test:
+                value:
+                  user_id: "test_mng001"
+                  user_pwd: "2222"
+                  user_auth: "ROLE_USER"
+                  user_name: "테스트"
+                  user_email: "test@test.com"
+              guide:
+                value:
+                  user_id: "회원 ID"
+                  user_pwd: "회원 PWD"
+                  user_auth: "회원 권한"
+                  user_name: "회원 이름"
+                  user_email: "회원 이메일"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 관리자 회원 컨트롤러
+      summary: 회원 탈퇴 및 복구
+      description: out_yn 값으로 회원 탈퇴 및 복구
+      operationId: userDeleteProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+            examples:
+              test:
+                value:
+                  user_seq: "24"
+                  flag: "d"
+                  out_yn: "Y"
+              guide:
+                value:
+                  user_seq: "회원 순번"
+                  flag: "플래그 (d) 이미 탈퇴면 복구"
+                  out_yn: "탈퇴 여부 (Y or N)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/user/check:
+    post:
+      tags:
+        - 관리자 회원 컨트롤러
+      summary: 회원 ID 중복 체크
+      description: 회원 아이디 중복체크
+      operationId: getUserCheck
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+            examples:
+              test:
+                value:
+                  user_id: "test_mng001"
+              guide:
+                value:
+                  user_id: "회원 ID"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /mng/bbs/proc:
+    put:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 수정
+      operationId: updateBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+            example:
+
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    post:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 등록
+      operationId: createBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    delete:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 삭제
+      operationId: deleteBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  /mng/bbs/code/check:
+    post:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 코드 중복검사
+      operationId: checkBbsCode
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+  /mng/{bbs_seq}/config/bbs/cnt:
+    get:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 존재여부 확인
+      operationId: menuLinkList
+      parameters:
+        - name: bbs_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  /mng/bbs/list:
+    get:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 리스트
+      operationId: bbsList
+      parameters:
+        - name: bbsMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/BbsMngVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  /mng/bbs/info:
+    get:
+      tags:
+        - bbs-mng-controller
+      summary: 게시판 상세정보
+      operationId: bbsForm
+      parameters:
+        - name: bbsMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/BbsMngVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+
+
+
+
+
+  /mng/user/check:
+    get:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_1
+      parameters:
+        - name: userVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    put:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    post:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    delete:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    options:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_7
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    head:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+    patch:
+      tags:
+        - user-mng-controller
+      operationId: getUserCheck_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/사용자 DTO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: boolean
+  /mng/system/code/getList:
+    get:
+      tags:
+        - code-controller
+      operationId: codeList
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    put:
+      tags:
+        - code-controller
+      operationId: codeList_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    post:
+      tags:
+        - code-controller
+      operationId: codeList_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    delete:
+      tags:
+        - code-controller
+      operationId: codeList_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    options:
+      tags:
+        - code-controller
+      operationId: codeList_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    head:
+      tags:
+        - code-controller
+      operationId: codeList_1
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    patch:
+      tags:
+        - code-controller
+      operationId: codeList_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+  /mng/system/code/check:
+    get:
+      tags:
+        - code-controller
+      operationId: codeCheck
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    put:
+      tags:
+        - code-controller
+      operationId: codeCheck_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    post:
+      tags:
+        - code-controller
+      operationId: codeCheck_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    delete:
+      tags:
+        - code-controller
+      operationId: codeCheck_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    options:
+      tags:
+        - code-controller
+      operationId: codeCheck_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    head:
+      tags:
+        - code-controller
+      operationId: codeCheck_1
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+    patch:
+      tags:
+        - code-controller
+      operationId: codeCheck_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: object
+                additionalProperties:
+                  type: object
+  /ajax/system/code/text:
+    get:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    put:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    post:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    delete:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    options:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    head:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_1
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+    patch:
+      tags:
+        - code-controller
+      operationId: codeToNameAjax_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: string
+  /ajax/system/code/prt/list:
+    get:
+      tags:
+        - code-controller
+      operationId: codeListAjax
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    put:
+      tags:
+        - code-controller
+      operationId: codeListAjax_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    post:
+      tags:
+        - code-controller
+      operationId: codeListAjax_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    delete:
+      tags:
+        - code-controller
+      operationId: codeListAjax_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    options:
+      tags:
+        - code-controller
+      operationId: codeListAjax_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    head:
+      tags:
+        - code-controller
+      operationId: codeListAjax_1
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+    patch:
+      tags:
+        - code-controller
+      operationId: codeListAjax_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/CodeVO'
+  /ajax/system/code/detail:
+    get:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    put:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_3
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    post:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_2
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    delete:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_5
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    options:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_6
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    head:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_1
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+    patch:
+      tags:
+        - code-controller
+      operationId: codeDetailAjax_4
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/CodeVO'
+
+  /api/mng/html/proc:
+    put:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html 수정
+      operationId: htmlUpdateProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/HtmlMngVO'
+            examples:
+              test:
+                value:
+                  html_seq : "1"
+                  html_title: "html subject1"
+                  html_content: "html content1"
+              guide:
+                value:
+                  html_seq : "html 순번"
+                  html_title: "제목"
+                  html_content: "내용"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html 등록
+      operationId: htmlProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/HtmlMngVO'
+            examples:
+              test:
+                value:
+                  html_title: "html subject1"
+                  html_content: "html content1"
+              guide:
+                value:
+                  html_title: "제목"
+                  html_content: "내용"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html 삭제
+      operationId: htmlDeleteProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/HtmlMngVO'
+            examples:
+              test:
+                value:
+                  html_seq: "1"
+              guide:
+                value:
+                  html_seq: "html 순번"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/html/list:
+    get:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html list 조회
+      operationId: htmlList
+      parameters:
+        - name: htmlMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/HtmlMngVO'
+          examples:
+            test:
+              value:
+                pageIndex : "1"
+                html_title: "html subject1"
+            guide:
+              value:
+                pageIndex : "페이지 번호"
+                html_title: "제목"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/html/detail/{html_seq}:
+    get:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html 상세보기
+      operationId: htmlDetail
+      parameters:
+        - name: htmlMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/HtmlMngVO'
+        - name: html_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/html/check/{html_seq}:
+    get:
+      tags:
+        - Html 관리 컨트롤러
+      summary: Html 존재여부 확인
+      description: 메뉴 관리에서 html_seq 로 html 존재여부 확인
+      operationId: menuLinkList_1
+      parameters:
+        - name: html_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+components:
+  schemas:
+    사용자 DTO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        user_seq:
+          type: string
+          description: 사용자 시퀀스
+        user_id:
+          type: string
+          description: 사용자 아이디
+        user_pwd:
+          type: string
+          description: 사용자 비밀번호
+    BbsMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        user_auth:
+          type: string
+        read_yn:
+          type: string
+        write_yn:
+          type: string
+        update_yn:
+          type: string
+        delete_yn:
+          type: string
+        category_nm:
+          type: string
+        category_del_yn:
+          type: string
+        category_order:
+          type: string
+        category_cd:
+          type: string
+        file_cnt:
+          type: string
+        bbs_type:
+          type: string
+        mobile_bbs_type:
+          type: string
+        bbs_dft_list_cnt:
+          type: string
+        bbs_page_cnt:
+          type: string
+        attach_file_use_yn:
+          type: string
+        comment_use_yn:
+          type: string
+        reply_use_yn:
+          type: string
+        notice_use_yn:
+          type: string
+        secret_use_yn:
+          type: string
+        category_use_yn:
+          type: string
+        pwd_use_yn:
+          type: string
+        date_range_use_yn:
+          type: string
+        file_size:
+          type: string
+        file_type:
+          type: string
+        bbs_info_seq:
+          type: string
+        bbs_cd:
+          type: string
+        bbs_nm:
+          type: string
+        bbs_remark:
+          type: string
+        bbs_use_yn:
+          type: string
+        bbs_del_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        date_remark:
+          type: string
+        bbs_cd_check_yn:
+          type: string
+        site_type:
+          type: string
+        data_range_use_yn:
+          type: string
+    GrantedAuthority:
+      type: object
+      properties:
+        authority:
+          type: string
+    LoginVO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        user_id:
+          type: string
+        user_pwd:
+          type: string
+        user_email:
+          type: string
+        pwd_check:
+          type: string
+        user_auth:
+          type: string
+        user_status:
+          type: string
+        out_yn:
+          type: string
+        user_seq:
+          type: string
+        last_login_date:
+          type: string
+        last_login_ip:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        user_name:
+          type: string
+        user_pwd_req:
+          type: string
+        token_seq:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        enabled:
+          type: boolean
+        authorities:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrantedAuthority'
+        accountNonExpired:
+          type: boolean
+        credentialsNonExpired:
+          type: boolean
+        accountNonLocked:
+          type: boolean
+    ResultVO:
+      type: object
+      properties:
+        resultMsg:
+          type: string
+          description: 응답 메시지
+        resultCode:
+          type: integer
+          description: 응답 코드
+          format: int32
+        result:
+          type: object
+          additionalProperties:
+            type: object
+            description: 응답 결과 데이터
+          description: 응답 결과 데이터
+      description: REST API 응답 결과 객체
+    FileMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        file_seq:
+          type: string
+        table_nm:
+          type: string
+        table_seq:
+          type: string
+        file_type:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        file_flag:
+          type: string
+        thumbnail_yn:
+          type: string
+        auth_type:
+          type: string
+        fileResult:
+          type: boolean
+    JwtVO:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    CodeVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        code_seq:
+          type: string
+        code:
+          type: string
+        code_nm:
+          type: string
+        prt_seq:
+          type: string
+        use_yn:
+          type: string
+        remark:
+          type: string
+        inpt_seq:
+          type: string
+        upd_seq:
+          type: string
+        inpt_date:
+          type: string
+        ord:
+          type: string
+        flag:
+          type: string
+        code_check_yn:
+          type: string
+        id:
+          type: string
+        parent:
+          type: string
+        text:
+          type: string
+        state:
+          type: object
+          additionalProperties:
+            type: boolean
+        code_detail:
+          type: string
+        code_detail_nm:
+          type: string
+    HtmlMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        inpt_user_name:
+          type: string
+        upd_user_name:
+          type: string
+        html_seq:
+          type: string
+        html_title:
+          type: string
+        html_content:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        del_yn:
+          type: string
+        flag:
+          type: string
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

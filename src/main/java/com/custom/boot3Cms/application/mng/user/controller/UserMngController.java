@@ -1,5 +1,6 @@
 package com.custom.boot3Cms.application.mng.user.controller;
 
+import com.custom.boot3Cms.application.common.result.vo.ResultVO;
 import com.custom.boot3Cms.application.common.system.login.vo.LoginVO;
 import com.custom.boot3Cms.application.common.utils.CommonUtil;
 import com.custom.boot3Cms.application.common.utils.StringUtil;
@@ -8,39 +9,42 @@ import com.custom.boot3Cms.application.mng.code.vo.CodeVO;
 import com.custom.boot3Cms.application.mng.user.service.UserMngService;
 import com.custom.boot3Cms.application.mng.user.vo.UserMngVO;
 import com.custom.boot3Cms.application.mng.user.vo.UserVO;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
+import javax.xml.transform.Result;
 import java.security.Principal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
- * 회원관리 컨트롤러
+ * 관리자 회원 Controller
+ * boot3Cms
  *
- * @author SEKOREA
+ * @author cms
  * @version 1.0
  * @see <pre>
  *  Modification Information
  *
  * 	수정일     / 수정자   / 수정내용
  * 	------------------------------------------
- * 	2018-03-13 / 최재민  / 최초 생성
- * 	2020-08-28 / 최민석  /  로그인 되어 있을 때, , login 요청이 오면, 사용자의 권한에 따라 리다이렉트
+ * 	2024-06-04 / cms  / 최초 생성
+ *
  * </pre>
- * @since 2018-03-13
- */
-@Controller
+ * @since 2024-06-04 */
+@RestController
+@Tag(name = "관리자 회원 컨트롤러")
 public class UserMngController {
 
     @Resource(name = "userMngService")
@@ -54,73 +58,46 @@ public class UserMngController {
      *
      * @param request
      * @param response
-     * @param model
      * @param session
-     * @param redirectAttributes
      * @param principal
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/mng/user/list")
-    public String userList(@ModelAttribute("userVO") UserVO userVO,
-                           HttpServletRequest request,
-                           HttpServletResponse response,
-                           ModelMap model,
-                           HttpSession session,
-                           RedirectAttributes redirectAttributes,
-                           Principal principal) throws Exception {
-        model.addAttribute("list", userMngService.getUserList(userVO));
-        return "mng/user/list";
-    }
+    @Operation(summary = "회원 목록" , description = "회원 목록 조회")
+    @GetMapping(value = "/api/mng/user/list")
+    public ResultVO userList(@ModelAttribute("UserVO") UserVO userVO,
+                             HttpServletRequest request,
+                             HttpServletResponse response,
+                             HttpSession session,
+                             Principal principal) throws Exception {
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
 
-    /**
-     * 관리자 회원 등록/수정 FORM
-     *
-     * @param userVO
-     * @param request
-     * @param response
-     * @param model
-     * @param session
-     * @param redirectAttributes
-     * @param principal
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/mng/admin/form")
-    public String adminForm(@ModelAttribute("userVO") UserVO userVO,
-                           HttpServletRequest request,
-                           HttpServletResponse response,
-                           ModelMap model,
-                           HttpSession session,
-                           RedirectAttributes redirectAttributes,
-                           Principal principal) throws Exception {
-        if(principal == null) {
-            return "redirect:/mng/user/list";
+        try{
+            int total_cnt = userMngService.getUserListCNT(userVO);
+            List<UserVO> list = userMngService.getUserList(userVO);
+
+            resultVO.putResult("total_cnt", total_cnt);
+            resultVO.putResult("data", list);
+            result = true;
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "회원목록 검색 중 오류가 발생하였습니다.";
         }
-        LoginVO login = CommonUtil.fn_getUserAuth(principal);
-        if (StringUtil.isNotEmpty(login.getUser_seq())) {
-            userVO.setUser_seq(login.getUser_seq());
-            Map<String, Object> map = userMngService.getUserAdminDetail(userVO);
-            if ((boolean) map.get("result")) {
-                UserVO vo = (UserVO) map.get("value");
-                if (vo != null) {
-                    model.addAttribute("userVO", vo);
-                    return "mng/user/adminForm";
-                }
-            } else {
-                redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-                redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-            }
-        }
-        return "redirect:/mng/user/list";
 
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
     }
-
 
     /**
      * 회원 상세보기
      *
-     * @param userVO
      * @param request
      * @param response
      * @param model
@@ -130,123 +107,194 @@ public class UserMngController {
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/mng/user/detail/{user_seq}")
-    public String bannerDetail(@ModelAttribute("userVO") UserVO userVO,
-                               @PathVariable("user_seq") String user_seq,
+    @Operation(summary = "회원 상세보기", description = "회원 상세보기")
+    @GetMapping(value = "/api/mng/user/detail/{user_seq}")
+    public ResultVO bannerDetail(@PathVariable("user_seq") String user_seq,
                                HttpServletRequest request,
                                HttpServletResponse response,
                                ModelMap model,
                                HttpSession session,
                                RedirectAttributes redirectAttributes,
                                Principal principal) throws Exception {
-        userVO.setUser_seq(user_seq);
-        Map<String, Object> map = userMngService.getUserDetail(userVO);
-        if ((boolean) map.get("result")) {
-            model.addAttribute("userVO", map.get("value"));
-        } else {
-            redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-            redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-            return "redirect:/mng/user/list";
-        }
-        return "mng/user/detail";
-    }
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
 
-    /**
-     * 회원 등록/수정 FORM
-     *
-     * @param userVO
-     * @param request
-     * @param response
-     * @param model
-     * @param session
-     * @param redirectAttributes
-     * @param principal
-     * @return
-     * @throws Exception
-     */
-    @RequestMapping(value = "/mng/user/form")
-    public String userForm(@ModelAttribute("userVO") UserVO userVO,
-                           HttpServletRequest request,
-                           HttpServletResponse response,
-                           ModelMap model,
-                           HttpSession session,
-                           RedirectAttributes redirectAttributes,
-                           Principal principal) throws Exception {
-        if (StringUtil.isNotEmpty(userVO.getUser_seq())) {
+        try{
+            UserVO userVO = new UserVO();
+            userVO.setUser_seq(user_seq);
             Map<String, Object> map = userMngService.getUserDetail(userVO);
             if ((boolean) map.get("result")) {
-                UserVO vo = (UserVO) map.get("value");
-                if (vo != null) {
-                    model.addAttribute("userVO", vo);
-                }
+                result = true;
+                resultVO.putResult("data",map.get("value"));
             } else {
-                redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-                redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-                return "redirect:/mng/user/list";
+                code = 404;
+                rMsg = "해당하는 회원정보가 없습니다.";
             }
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "회원정보 조회 중 오류가 발생하였습니다.";
         }
-        return "mng/user/form";
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
     }
 
+
     /**
-     * 회원 등록/수정/탈퇴|탈퇴복구
-     *
+     * 회원 등록
      * @param userVO
      * @param request
      * @param response
-     * @param model
-     * @param session
-     * @param redirectAttributes
      * @param principal
      * @return
      * @throws Exception
      */
-    @RequestMapping(value = "/mng/user/proc")
-    public String userProc(@ModelAttribute("userVO") UserVO userVO,
+    @Operation(summary = "회원 등록", description = "회원 등록")
+    @PostMapping(value = "/api/mng/user/proc")
+    public ResultVO userSetProc(@RequestBody UserVO userVO,
                            HttpServletRequest request,
                            HttpServletResponse response,
-                           ModelMap model,
-                           HttpSession session,
-                           RedirectAttributes redirectAttributes,
                            Principal principal) throws Exception {
-        if (principal != null) {
-            LoginVO vo = CommonUtil.fn_getUserAuth(principal);
-            userVO.setInpt_seq(vo.getUser_seq());
-            userVO.setUpd_seq(vo.getUser_seq());
-        }
-        Map<String, Object> map = userMngService.userProc(userVO);
-        String rtnUrl = "";
-        if ((boolean) map.get("result")) {
-            if ("d".equals(userVO.getFlag())) {
-                if (userVO.getOut_yn().equals("Y")) {
-                    rtnUrl = "redirect:/mng/user/list";
-                } else {
-                    rtnUrl = "redirect:/mng/user/detail/" + userVO.getUser_seq();
-                }
-            } else {
-                rtnUrl = "redirect:/mng/user/detail/" + userVO.getUser_seq();
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            if (principal != null) {
+                LoginVO vo = CommonUtil.fn_getUserAuth(principal);
+                userVO.setInpt_seq(vo.getUser_seq());
+                userVO.setUpd_seq(vo.getUser_seq());
             }
-            redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-            redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-        } else {
-            if ("d".equals(userVO.getFlag())) {
-                redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-                redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-                rtnUrl = "redirect:/mng/user/detail/" + userVO.getUser_seq();
-            } else if ("c".equals(userVO.getFlag()) || "u".equals(userVO.getFlag())) {
-                model.addAttribute("rHeader", map.get("rHeader"));
-                model.addAttribute("rMsg", map.get("rMsg"));
-                model.addAttribute("userVO", userVO);
-                rtnUrl = "mng/user/form";
-            } else {
-                redirectAttributes.addFlashAttribute("rHeader", map.get("rHeader"));
-                redirectAttributes.addFlashAttribute("rMsg", map.get("rMsg"));
-                rtnUrl = "redirect:/mng/user/list";
+            userVO.setFlag("c");
+            Map<String, Object> map = userMngService.userProc(userVO);
+
+            if((boolean) map.get("result")){
+                result = true;
+            }else{
+                code = 404;
             }
+
+            rMsg = map.get("rMsg").toString();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "회원 등록 중 오류가 발생하였습니다.";
         }
-        return rtnUrl;
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
     }
 
+    /**
+     * 회원 수정
+     * @param userVO
+     * @param request
+     * @param response
+     * @param principal
+     * @return
+     * @throws Exception
+     */
+    @Operation(summary = "회원 수정", description = "회원 수정")
+    @PutMapping(value = "/api/mng/user/proc")
+    public ResultVO userUpdateProc(@RequestBody UserVO userVO,
+                                HttpServletRequest request,
+                                HttpServletResponse response,
+                                Principal principal) throws Exception {
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            if (principal != null) {
+                LoginVO vo = CommonUtil.fn_getUserAuth(principal);
+                userVO.setInpt_seq(vo.getUser_seq());
+                userVO.setUpd_seq(vo.getUser_seq());
+            }
+            userVO.setFlag("u");
+            Map<String, Object> map = userMngService.userProc(userVO);
+
+            if((boolean) map.get("result")){
+                result = true;
+            }else{
+                code = 404;
+            }
+
+            rMsg = map.get("rMsg").toString();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "회원 수정 중 오류가 발생하였습니다.";
+        }
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
+    }
+
+    /**
+     * 회원 탈퇴 및 복구
+     * @param userVO
+     * @param request
+     * @param response
+     * @param principal
+     * @return
+     * @throws Exception
+     */
+    @Operation(summary = "회원 탈퇴 및 복구", description = "out_yn 값으로 회원 탈퇴 및 복구")
+    @DeleteMapping(value = "/api/mng/user/proc")
+    public ResultVO userDeleteProc(@RequestBody UserVO userVO,
+                                   HttpServletRequest request,
+                                   HttpServletResponse response,
+                                   Principal principal) throws Exception {
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            if (principal != null) {
+                LoginVO vo = CommonUtil.fn_getUserAuth(principal);
+                userVO.setInpt_seq(vo.getUser_seq());
+                userVO.setUpd_seq(vo.getUser_seq());
+            }
+            userVO.setFlag("d");
+            Map<String, Object> map = userMngService.userProc(userVO);
+
+            if((boolean) map.get("result")){
+                result = true;
+            }else{
+                code = 404;
+            }
+
+            rMsg = map.get("rMsg").toString();
+
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "회원 탈퇴 중 오류가 발생하였습니다.";
+        }
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
+    }
 
     /**
      * 회원 ID 중복확인
@@ -254,19 +302,39 @@ public class UserMngController {
      * @param userVO
      * @param request
      * @param response
-     * @param redirectAttributes
      * @return
      * @throws Exception
      */
-    @ResponseBody
-    @RequestMapping(value = "/mng/user/check")
-    public boolean getUserCheck(@ModelAttribute("userVO") UserVO userVO,
+    @Operation(summary = "회원 ID 중복 체크", description = "회원 아이디 중복체크")
+    @PostMapping(value = "/api/mng/user/check")
+    public ResultVO getUserCheck(@RequestBody UserVO userVO,
                                 HttpServletRequest request,
-                                HttpServletResponse response,
-                                RedirectAttributes redirectAttributes) throws Exception {
-        Map<String, Object> map = userMngService.userProc(userVO);
-        boolean result = (boolean) map.get("result");
-        return result;
+                                HttpServletResponse response) throws Exception {
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            userVO.setFlag("chk");
+            Map<String, Object> map = userMngService.userProc(userVO);
+            result = (boolean) map.get("result");
+            if(result){
+                rMsg = "사용가능한 아이디 입니다.";
+            }else{
+                rMsg = "이미 사용중인 아이디 입니다.";
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "아이디 중복체크 중 오류가 발생하였습니다.";
+        }
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
     }
 
 }

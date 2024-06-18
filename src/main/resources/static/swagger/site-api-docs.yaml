@@ -1,0 +1,1216 @@
+openapi: 3.0.3
+info:
+  title: REST API 명세 ( yaml )
+  description: REST API 명세 with Swagger ( yaml )
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+security:
+  - Authorization: []
+paths:
+  /api/mypage/proc:
+    put:
+      tags:
+        - 마이페이지 컨트롤러
+      summary: 마이페이지 회원 정보 수정
+      operationId: updateUserInfo
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/LoginVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 마이페이지 컨트롤러
+      summary: 회원 탈퇴
+      description: 비밀번호 체크를 통한 회원탈퇴 처리
+      operationId: deleteUserInfo
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/LoginVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /article/{bbs_cd}/{article_seq}/comment:
+    post:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 댓글 등록
+      operationId: insertComment
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/logout:
+    post:
+      tags:
+        - 로그인 컨트롤러
+      summary: 로그아웃 API
+      description: 로그아웃을 위한 REST API
+      operationId: logout
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/login:
+    post:
+      tags:
+        - 로그인 컨트롤러
+      summary: 로그인 API
+      description: "아이디, 비밀번호로 로그인"
+      operationId: login
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              required:
+                - user_id
+                - user_pwd
+              allOf:
+                - $ref: '#/components/schemas/LoginVO'
+            examples:
+              test:
+                value:
+                  user_id: "test4"
+                  user_pwd: "2222"
+              guide:
+                value:
+                  user_id: "사용자 ID"
+                  user_pwd: "사용자 PWD"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/jwt/token/refresh:
+    post:
+      tags:
+        - jwt-controller
+      operationId: apiJwtRefresh
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/JwtVO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/join/user/check:
+    post:
+      tags:
+        - 회원가입 컨트롤러
+      summary: 회원 ID 중복 확인
+      description: user_id 를 이용하여 ID 중복 확인
+      operationId: getUserCheck
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              required:
+                - user_id
+              allOf:
+                - $ref: '#/components/schemas/회원가입 DTO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/join/proc:
+    post:
+      tags:
+        - 회원가입 컨트롤러
+      summary: 회원가입 프로세스
+      description: 회원가입 프로세스 입니다.
+      operationId: joinProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              required:
+                - user_email
+                - user_id
+                - user_id_check
+                - user_name
+                - user_pwd
+              allOf:
+                - $ref: '#/components/schemas/회원가입 DTO'
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/proc:
+    post:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 및 답변 등록
+      operationId: setArticle
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                user_id:
+                  description: "비회원 아이디"
+                  default: "test"
+                  type: string
+                user_pwd:
+                  description: "비회원 비밀번호"
+                  default: "2222"
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 및 답변 삭제
+      operationId: deleteArticle
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleVO'
+            examples:
+              test:
+                value:
+                  article_seq: "8"
+              guide:
+                value:
+                  article_seq: "게시글 순번 (int)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    patch:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 및 답변 수정
+      operationId: updateArticle
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                article_seq:
+                  description: "게시글 순번"
+                  default: "8"
+                  type: string
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                user_pwd:
+                  description: "게시글 비밀번호"
+                  default: "2222"
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/checkpwd:
+    post:
+      tags:
+        - 게시글 컨트롤러
+      summary: 비밀번호 체크
+      operationId: getAjaxUserCheck
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/{article_seq}/comment:
+    delete:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 댓글 삭제
+      operationId: deleteComment
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    patch:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 댓글 수정
+      operationId: updateComment
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /main:
+    get:
+      tags:
+        - main-controller
+      operationId: mainTest
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /:
+    get:
+      tags:
+        - main-controller
+      operationId: mainTest_1
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mypage/info:
+    get:
+      tags:
+        - 마이페이지 컨트롤러
+      summary: 사용자 정보 GET
+      description: jwt 로 사용자 정보를 가져옵니다.
+      operationId: userInfoInMypage
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/list:
+    get:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 리스트
+      operationId: articleList
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: articleVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ArticleVO'
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/detail/{article_seq}:
+    get:
+      tags:
+        - 게시글 컨트롤러
+      summary: 게시글 상세보기
+      operationId: articleDetail
+      parameters:
+        - name: articleVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/ArticleVO'
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/article/{bbs_cd}/category:
+    get:
+      tags:
+        - 게시글 컨트롤러
+      summary: 카테고리 리스트 API
+      description: 게시판의 카테고리 리스트를 반환합니다.
+      operationId: getCategoryList
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/page/{html_seq}:
+    get:
+      tags:
+        - Html 페이지 컨트롤러
+      summary: 페이지 정보 GET
+      description: Html 페이지 정보를 가져옵니다.
+      operationId: pageDetail
+      parameters:
+        - name: html_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/list:
+    get:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 메뉴 조회
+      description: 대메뉴 + 서브메뉴
+      operationId: getMenuList
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/first:
+    get:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 대메뉴 조회
+      description: 대메뉴 조회
+      operationId: getfirstMenu
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/upTree:
+    post:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 계층형 메뉴 조회 up
+      description: 계층형 메뉴 조회 ( up tree )
+      operationId: menuUpTree
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuVO'
+            examples:
+              test:
+                value:
+                  menu_type: "MNT_001"
+                  menu_link: "/info/exhibition/list"
+              guide:
+                value:
+                  menu_type: "메뉴 타입 ( MNT_001 ~ 004 )"
+                  menu_link: "메뉴 링크"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/menu/downTree:
+    post:
+      tags:
+        - 메뉴 컨트롤러
+      summary: 계층형 메뉴 조회 down
+      description: 계층형 메뉴 조회 down
+      operationId: menuDownTree
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuVO'
+            examples:
+              test:
+                value:
+                  menu_seq: "1576718683454"
+              guide:
+                value:
+                  menu_seq: "메뉴 순번"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+components:
+  schemas:
+    BbsMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        user_auth:
+          type: string
+        read_yn:
+          type: string
+        write_yn:
+          type: string
+        update_yn:
+          type: string
+        delete_yn:
+          type: string
+        category_nm:
+          type: string
+        category_del_yn:
+          type: string
+        category_order:
+          type: string
+        category_cd:
+          type: string
+        file_cnt:
+          type: string
+        bbs_type:
+          type: string
+        mobile_bbs_type:
+          type: string
+        bbs_dft_list_cnt:
+          type: string
+        bbs_page_cnt:
+          type: string
+        attach_file_use_yn:
+          type: string
+        comment_use_yn:
+          type: string
+        reply_use_yn:
+          type: string
+        notice_use_yn:
+          type: string
+        secret_use_yn:
+          type: string
+        category_use_yn:
+          type: string
+        pwd_use_yn:
+          type: string
+        date_range_use_yn:
+          type: string
+        file_size:
+          type: string
+        file_type:
+          type: string
+        bbs_info_seq:
+          type: string
+        bbs_cd:
+          type: string
+        bbs_nm:
+          type: string
+        bbs_remark:
+          type: string
+        bbs_use_yn:
+          type: string
+        bbs_del_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        date_remark:
+          type: string
+        bbs_cd_check_yn:
+          type: string
+        site_type:
+          type: string
+        data_range_use_yn:
+          type: string
+    GrantedAuthority:
+      type: object
+      properties:
+        authority:
+          type: string
+    LoginVO:
+      type: object
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        user_id:
+          type: string
+        user_pwd:
+          type: string
+        user_email:
+          type: string
+        pwd_check:
+          type: string
+        user_auth:
+          type: string
+        user_status:
+          type: string
+        out_yn:
+          type: string
+        user_seq:
+          type: string
+        last_login_date:
+          type: string
+        last_login_ip:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        user_name:
+          type: string
+        user_pwd_req:
+          type: string
+        token_seq:
+          type: string
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+        enabled:
+          type: boolean
+        authorities:
+          type: array
+          items:
+            $ref: '#/components/schemas/GrantedAuthority'
+        accountNonExpired:
+          type: boolean
+        credentialsNonExpired:
+          type: boolean
+        accountNonLocked:
+          type: boolean
+    ResultVO:
+      type: object
+      properties:
+        resultMsg:
+          type: string
+          description: 응답 메시지
+        resultCode:
+          type: integer
+          description: 응답 코드
+          format: int32
+        result:
+          type: object
+          additionalProperties:
+            type: object
+            description: 응답 결과 데이터
+          description: 응답 결과 데이터
+      description: REST API 응답 결과 객체
+    ArticleVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        inpt_user_name:
+          type: string
+        user_auth:
+          type: string
+        read_yn:
+          type: string
+        write_yn:
+          type: string
+        update_yn:
+          type: string
+        delete_yn:
+          type: string
+        category_nm:
+          type: string
+        category_del_yn:
+          type: string
+        category_order:
+          type: string
+        category_cd:
+          type: string
+        file_cnt:
+          type: string
+        bbs_type:
+          type: string
+        mobile_bbs_type:
+          type: string
+        bbs_dft_list_cnt:
+          type: string
+        bbs_page_cnt:
+          type: string
+        attach_file_use_yn:
+          type: string
+        comment_use_yn:
+          type: string
+        reply_use_yn:
+          type: string
+        notice_use_yn:
+          type: string
+        secret_use_yn:
+          type: string
+        category_use_yn:
+          type: string
+        pwd_use_yn:
+          type: string
+        date_range_use_yn:
+          type: string
+        file_size:
+          type: string
+        file_type:
+          type: string
+        bbs_info_seq:
+          type: string
+        bbs_cd:
+          type: string
+        bbs_nm:
+          type: string
+        bbs_remark:
+          type: string
+        bbs_use_yn:
+          type: string
+        bbs_del_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        date_remark:
+          type: string
+        bbs_cd_check_yn:
+          type: string
+        site_type:
+          type: string
+        data_range_use_yn:
+          type: string
+        article_seq:
+          type: string
+        article_num:
+          type: string
+        subject:
+          type: string
+        secret_yn:
+          type: string
+        notice_yn:
+          type: string
+        content:
+          type: string
+        prt_seq:
+          type: string
+        bbs_order:
+          type: string
+        read_cnt:
+          type: string
+        inpt_ip:
+          type: string
+        upd_ip:
+          type: string
+        user_id:
+          type: string
+        user_pwd:
+          type: string
+        del_yn:
+          type: string
+        articleAuth:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleVO'
+        inpt_user_type:
+          type: string
+        upd_user_type:
+          type: string
+        fileList:
+          type: array
+          items:
+            $ref: '#/components/schemas/FileMngVO'
+        user_no:
+          type: string
+        inpt_user_dept:
+          type: string
+        nickname:
+          type: string
+        manager:
+          type: string
+        place:
+          type: string
+        author_name:
+          type: string
+        user_name:
+          type: string
+        reply_yn:
+          type: string
+        link_url:
+          type: string
+        doc_source:
+          type: string
+        file_seq:
+          type: string
+        youtube_url:
+          type: string
+        content_word:
+          type: string
+        article_start_date:
+          type: string
+        article_end_date:
+          type: string
+        reply_cnt:
+          type: string
+        pwd_check_yn:
+          type: string
+        content_article:
+          type: string
+        comment_seq:
+          type: string
+        repl_order:
+          type: string
+        comment_cnt:
+          type: string
+        profile_path:
+          type: string
+        profile_image_sys_name:
+          type: string
+        profile_image:
+          type: string
+        start_num:
+          type: integer
+          format: int32
+        end_num:
+          type: integer
+          format: int32
+        searchList:
+          type: array
+          items:
+            $ref: '#/components/schemas/ArticleVO'
+        search_cnt:
+          type: integer
+          format: int32
+        public_time:
+          type: string
+        notEncUser_pwd:
+          type: string
+          writeOnly: true
+    FileMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        file_seq:
+          type: string
+        table_nm:
+          type: string
+        table_seq:
+          type: string
+        file_type:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        file_flag:
+          type: string
+        thumbnail_yn:
+          type: string
+        auth_type:
+          type: string
+        fileResult:
+          type: boolean
+    JwtVO:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+    회원가입 DTO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        user_seq:
+          type: string
+          description: 회원 시퀀스
+        user_id:
+          type: string
+          description: 아이디
+        user_pwd:
+          type: string
+          description: 회원 비밀번호
+        user_name:
+          type: string
+          description: 회원 이름
+        phone_number:
+          type: string
+          description: 전화번호
+          example: 010-1234-1234
+        user_email:
+          type: string
+          description: 이메일
+        user_id_check:
+          type: string
+          description: 아이디 중복체크 값
+    사용자 DTO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        user_seq:
+          type: string
+          description: 사용자 시퀀스
+        user_id:
+          type: string
+          description: 사용자 아이디
+        user_pwd:
+          type: string
+          description: 사용자 비밀번호
+    MenuVO:
+      type: object
+      properties:
+        menu_seq:
+          type: string
+        menu_title:
+          type: string
+        menu_type:
+          type: string
+        menu_link:
+          type: string
+        menu_link_type:
+          type: string
+        prt_seq:
+          type: string
+        use_yn:
+          type: string
+        ord:
+          type: string
+        remark:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        user_auth:
+          type: string
+        access_code:
+          type: string
+        menu_json:
+          type: string
+        menu_order:
+          type: string
+        menu_depth:
+          type: string
+        menu_link_seq:
+          type: string
+        menu_link_title:
+          type: string
+        sub_menu_list:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuVO'
+  securitySchemes:
+    Authorization:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
