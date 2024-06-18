@@ -1347,7 +1347,6 @@ paths:
               guide:
                 value:
                   popup_seq: "팝업 순번"
-
       responses:
         "200":
           description: OK
@@ -1391,6 +1390,216 @@ paths:
       operationId: popupDetail
       parameters:
         - name: popup_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+
+  /api/mng/banner/proc:
+    put:
+      tags:
+        - 배너 관리 컨트롤러
+      summary: 배너 수정
+      operationId: bannerUpdateProc
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                del_file_seq:
+                  description: "삭제할 파일 순번(seq)"
+                  type: array
+                  items:
+                    type: string
+                banner_seq:
+                  description: "배너 순번(seq)"
+                  default: "1"
+                  type: string
+                banner_title:
+                  description: "배너 제목"
+                  default: "배너 1"
+                  type: string
+                banner_alt:
+                  description: "배너 설명"
+                  default: "배너 설명1"
+                  type: string
+                link_type:
+                  description: "링크타입 (새창 : _blank, 현재창 : _self, 사용안함 : null )"
+                  default: "_self"
+                  type: string
+                link_url:
+                  description: "배너 링크 URL"
+                  default: "https://www.naver.com"
+                  type: string
+                banner_order:
+                  description: "배너 순서"
+                  default: "1"
+                  type: string
+                remark:
+                  description: "메모"
+                  default: "배너 메모"
+                  type: string
+                use_yn:
+                  description: "사용여부 (Y, N)"
+                  default: "Y"
+                  type: string
+                del_yn:
+                  description: "삭제여부 (Y, N)"
+                  default: "N"
+                  type: string
+                banner_start_date:
+                  description: "'게시 시작일'"
+                  default: "2024-01-01 00:00:00"
+                  type: string
+                banner_end_date:
+                  description: "게시 종료일"
+                  default: "2024-12-31 00:00:00"
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 배너 관리 컨트롤러
+      summary: 배너 등록
+      operationId: bannerInsertProc
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                banner_title:
+                  description: "배너 제목"
+                  default: "배너 1"
+                  type: string
+                banner_alt:
+                  description: "배너 설명"
+                  default: "배너 설명1"
+                  type: string
+                link_type:
+                  description: "링크타입 (새창 : _blank, 현재창 : _self, 사용안함 : null )"
+                  default: "_self"
+                  type: string
+                link_url:
+                  description: "배너 링크 URL"
+                  default: "https://www.naver.com"
+                  type: string
+                banner_order:
+                  description: "배너 순서"
+                  default: "1"
+                  type: string
+                remark:
+                  description: "메모"
+                  default: "배너 메모"
+                  type: string
+                use_yn:
+                  description: "사용여부 (Y, N)"
+                  default: "Y"
+                  type: string
+                del_yn:
+                  description: "삭제여부 (Y, N)"
+                  default: "N"
+                  type: string
+                banner_start_date:
+                  description: "'게시 시작일'"
+                  default: "2024-01-01 00:00:00"
+                  type: string
+                banner_end_date:
+                  description: "게시 종료일"
+                  default: "2024-12-31 00:00:00"
+                  type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 배너 관리 컨트롤러
+      summary: 배너 삭제
+      operationId: bannerDeleteProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BannerMngVO'
+            examples:
+              test:
+                value:
+                  banner_seq: "1"
+              guide:
+                value:
+                  banner_seq: "배너 순번"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/banner/list:
+    get:
+      tags:
+        - 배너 관리 컨트롤러
+      summary: 배너 목록
+      operationId: bannerList
+      parameters:
+        - name: bannerMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/BannerMngVO'
+          examples:
+            test:
+              value:
+                pageIndex: "1"
+                searchKeyword : "배너"
+            guide:
+              value:
+                pageIndex: "페이지 index"
+                searchKeyword: "검색어 (제목)"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/banner/detail/{banner_seq}:
+    get:
+      tags:
+        - 배너 관리 컨트롤러
+      summary: 배너 상세정보
+      operationId: bannerDetail_1
+      parameters:
+        - name: banner_seq
           in: path
           required: true
           schema:
@@ -1880,6 +2089,82 @@ components:
         file_NM:
           type: string
         table_SEQ:
+          type: string
+    BannerMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        inpt_user_name:
+          type: string
+        upd_user_name:
+          type: string
+        banner_seq:
+          type: string
+        banner_title:
+          type: string
+        banner_alt:
+          type: string
+        link_type:
+          type: string
+        link_url:
+          type: string
+        banner_order:
+          type: string
+        remark:
+          type: string
+        del_yn:
+          type: string
+        use_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        banner_start_date:
+          type: string
+        banner_end_date:
+          type: string
+        banner_type:
+          type: string
+        banner_title_color:
+          type: string
+        remark_color:
+          type: string
+        video_yn:
+          type: string
+        video_url:
+          type: string
+        flag:
           type: string
   securitySchemes:
     Authorization:
