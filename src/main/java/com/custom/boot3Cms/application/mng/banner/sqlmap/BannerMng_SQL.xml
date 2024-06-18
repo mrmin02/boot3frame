@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.banner.mapper.BannerMngMapper">
+
+    <sql id="bannerWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (BANNER_TITLE LIKE '%'||#{searchKeyword}||'%')
+        </if>
+    </sql>
+
+    <!--  배너 List CNT  -->
+    <select id="getBannerListCNT" resultType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        SELECT
+            count(*)
+        FROM TB_BANNER TB
+        WHERE 1=1
+          AND TB.DEL_YN = 'N'
+        <include refid="bannerWhere"/>
+    </select>
+
+    <!-- 배너 목록 -->
+    <select id="getBannerList" resultType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        SELECT
+            bannerList.*
+        FROM (
+            SELECT
+                ROWNUM() OVER (ORDER BY TB.BANNER_SEQ DESC, TB.BANNER_ORDER ASC) AS rNum,
+                TB.BANNER_SEQ,
+                TB.BANNER_TITLE,
+                TB.LINK_TYPE,
+                TB.BANNER_ORDER,
+                TB.USE_YN,
+                TB.INPT_SEQ,
+                INPT_DATE,
+                BANNER_START_DATE,
+                BANNER_END_DATE,
+                TB.BANNER_TYPE
+            FROM TB_BANNER TB
+            WHERE 1=1
+            AND TB.DEL_YN = 'N'
+            <include refid="bannerWhere"/>
+        ) bannerList
+        WHERE bannerList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+    </select>
+
+    <!-- 배너 상세보기 -->
+    <select id="getBannerDetail" resultType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        SELECT
+            TB.BANNER_SEQ,
+            TB.BANNER_TITLE,
+            TB.BANNER_ALT,
+            TB.LINK_TYPE,
+            TB.LINK_URL,
+            TB.BANNER_ORDER,
+            TB.REMARK,
+            TB.USE_YN,
+            BANNER_START_DATE,
+            BANNER_END_DATE,
+            TB.INPT_SEQ,
+            INPT_DATE,
+            TB.UPD_SEQ,
+            UPD_DATE,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TB.INPT_SEQ) AS INPT_USER_NAME,
+            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TB.UPD_SEQ) AS UPD_USER_NAME,
+            TB.BANNER_TYPE,
+            TB.BANNER_TITLE_COLOR,
+            TB.REMARK_COLOR,
+            TB.VIDEO_YN,
+            TB.VIDEO_URL
+        FROM TB_BANNER TB
+        WHERE 1=1
+        AND TB.DEL_YN = 'N'
+        AND TB.BANNER_SEQ = #{banner_seq}
+    </select>
+
+    <!-- 배너 등록 -->
+    <insert id="setBanner" parameterType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        <selectKey keyProperty="banner_seq" resultType="String" order="BEFORE">
+            SELECT TB_BANNER_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_BANNER
+        (
+            BANNER_SEQ,
+            BANNER_TITLE,
+            BANNER_ALT,
+            LINK_TYPE,
+            LINK_URL,
+            BANNER_ORDER,
+            REMARK,
+            USE_YN,
+            DEL_YN,
+            INPT_SEQ,
+            INPT_DATE,
+            BANNER_START_DATE,
+            BANNER_END_DATE,
+            BANNER_TYPE,
+            BANNER_TITLE_COLOR,
+            REMARK_COLOR,
+            VIDEO_YN,
+            VIDEO_URL
+        )
+        VALUES
+        (
+            #{banner_seq},
+            #{banner_title},
+            #{banner_alt},
+            #{link_type},
+            #{link_url},
+            #{banner_order},
+            #{remark},
+            #{use_yn},
+            'N',
+            #{inpt_seq},
+            SYSDATE,
+            #{banner_start_date},
+            #{banner_end_date},
+            #{banner_type},
+            #{banner_title_color},
+            #{remark_color},
+            #{video_yn},
+            #{video_url}
+        )
+    </insert>
+
+    <!-- 배너 수정 -->
+    <update id="updBanner" parameterType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        UPDATE TB_BANNER SET
+            BANNER_TITLE = #{banner_title},
+            BANNER_ALT = #{banner_alt},
+            LINK_TYPE = #{link_type},
+            LINK_URL = #{link_url},
+            BANNER_ORDER = #{banner_order},
+            REMARK = #{remark},
+            USE_YN = #{use_yn},
+            <if test="upd_seq != null and upd_seq != ''">
+                UPD_SEQ = #{upd_seq},
+                UPD_DATE = SYSDATE,
+            </if>
+            BANNER_START_DATE = #{banner_start_date},
+            BANNER_END_DATE = #{banner_end_date},
+            BANNER_TYPE = #{banner_type},
+            BANNER_TITLE_COLOR = #{banner_title_color},
+            REMARK_COLOR = #{remark_color},
+            VIDEO_YN = #{video_yn},
+            VIDEO_URL = #{video_url}
+        WHERE BANNER_SEQ = #{banner_seq}
+    </update>
+
+    <!-- 배너 삭제 (UPDATE) -->
+    <update id="delBanner" parameterType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        UPDATE TB_BANNER SET
+            DEL_YN = 'Y',
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE BANNER_SEQ = #{banner_seq}
+    </update>
+
+    <!-- 배너 완전 삭제 (DELETE) -->
+    <delete id="deleteBanner" parameterType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        DELETE FROM TB_BANNER WHERE BANNER_SEQ = #{banner_seq}
+    </delete>
+
+
+    <!-- 메인 배너 목록 -->
+    <select id="getMainBannerList" resultType="com.custom.boot3Cms.application.mng.banner.vo.BannerMngVO">
+        SELECT
+        TB.BANNER_SEQ,
+        TB.BANNER_TITLE,
+        TB.BANNER_ALT,
+        TB.LINK_TYPE,
+        TB.LINK_URL,
+        TB.BANNER_ORDER,
+        TB.USE_YN,
+        TB.INPT_SEQ,
+        TF.FILE_PATH,
+        TF.FILE_SYS_NM,
+        TF.FILE_NM,
+        TB.REMARK,
+        TB.BANNER_TITLE_COLOR,
+        TB.REMARK_COLOR,
+        TB.VIDEO_YN,
+        TB.VIDEO_URL,
+        TB.BANNER_START_DATE,
+        TB.BANNER_END_DATE
+        FROM TB_BANNER TB
+        JOIN TB_FILES TF ON TB.BANNER_SEQ = TF.TABLE_SEQ
+        WHERE 1=1
+        AND TB.DEL_YN = 'N'
+        AND TB.USE_YN = 'Y'
+        AND TF.TABLE_NM = 'TB_BANNER'
+        AND TB.BANNER_TYPE = #{banner_type}
+        AND ( DATE_FORMAT(TB.BANNER_START_DATE, 'YYYY-MM-DD') <![CDATA[ <=]]> DATE_FORMAT(SYSDATE, 'YYYY-MM-DD') AND DATE_FORMAT(SYSDATE, 'YYYY-MM-DD') <![CDATA[ <=]]> DATE_FORMAT(TB.BANNER_END_DATE, 'YYYY-MM-DD') )
+        ORDER BY TB.BANNER_ORDER ASC
+    </select>
+
+
+    <!-- 메인 배너 갯수 -->
+    <select id="getMainBannerCnt" resultType="java.lang.Integer">
+        SELECT
+        COUNT(*)
+        FROM TB_BANNER TB
+        JOIN TB_FILES TF ON TB.BANNER_sEQ = TF.TABLE_SEQ
+        WHERE 1=1
+        AND TB.DEL_YN = 'N'
+        AND TB.USE_YN = 'Y'
+        AND TF.TABLE_NM = 'TB_BANNER'
+        AND TB.BANNER_TYPE = #{banner_type}
+        AND ( DATE_FORMAT(TB.BANNER_START_DATE, 'YYYY-MM-DD') <![CDATA[ <=]]> DATE_FORMAT(SYSDATE, 'YYYY-MM-DD') AND DATE_FORMAT(SYSDATE, 'YYYY-MM-DD') <![CDATA[ <=]]> DATE_FORMAT(TB.BANNER_END_DATE, 'YYYY-MM-DD') )
+        ORDER BY TB.BANNER_ORDER ASC
+    </select>
+</mapper>
