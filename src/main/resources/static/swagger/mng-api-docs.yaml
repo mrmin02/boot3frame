@@ -1611,6 +1611,146 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
+  /api/mng/adminAccess/proc:
+    put:
+      tags:
+        - 관리자 페이지 접근 IP 관리 컨트롤러
+      summary: 관리자 페이지 접근 가능 IP 수정
+      operationId: updateProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/AdminAccessMngVO'
+            examples:
+              test:
+                value:
+                  admin_access_seq: "2"
+                  admin_access_nm: "관리자 수정"
+                  admin_access_ip: "127.0.0.1"
+                  use_yn: "Y"
+                  del_yn: "N"
+              guide:
+                value:
+                  admin_access_seq: "접근 가능 IP 순번(seq)"
+                  admin_access_nm: "접근 가능 이름"
+                  admin_access_ip: "접근 가능 IP"
+                  use_yn: "사용여부 (Y , N)"
+                  del_yn: "삭제여부 (Y , N)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 관리자 페이지 접근 IP 관리 컨트롤러
+      summary: 관리자 페이지 접근 가능 IP 등록
+      operationId: insertProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/AdminAccessMngVO'
+            examples:
+              test:
+                value:
+                  admin_access_nm: "관리자"
+                  admin_access_ip: "127.0.0.1"
+                  use_yn: "Y"
+                  del_yn: "N"
+              guide:
+                value:
+                  admin_access_nm: "접근 가능 이름"
+                  admin_access_ip: "접근 가능 IP"
+                  use_yn: "사용여부 (Y , N)"
+                  del_yn: "삭제여부 (Y , N)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 관리자 페이지 접근 IP 관리 컨트롤러
+      summary: 관리자 페이지 접근 가능 IP 삭제
+      operationId: deleteProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/AdminAccessMngVO'
+            examples:
+              test:
+                value:
+                  admin_access_seq: "2"
+              guide:
+                value:
+                  admin_access_seq: "접근 가능 IP 순번(seq)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/adminAccess/list:
+    get:
+      tags:
+        - 관리자 페이지 접근 IP 관리 컨트롤러
+      summary: 관리자 페이지 접근 가능 IP 리스트
+      operationId: list
+      parameters:
+        - name: adminAccessMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/AdminAccessMngVO'
+          examples:
+            test:
+              value:
+                pageIndex: "1"
+
+            guide:
+              value:
+                admin_access_seq: "접근 가능 IP 순번(seq)"
+                admin_access_nm: "접근 가능 이름"
+                admin_access_ip: "접근 가능 IP"
+                use_yn: "사용여부 (Y , N)"
+                del_yn: "삭제여부 (Y , N)"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/adminAccess/detail/{admin_access_seq}:
+    get:
+      tags:
+        - 관리자 페이지 접근 IP 관리 컨트롤러
+      summary: 관리자 페이지 접근 가능 IP 상세정보
+      operationId: detail
+      parameters:
+        - name: admin_access_seq
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
 components:
   schemas:
     사용자 DTO:
@@ -2163,6 +2303,31 @@ components:
         video_yn:
           type: string
         video_url:
+          type: string
+        flag:
+          type: string
+    AdminAccessMngVO:
+      type: object
+      properties:
+        admin_access_seq:
+          type: string
+        admin_access_nm:
+          type: string
+        admin_access_ip:
+          type: string
+        use_yn:
+          type: string
+        del_yn:
+          type: string
+        inpt_user_name:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
           type: string
         flag:
           type: string

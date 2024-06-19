@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.adminAccess.mapper.AdminAccessMngMapper">
+	
+	<sql id="adminAccessWhere">
+		<if test="searchKeyword != null and searchKeyword != ''">
+			AND (ADMIN_ACCESS_IP LIKE '%'||#{searchKeyword}||'%')
+		</if>
+	</sql>
+	
+	<!-- 관리자 페이지 접근 가능 IP List CNT -->
+	<select id="getAdminAccessListCNT" parameterType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO" resultType="int">
+		SELECT
+		    count(*)
+		FROM TB_ADMIN_ACCESS TAA
+		WHERE 1=1
+		AND DEL_YN = 'N'
+		<include refid="adminAccessWhere"/>
+	</select>
+			
+	<!-- 관리자 페이지 접근 가능 IP 리스트 -->
+	<select id="getAdminAccessList" resultType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		SELECT
+		    adminAccessList.*
+		FROM (
+			SELECT
+				ROW_NUMBER() OVER (ORDER BY ADMIN_ACCESS_SEQ DESC) as rNum,
+				ADMIN_ACCESS_SEQ,
+				ADMIN_ACCESS_NM,
+				ADMIN_ACCESS_IP,
+				USE_YN,
+				(SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TAA.INPT_SEQ) AS INPT_USER_NAME,
+				SYSDATE AS INPT_DATE
+			FROM TB_ADMIN_ACCESS TAA
+			WHERE 1=1
+			AND DEL_YN = 'N'
+			<include refid="adminAccessWhere"/>
+		) adminAccessList
+		WHERE adminAccessList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
+	</select>
+
+	<!-- 관리자 페이지 접근 가능 IP 상세보기 -->
+	<select id="getAdminAccessDetail" resultType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		SELECT
+		   ADMIN_ACCESS_SEQ,
+		   ADMIN_ACCESS_NM,
+		   ADMIN_ACCESS_IP,
+		   USE_YN
+		  FROM TB_ADMIN_ACCESS
+		 WHERE 1=1
+		   AND ADMIN_ACCESS_SEQ = #{admin_access_seq}
+		   AND DEL_YN = 'N'
+	</select>
+
+	<!-- 관리자 페이지 접근 가능 IP 등록 -->
+	<insert id="setAdminAccess" parameterType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		<selectKey keyProperty="admin_access_seq" resultType="String" order="BEFORE">
+			SELECT TB_ADMIN_ACCESS_SEQ.NEXTVAL FROM DUAL
+		</selectKey>
+		INSERT INTO TB_ADMIN_ACCESS
+		(
+			ADMIN_ACCESS_SEQ,
+			ADMIN_ACCESS_NM,
+			ADMIN_ACCESS_IP,
+			USE_YN,
+			DEL_YN,
+			INPT_SEQ,
+			INPT_DATE
+		)
+		VALUES
+		(
+			#{admin_access_seq},
+			#{admin_access_nm},
+			#{admin_access_ip},
+			#{use_yn},
+			'N',
+			#{inpt_seq},
+			SYSDATE
+		)
+	</insert>
+
+	<!-- 관리자 페이지 접근 가능 IP 수정 -->
+	<update id="updAdminAccess" parameterType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		UPDATE TB_ADMIN_ACCESS
+		   SET ADMIN_ACCESS_NM	= #{admin_access_nm},
+			   ADMIN_ACCESS_IP	= #{admin_access_ip},
+			   USE_YN 			= #{use_yn},
+			   UPD_SEQ 			= #{upd_seq},
+			   UPD_DATE 		= SYSDATE
+		 WHERE ADMIN_ACCESS_SEQ = #{admin_access_seq}
+	</update>
+
+	<!-- 전시공영 삭제 -->
+	<update id="delAdminAccess" parameterType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		UPDATE TB_ADMIN_ACCESS
+		   SET DEL_YN = 'Y'
+		 WHERE ADMIN_ACCESS_SEQ = #{admin_access_seq}
+	</update>
+
+	<!-- 접근 가능한 IP 리스트 -->
+	<select id="getAdminAccessList2" resultType="com.custom.boot3Cms.application.mng.adminAccess.vo.AdminAccessMngVO">
+		SELECT ADMIN_ACCESS_IP
+		  FROM TB_ADMIN_ACCESS
+		 WHERE 1=1
+		   AND DEL_YN = 'N'
+		   AND USE_YN = 'Y'
+	</select>
+
+</mapper>
