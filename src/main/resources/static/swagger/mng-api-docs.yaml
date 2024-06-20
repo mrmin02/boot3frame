@@ -1717,14 +1717,11 @@ paths:
             test:
               value:
                 pageIndex: "1"
-
+                searchKeyword: "127.0.0.1"
             guide:
               value:
-                admin_access_seq: "접근 가능 IP 순번(seq)"
-                admin_access_nm: "접근 가능 이름"
-                admin_access_ip: "접근 가능 IP"
-                use_yn: "사용여부 (Y , N)"
-                del_yn: "삭제여부 (Y , N)"
+                pageIndex: "페이지 번호"
+                searchKeyword: "검색 키워드 ( ip )"
       responses:
         "200":
           description: OK

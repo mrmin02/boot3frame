@@ -1,6 +1,7 @@
 package com.custom.boot3Cms.application.mng.adminAccess.vo;
 
 
+import com.custom.boot3Cms.application.common.config.vo.DefaultVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Getter @Setter
-public class AdminAccessMngVO {
+public class AdminAccessMngVO extends DefaultVO {
 
     private String admin_access_seq;
     private String admin_access_nm;
