@@ -26,7 +26,7 @@ import java.util.Map;
 @Data
 @EqualsAndHashCode(callSuper = false)
 @Getter @Setter
-public class CodeVO extends DefaultVO {
+public class CodeMngVO extends DefaultVO {
 
     private String code_seq;
     private String code;
@@ -50,9 +50,9 @@ public class CodeVO extends DefaultVO {
     private String code_detail;
     private String code_detail_nm;
 
-    public CodeVO(){}
+    public CodeMngVO(){}
 
-    public CodeVO(String id, String text, String parent, Map<String, Boolean> state, String code){
+    public CodeMngVO(String id, String text, String parent, Map<String, Boolean> state, String code){
         this.id = id;
         this.text = text;
         this.parent = parent;

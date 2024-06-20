@@ -1,6 +1,6 @@
 package com.custom.boot3Cms.application.mng.code.mapper;
 
-import com.custom.boot3Cms.application.mng.code.vo.CodeVO;
+import com.custom.boot3Cms.application.mng.code.vo.CodeMngVO;
 import org.apache.ibatis.annotations.Mapper;
 
 import java.util.List;
@@ -20,7 +20,7 @@ import java.util.List;
  * @since 2017-09-06
  */
 @Mapper
-public interface CodeMapper {
+public interface CodeMngMapper {
 
     /**
      * 코드 목록
@@ -28,7 +28,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    List<CodeVO> getCodeList(CodeVO vo) throws Exception;
+    List<CodeMngVO> getCodeList(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 상세보기
@@ -36,7 +36,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    CodeVO getCodeDetail(CodeVO vo) throws Exception;
+    CodeMngVO getCodeDetail(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 목록 (커스텀 태그)
@@ -44,7 +44,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    List<CodeVO> getCodeToTag(String code) throws Exception;
+    List<CodeMngVO> getCodeToTag(String code) throws Exception;
 
     /**
      * 자식코드 개수 확인
@@ -68,7 +68,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    int getCodeCheck(CodeVO vo) throws Exception;
+    int getCodeCheck(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 등록
@@ -76,7 +76,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    int setCode(CodeVO vo) throws Exception;
+    int setCode(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 수정
@@ -84,7 +84,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    int updCode(CodeVO vo) throws Exception;
+    int updCode(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 삭제
@@ -92,7 +92,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    int delCode(CodeVO vo) throws Exception;
+    int delCode(CodeMngVO vo) throws Exception;
 
     /**
      * 자식 코드 삭제
@@ -100,7 +100,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    int delChildrenCode(CodeVO vo) throws Exception;
+    int delChildrenCode(CodeMngVO vo) throws Exception;
 
     /**
      * 코드 목록 by Searching
@@ -108,7 +108,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    List<CodeVO> getCodeListByType(CodeVO vo) throws Exception;
+    List<CodeMngVO> getCodeListByType(CodeMngVO vo) throws Exception;
 
     /**
      * 산그림 홈페이지에 맞게 권한관리 구현을 위한 코드 목록
@@ -116,7 +116,7 @@ public interface CodeMapper {
      * @return
      * @throws Exception
      */
-    List<CodeVO> getCodeToAuthConf(CodeVO userAuthConfVO) throws Exception;
+    List<CodeMngVO> getCodeToAuthConf(CodeMngVO userAuthConfVO) throws Exception;
 
 
 }

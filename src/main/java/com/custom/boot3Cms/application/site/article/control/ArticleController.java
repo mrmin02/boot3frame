@@ -9,7 +9,7 @@ import com.custom.boot3Cms.application.common.utils.CommonUtil;
 import com.custom.boot3Cms.application.common.utils.StringUtil;
 import com.custom.boot3Cms.application.mng.bbs.service.BbsMngService;
 import com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO;
-import com.custom.boot3Cms.application.mng.code.service.CodeService;
+import com.custom.boot3Cms.application.mng.code.service.CodeMngService;
 import com.custom.boot3Cms.application.site.article.service.ArticleService;
 import com.custom.boot3Cms.application.site.article.vo.ArticleVO;
 import com.nhncorp.lucy.security.xss.XssFilter;
@@ -60,7 +60,7 @@ public class ArticleController {
 
     //게시판 관리 서비스
     @Resource(name = "codeService")
-    private CodeService codeService;
+    private CodeMngService codeService;
 
     //첨부파일 관리 서비스
     @Resource(name = "fileMngService")

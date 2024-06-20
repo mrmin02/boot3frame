@@ -5,8 +5,8 @@ import com.custom.boot3Cms.application.common.utils.CommonUtil;
 import com.custom.boot3Cms.application.common.utils.StringUtil;
 import com.custom.boot3Cms.application.mng.bbs.service.BbsMngService;
 import com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO;
-import com.custom.boot3Cms.application.mng.code.service.CodeService;
-import com.custom.boot3Cms.application.mng.code.vo.CodeVO;
+import com.custom.boot3Cms.application.mng.code.service.CodeMngService;
+import com.custom.boot3Cms.application.mng.code.vo.CodeMngVO;
 import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
@@ -44,7 +44,7 @@ public class BbsMngController {
 
     //코드 관리 서비스
     @Resource(name = "codeService")
-    private CodeService codeService;
+    private CodeMngService codeService;
 
     /**
      * 게시판 목록
@@ -124,7 +124,7 @@ public class BbsMngController {
                 return "redirect:/mng/bbs/list";
             }
         }
-        CodeVO userAuthConfVO = new CodeVO();
+        CodeMngVO userAuthConfVO = new CodeMngVO();
         userAuthConfVO.setCode("user_auth");
         model.addAttribute("user_auth", codeService.getCodeToAuthConf(userAuthConfVO));
         return "mng/bbs/form";

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.custom.boot3Cms.application.mng.code.mapper.CodeMapper">
+<mapper namespace="com.custom.boot3Cms.application.mng.code.mapper.CodeMngMapper">
 
     <!-- 코드 목록 -->
-    <select id="getCodeList" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <select id="getCodeList" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CD.CODE_SEQ AS ID,
     		CD.CODE_NM AS TEXT,
@@ -17,7 +17,7 @@
     </select>
 
     <!-- 코드 상세보기 -->
-    <select id="getCodeDetail" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <select id="getCodeDetail" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CD.CODE_SEQ,
             CD.CODE,
@@ -36,7 +36,7 @@
     </select>
 
     <!-- 코드 목록 (커스텀태그) -->
-    <select id="getCodeToTag" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <select id="getCodeToTag" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CODE_SEQ,
             CODE,
@@ -71,6 +71,7 @@
         FROM TB_CODE
         WHERE CODE = #{code}
         AND USE_YN = 'Y'
+        AND ROWNUM = 1
     </select>
     
     <!-- 코드 중복 확인 -->
@@ -79,7 +80,7 @@
     </select>
 
     <!-- 코드 등록 -->
-    <insert id="setCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <insert id="setCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         INSERT INTO TB_CODE
         (
             CODE,
@@ -105,7 +106,7 @@
     </insert>
 
     <!-- 코드 수정 -->
-    <update id="updCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <update id="updCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         UPDATE TB_CODE SET
             CODE = #{code},
             CODE_NM = #{code_nm},
@@ -118,17 +119,17 @@
     </update>
 
     <!-- 코드 삭제 -->
-    <delete id="delCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <delete id="delCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         DELETE FROM TB_CODE WHERE CODE_SEQ = #{code_seq}
     </delete>
 
     <!-- 자식코드 삭제 -->
-    <delete id="delChildrenCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <delete id="delChildrenCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         DELETE FROM TB_CODE WHERE PRT_SEQ = #{code_seq}
     </delete>
 
     <!-- 코드 목록 by Searching -->
-    <select id="getCodeListByType" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <select id="getCodeListByType" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CD.CODE,
             CD.CODE_NM
@@ -140,7 +141,7 @@
     </select>
 
     <!--  산그림 홈페이지에 맞게 권한관리 구현을 위한 코드 목록 -->
-    <select id="getCodeToAuthConf" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeVO" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeVO">
+    <select id="getCodeToAuthConf" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CODE_SEQ,
             CODE,

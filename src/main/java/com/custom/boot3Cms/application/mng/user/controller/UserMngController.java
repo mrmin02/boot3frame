@@ -3,16 +3,11 @@ package com.custom.boot3Cms.application.mng.user.controller;
 import com.custom.boot3Cms.application.common.result.vo.ResultVO;
 import com.custom.boot3Cms.application.common.system.login.vo.LoginVO;
 import com.custom.boot3Cms.application.common.utils.CommonUtil;
-import com.custom.boot3Cms.application.common.utils.StringUtil;
-import com.custom.boot3Cms.application.mng.code.service.CodeService;
-import com.custom.boot3Cms.application.mng.code.vo.CodeVO;
+import com.custom.boot3Cms.application.mng.code.service.CodeMngService;
 import com.custom.boot3Cms.application.mng.user.service.UserMngService;
-import com.custom.boot3Cms.application.mng.user.vo.UserMngVO;
 import com.custom.boot3Cms.application.mng.user.vo.UserVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
@@ -22,9 +17,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
-import javax.xml.transform.Result;
 import java.security.Principal;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -51,7 +44,7 @@ public class UserMngController {
     UserMngService userMngService;
 
     @Resource(name = "codeService")
-    CodeService codeService;
+    CodeMngService codeService;
 
     /**
      * 회원 목록

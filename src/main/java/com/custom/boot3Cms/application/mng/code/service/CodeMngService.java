@@ -1,7 +1,7 @@
 package com.custom.boot3Cms.application.mng.code.service;
 
-import com.custom.boot3Cms.application.mng.code.mapper.CodeMapper;
-import com.custom.boot3Cms.application.mng.code.vo.CodeVO;
+import com.custom.boot3Cms.application.mng.code.mapper.CodeMngMapper;
+import com.custom.boot3Cms.application.mng.code.vo.CodeMngVO;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,10 +26,10 @@ import java.util.Map;
  */
 @Service("codeService")
 @Transactional
-public class CodeService {
+public class CodeMngService {
 
-    @Resource(name = "codeMapper")
-    CodeMapper codeMapper;
+    @Resource(name = "codeMngMapper")
+    CodeMngMapper codeMapper;
 
     /**
      * 코드 목록
@@ -37,11 +37,11 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public List<CodeVO> getCodeList(CodeVO vo) throws Exception{
-        List<CodeVO> codeVoList = codeMapper.getCodeList(vo);
+    public List<CodeMngVO> getCodeList(CodeMngVO vo) throws Exception{
+        List<CodeMngVO> codeVoList = codeMapper.getCodeList(vo);
         Map<String, Boolean> state = new HashMap<>();
         state.put("opened", true);
-        codeVoList.add(0, new CodeVO("0", "공통코드 그룹", "#", state, "root"));
+        codeVoList.add(0, new CodeMngVO("0", "공통코드 그룹", "#", state, "root"));
         return codeVoList;
     }
 
@@ -51,7 +51,7 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public CodeVO getCodeDetail(CodeVO vo) throws Exception{
+    public CodeMngVO getCodeDetail(CodeMngVO vo) throws Exception{
         return codeMapper.getCodeDetail(vo);
     }
 
@@ -61,7 +61,7 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public List<CodeVO> getCodeToTag(String code) throws Exception{
+    public List<CodeMngVO> getCodeToTag(String code) throws Exception{
         return codeMapper.getCodeToTag(code);
     }
 
@@ -91,13 +91,13 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> getCodeCheck(CodeVO vo) throws Exception{
+    public Map<String, Object> getCodeCheck(CodeMngVO vo) throws Exception{
         Map<String, Object> rtnMap = new HashMap<>();
         int result = codeMapper.getCodeCheck(vo);
         boolean rtnVal = result>0?false:true;
         String rtnMsg = result>0?"중복된 코드명이 존재합니다.":"사용가능한 코드입니다.";
         rtnMap.put("result", rtnVal);
-        rtnMap.put("msg", rtnMsg);
+        rtnMap.put("rMsg", rtnMsg);
         return rtnMap;
     }
 
@@ -107,7 +107,7 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> codeProc(CodeVO vo) throws Exception{
+    public Map<String, Object> codeProc(CodeMngVO vo) throws Exception{
         int result = 0;
         Map<String, Object> rtnMap = new HashMap<>();
         String rtnMsg = "";
@@ -143,7 +143,7 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public List<CodeVO> getCodeListByType(CodeVO vo) throws Exception{
+    public List<CodeMngVO> getCodeListByType(CodeMngVO vo) throws Exception{
         return codeMapper.getCodeListByType(vo);
     }
 
@@ -153,7 +153,7 @@ public class CodeService {
      * @return
      * @throws Exception
      */
-    public List<CodeVO> getCodeToAuthConf(CodeVO userAuthConfVO) throws Exception{
+    public List<CodeMngVO> getCodeToAuthConf(CodeMngVO userAuthConfVO) throws Exception{
         return codeMapper.getCodeToAuthConf(userAuthConfVO);
     }
 
