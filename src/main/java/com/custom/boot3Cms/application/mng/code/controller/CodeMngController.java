@@ -34,7 +34,7 @@ import java.util.Map;
 @RestController
 public class CodeMngController {
 
-    @Resource(name = "codeService")
+    @Resource(name = "codeMngService")
     CodeMngService codeService;
 
     /**
@@ -168,7 +168,7 @@ public class CodeMngController {
      * @throws Exception
      */
     @Operation(summary = "코드 수정")
-    @PostMapping("/api/mng/code/proc")
+    @PutMapping("/api/mng/code/proc")
     public ResultVO codeUpdate(@RequestBody CodeMngVO codeVO
             , HttpServletRequest request
             , HttpServletResponse response
@@ -184,7 +184,7 @@ public class CodeMngController {
                 codeVO.setInpt_seq(vo.getUser_seq());
                 codeVO.setUpd_seq(vo.getUser_seq());
             }
-            codeVO.setFlag("c");
+            codeVO.setFlag("u");
             Map<String,Object> map = codeService.codeProc(codeVO);
             if((boolean) map.get("result")){
                 result = true;
@@ -194,7 +194,55 @@ public class CodeMngController {
             e.printStackTrace();
             result = false;
             code = 404;
-            rMsg = "코드 등록 중 오류가 발생하였습니다.";
+            rMsg = "코드 수정 중 오류가 발생하였습니다.";
+        }
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
+    }
+
+    /**
+     * 코드 수정
+     *
+     * @param codeVO
+     * @param request
+     * @param response
+     * @return
+     * @throws Exception
+     */
+    @Operation(summary = "코드 삭제")
+    @DeleteMapping("/api/mng/code/proc")
+    public ResultVO codeDelete(@RequestBody CodeMngVO codeVO
+            , HttpServletRequest request
+            , HttpServletResponse response
+            , Principal principal ) throws Exception {
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            if(principal != null){
+                LoginVO vo = CommonUtil.fn_getUserAuth(principal);
+                codeVO.setInpt_seq(vo.getUser_seq());
+                codeVO.setUpd_seq(vo.getUser_seq());
+            }
+            if(codeVO.getFlag() == null || !codeVO.getFlag().equals("dp")) {
+                codeVO.setFlag("d");
+            }
+
+            Map<String,Object> map = codeService.codeProc(codeVO);
+            if((boolean) map.get("result")){
+                result = true;
+            }
+            rMsg = String.valueOf(map.get("rMsg"));
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "코드 삭제 중 오류가 발생하였습니다.";
         }
 
         resultVO.setResultMsg(rMsg);
@@ -242,18 +290,38 @@ public class CodeMngController {
     /**
      * 코드 상세정보 출력
      *
-     * @param codeVO
      * @param request
      * @param response
      * @return
      * @throws Exception
      */
     @Operation(summary = "코드 상세정보")
-    @GetMapping("/api/mng/code/detail")
-    public CodeMngVO codeDetailAjax(@ModelAttribute("CodeVO") CodeMngVO codeVO
+    @GetMapping("/api/mng/code/detail/{code}")
+    public ResultVO codeDetailAjax(@RequestParam("code") String code_str
             , HttpServletRequest request
             , HttpServletResponse response ) throws Exception {
-        return codeService.getCodeDetail(codeVO);
+        ResultVO resultVO = new ResultVO();
+        boolean result = false;
+        int code = 200;
+        String rMsg = "";
+
+        try{
+            CodeMngVO codeVO = new CodeMngVO();
+            codeVO.setCode(code_str);
+
+            resultVO.putResult("data",codeService.getCodeDetail(codeVO));
+            result = true;
+        }catch (Exception e){
+            e.printStackTrace();
+            result = false;
+            code = 404;
+            rMsg = "코드 정보 조회 중 오류가 발생하였습니다.";
+        }
+
+        resultVO.setResultMsg(rMsg);
+        resultVO.putResult("result",result);
+        resultVO.setResultCode(code);
+        return resultVO;
     }
 
 }

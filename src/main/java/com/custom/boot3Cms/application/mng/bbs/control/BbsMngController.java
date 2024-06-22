@@ -43,7 +43,7 @@ public class BbsMngController {
     private BbsMngService bbsMngService;
 
     //코드 관리 서비스
-    @Resource(name = "codeService")
+    @Resource(name = "codeMngService")
     private CodeMngService codeService;
 
     /**

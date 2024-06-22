@@ -59,7 +59,7 @@ public class ArticleController {
     private BbsMngService bbsMngService;
 
     //게시판 관리 서비스
-    @Resource(name = "codeService")
+    @Resource(name = "codeMngService")
     private CodeMngService codeService;
 
     //첨부파일 관리 서비스

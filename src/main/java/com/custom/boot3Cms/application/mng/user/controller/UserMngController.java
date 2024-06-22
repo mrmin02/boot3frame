@@ -43,7 +43,7 @@ public class UserMngController {
     @Resource(name = "userMngService")
     UserMngService userMngService;
 
-    @Resource(name = "codeService")
+    @Resource(name = "codeMngService")
     CodeMngService codeService;
 
     /**

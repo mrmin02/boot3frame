@@ -3,7 +3,7 @@
 <mapper namespace="com.custom.boot3Cms.application.mng.code.mapper.CodeMngMapper">
 
     <!-- 코드 목록 -->
-    <select id="getCodeList" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
+    <select id="getCodeList" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO" resultType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
         SELECT
             CD.CODE_SEQ AS ID,
     		CD.CODE_NM AS TEXT,
@@ -81,8 +81,12 @@
 
     <!-- 코드 등록 -->
     <insert id="setCode" parameterType="com.custom.boot3Cms.application.mng.code.vo.CodeMngVO">
+        <selectKey keyProperty="code_seq" resultType="string" order="BEFORE">
+            SELECT TB_CODE_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_CODE
         (
+            CODE_SEQ,
             CODE,
             CODE_NM,
             PRT_SEQ,
@@ -94,6 +98,7 @@
         )
         VALUES
         (
+            #{code_seq},
             #{code},
             #{code_nm},
             #{prt_seq},
@@ -101,7 +106,7 @@
             #{ord},
             #{remark},
             #{inpt_seq},
-            NOW()
+            SYSDATE
         )
     </insert>
 
@@ -114,7 +119,7 @@
             REMARK = #{remark},
             ORD = #{ord},
             UPD_SEQ = #{upd_seq},
-            UPD_DATE = NOW()
+            UPD_DATE = SYSDATE
         WHERE CODE_SEQ = #{code_seq}
     </update>
 

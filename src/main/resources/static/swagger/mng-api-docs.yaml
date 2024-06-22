@@ -417,619 +417,6 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 type: boolean
-  /mng/system/code/getList:
-    get:
-      tags:
-        - code-controller
-      operationId: codeList
-      parameters:
-        - name: codeVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    put:
-      tags:
-        - code-controller
-      operationId: codeList_3
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    post:
-      tags:
-        - code-controller
-      operationId: codeList_2
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    delete:
-      tags:
-        - code-controller
-      operationId: codeList_5
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    options:
-      tags:
-        - code-controller
-      operationId: codeList_6
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    head:
-      tags:
-        - code-controller
-      operationId: codeList_1
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    patch:
-      tags:
-        - code-controller
-      operationId: codeList_4
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-  /mng/system/code/check:
-    get:
-      tags:
-        - code-controller
-      operationId: codeCheck
-      parameters:
-        - name: codeVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    put:
-      tags:
-        - code-controller
-      operationId: codeCheck_3
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    post:
-      tags:
-        - code-controller
-      operationId: codeCheck_2
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    delete:
-      tags:
-        - code-controller
-      operationId: codeCheck_5
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    options:
-      tags:
-        - code-controller
-      operationId: codeCheck_6
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    head:
-      tags:
-        - code-controller
-      operationId: codeCheck_1
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-    patch:
-      tags:
-        - code-controller
-      operationId: codeCheck_4
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: object
-                additionalProperties:
-                  type: object
-  /ajax/system/code/text:
-    get:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax
-      parameters:
-        - name: codeVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    put:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_3
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    post:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_2
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    delete:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_5
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    options:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_6
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    head:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_1
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    patch:
-      tags:
-        - code-controller
-      operationId: codeToNameAjax_4
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-  /ajax/system/code/prt/list:
-    get:
-      tags:
-        - code-controller
-      operationId: codeListAjax
-      parameters:
-        - name: codeVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    put:
-      tags:
-        - code-controller
-      operationId: codeListAjax_3
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    post:
-      tags:
-        - code-controller
-      operationId: codeListAjax_2
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    delete:
-      tags:
-        - code-controller
-      operationId: codeListAjax_5
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    options:
-      tags:
-        - code-controller
-      operationId: codeListAjax_6
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    head:
-      tags:
-        - code-controller
-      operationId: codeListAjax_1
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-    patch:
-      tags:
-        - code-controller
-      operationId: codeListAjax_4
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: array
-                items:
-                  $ref: '#/components/schemas/CodeVO'
-  /ajax/system/code/detail:
-    get:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax
-      parameters:
-        - name: codeVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    put:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_3
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    post:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_2
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    delete:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_5
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    options:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_6
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    head:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_1
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-    patch:
-      tags:
-        - code-controller
-      operationId: codeDetailAjax_4
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/CodeVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                $ref: '#/components/schemas/CodeVO'
-
   /api/mng/html/proc:
     put:
       tags:
@@ -1748,6 +1135,175 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
+  /api/mng/code/proc:
+    put:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 수정
+      operationId: codeUpdate
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeMngVO'
+            examples:
+              test:
+                value:
+                  code_seq: '13'
+                  code: 'test'
+                  code_nm: '테스트 코드'
+                  use_yn: 'Y'
+                  ord: '1'
+                  remark: "테스트 코드"
+              guide:
+                value:
+                  code_seq: '코드 순번'
+                  code: '코드'
+                  code_nm: '코드 이름'
+                  use_yn: '사용여부 (Y ,N)'
+                  ord: '정렬 순서'
+                  remark: "메모"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 등록
+      operationId: codeInsert
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeMngVO'
+            examples:
+              test:
+                value:
+                  code : 'test'
+                  code_nm : '테스트 코드'
+                  prt_seq : '0'
+                  use_yn : 'Y'
+                  ord : '1'
+                  remark : "테스트 코드"
+              guide:
+                value:
+                  code: '코드'
+                  code_nm: '코드 이름'
+                  prt_seq: '부모 코드 순번'
+                  use_yn: '사용여부 (Y ,N)'
+                  ord: '정렬 순서'
+                  remark: "메모"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 삭제
+      operationId: codeDelete
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeMngVO'
+            examples:
+              test:
+                value:
+                  code_seq: '13'
+                  flag : 'd'
+              guide:
+                value:
+                  code: '코드 순번'
+                  flag: '해당 코드 : d , 코드와 자식코드 전체 : dp '
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/code/list:
+    get:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 리스트
+      operationId: codeList
+      parameters:
+        - name: codeVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/CodeMngVO'
+          examples:
+            test:
+              value:
+                code: "test"
+            guide:
+              value:
+                code: "코드"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/code/detail/{code}:
+    get:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 상세정보
+      operationId: codeDetailAjax
+      parameters:
+        - name: code
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/code/check:
+    post:
+      tags:
+        - 코드 관리 컨트롤러
+      summary: 코드 중복체크
+      operationId: codeCheck
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/CodeMngVO'
+            examples:
+              test:
+                value:
+                  code: "test"
+              guide:
+                value:
+                  code: "코드"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
 components:
   schemas:
     사용자 DTO:
@@ -2031,74 +1587,6 @@ components:
           type: string
         refresh_token:
           type: string
-    CodeVO:
-      type: object
-      properties:
-        searchCondition:
-          type: string
-          description: 검색 조건
-        searchKeyword:
-          type: string
-          description: 검색어
-        searchUseYn:
-          type: string
-          description: 검색 사용 여부
-          example: Y or N
-        searchOrderBy:
-          type: string
-          description: 검색 정렬 기준
-        pageIndex:
-          type: integer
-          description: 현재 페이지
-          format: int32
-        pageUnit:
-          type: integer
-          description: 페이지 개수
-          format: int32
-        file:
-          type: array
-          description: 파일 배열
-          items:
-            type: string
-            format: binary
-        code_seq:
-          type: string
-        code:
-          type: string
-        code_nm:
-          type: string
-        prt_seq:
-          type: string
-        use_yn:
-          type: string
-        remark:
-          type: string
-        inpt_seq:
-          type: string
-        upd_seq:
-          type: string
-        inpt_date:
-          type: string
-        ord:
-          type: string
-        flag:
-          type: string
-        code_check_yn:
-          type: string
-        id:
-          type: string
-        parent:
-          type: string
-        text:
-          type: string
-        state:
-          type: object
-          additionalProperties:
-            type: boolean
-        code_detail:
-          type: string
-        code_detail_nm:
-          type: string
     HtmlMngVO:
       type: object
       properties:
@@ -2327,6 +1815,74 @@ components:
         upd_date:
           type: string
         flag:
+          type: string
+    CodeMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        code_seq:
+          type: string
+        code:
+          type: string
+        code_nm:
+          type: string
+        prt_seq:
+          type: string
+        use_yn:
+          type: string
+        remark:
+          type: string
+        inpt_seq:
+          type: string
+        upd_seq:
+          type: string
+        inpt_date:
+          type: string
+        ord:
+          type: string
+        flag:
+          type: string
+        code_check_yn:
+          type: string
+        id:
+          type: string
+        parent:
+          type: string
+        text:
+          type: string
+        state:
+          type: object
+          additionalProperties:
+            type: boolean
+        code_detail:
+          type: string
+        code_detail_nm:
           type: string
   securitySchemes:
     Authorization:

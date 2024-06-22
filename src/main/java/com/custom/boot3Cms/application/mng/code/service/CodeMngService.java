@@ -2,6 +2,7 @@ package com.custom.boot3Cms.application.mng.code.service;
 
 import com.custom.boot3Cms.application.mng.code.mapper.CodeMngMapper;
 import com.custom.boot3Cms.application.mng.code.vo.CodeMngVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,11 +25,11 @@ import java.util.Map;
  * </pre>
  * @since 2017-09-06
  */
-@Service("codeService")
+@Service("codeMngService")
 @Transactional
 public class CodeMngService {
 
-    @Resource(name = "codeMngMapper")
+    @Autowired
     CodeMngMapper codeMapper;
 
     /**
