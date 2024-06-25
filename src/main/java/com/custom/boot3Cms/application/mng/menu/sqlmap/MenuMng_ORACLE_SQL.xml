@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.custom.boot3Cms.application.mng.menu.mapper.MenuMngMapper">
+
+    <!-- 메뉴 정보 목록 -->
+    <select id="getMenuInfoList" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            TMI.MENU_INFO_SEQ,
+            TMI.MENU_NAME,
+            TMI.USE_YN,
+            TMI.DEL_YN,
+            TMI.INPT_SEQ,
+            TMI.INPT_DATE,
+            TMI.UPD_SEQ,
+            TMI.UPD_DATE,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TMI.INPT_SEQ) AS INPT_USER_NAME,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TMI.UPD_SEQ) AS UPD_USER_NAME
+        FROM TB_MENU_INFO TMI
+        WHERE 1=1
+        AND TMI.DEL_YN = 'N'
+    </select>
+
+    <!-- 메뉴 관리자 목록 -->
+    <select id="getMenuAdminList" resultType="com.custom.boot3Cms.application.mng.user.vo.UserVO">
+        SELECT
+            TUD.USER_NAME,
+            TUL.USER_ID,
+            TUL.USER_SEQ,
+            (SELECT USER_NAME FROM TB_USER_DETAIL STUD WHERE STUD.USER_SEQ = TMAL.INPT_SEQ) AS INPT_USER_NAME,
+            TMAL.INPT_DATE
+        FROM TB_MENU_ADMIN_LIST TMAL
+        INNER JOIN TB_USER_LIST TUL ON TMAL.USER_SEQ = TUL.USER_SEQ
+        INNER JOIN TB_USER_DETAIL TUD ON TUL.USER_SEQ = TUD.USER_SEQ
+        INNER JOIN tb_user_list TUA ON TUL.USER_SEQ = TUA.USER_SEQ
+        WHERE 1=1
+        AND TMAL.MENU_INFO_SEQ = #{menu_info_seq}
+        AND TUA.USER_AUTH IN ('ROLE_ADMIN','ROLE_MENU')
+        AND TUL.OUT_YN = 'N'
+        ORDER BY TMAL.INPT_DATE DESC
+    </select>
+
+    <!-- 메뉴 정보 상세보기 -->
+    <select id="getMenuInfoDetail" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            TMI.MENU_INFO_SEQ,
+            TMI.MENU_NAME,
+            TMI.REMARK,
+            TMI.USE_YN,
+            TMI.DEL_YN,
+            TMI.INPT_SEQ,
+            TMI.INPT_DATE,
+            TMI.UPD_SEQ,
+            TMI.UPD_DATE,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TMI.INPT_SEQ) AS INPT_USER_NAME,
+            (SELECT USER_NAME FROM TB_USER_DETAIL TUD WHERE TUD.USER_SEQ = TMI.UPD_SEQ) AS UPD_USER_NAME
+        FROM TB_MENU_INFO TMI
+        WHERE 1=1
+        AND TMI.DEL_YN = 'N'
+        AND TMI.MENU_INFO_SEQ = #{menu_info_seq}
+    </select>
+
+    <!-- 메뉴 목록 -->
+    <select id="getMenu" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            TM.MENU_INFO_SEQ,
+            TM.MENU_SEQ,
+            TM.MENU_TITLE,
+            TM.MENU_TYPE,
+            TM.MENU_LINK,
+            TM.MENU_LINK_TYPE,
+            TM.PRT_SEQ,
+            TM.USE_YN,
+            TM.REMARK,
+            TM.INPT_SEQ,
+            TM.INPT_DATE,
+            TM.MENU_JSON
+        FROM TB_MENU TM
+        WHERE 1=1
+        AND TM.MENU_INFO_SEQ = #{menu_info_seq}
+        AND TM.MENU_JSON IS NOT NULL -- 관리자에서는 JSON으로만 리스트를 만들기때문에 1줄만 있으면 된다.
+        ORDER BY TM.MENU_SEQ ASC
+    </select>
+
+    <!-- 메뉴 정보 등록 -->
+    <insert id="setMenuInfo" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO"
+            useGeneratedKeys="true" keyProperty="menu_info_seq" >
+        INSERT INTO TB_MENU_INFO
+        (
+            MENU_NAME,
+            REMARK,
+            USE_YN,
+            DEL_YN,
+            INPT_SEQ,
+            INPT_DATE
+        )
+        VALUES
+        (
+            #{menu_name},
+            #{remark},
+            #{use_yn},
+            'N',
+            #{inpt_seq},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 메뉴 정보 관리자 등록 -->
+    <insert id="setMenuInfoAdmin" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        INSERT INTO TB_MENU_ADMIN_LIST
+        (
+            MENU_INFO_SEQ,
+            USER_SEQ,
+            INPT_SEQ,
+            INPT_DATE
+        )
+        VALUES
+        (
+            #{menu_info_seq},
+            #{user_seq},
+            #{inpt_seq},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 메뉴 정보 수정 -->
+    <update id="updMenuInfo" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        UPDATE TB_MENU_INFO SET
+            MENU_NAME = #{menu_name},
+            REMARK = #{remark},
+            USE_YN = #{use_yn},
+            UPD_SEQ = #{upd_seq},
+            UPD_DATE = SYSDATE
+        WHERE MENU_INFO_SEQ = #{menu_info_seq}
+    </update>
+
+    <!-- 메뉴 정보 삭제 (논리) -->
+    <update id="delMenuInfo" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        UPDATE TB_MENU_INFO SET
+            DEL_YN = 'Y'
+        WHERE MENU_INFO_SEQ = #{menu_info_seq}
+    </update>
+
+    <!-- 메뉴 정보 삭제 (물리) -->
+    <delete id="delMenuInfoReal" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        DELETE FROM TB_MENU_INFO WHERE MENU_INFO_SEQ = #{menu_info_seq}
+    </delete>
+
+    <!-- 메뉴 관리자 정보 삭제 (물리) -->
+    <delete id="delMenuInfoAdminReal" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        DELETE FROM TB_MENU_ADMIN_LIST WHERE MENU_INFO_SEQ = #{menu_info_seq}
+    </delete>
+
+    <!-- 메뉴 등록 -->
+    <insert id="setMenu" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        INSERT INTO TB_MENU
+        (
+            MENU_INFO_SEQ,
+            MENU_SEQ,
+            MENU_TITLE,
+            MENU_TYPE,
+            MENU_LINK,
+            MENU_LINK_TYPE,
+            PRT_SEQ,
+            SHOW_YN,
+            HIGHLIGHT_YN,
+            USE_YN,
+            REMARK,
+            MENU_JSON,
+            MENU_ORDER,
+            MENU_DEPTH,
+            INPT_SEQ,
+            INPT_DATE
+        )
+        VALUES
+        (
+            #{menu_info_seq},
+            #{menu_seq},
+            #{menu_title},
+            #{menu_type},
+            #{menu_link},
+            #{menu_link_type},
+            #{prt_seq},
+            #{show_yn},
+            #{highlight_yn},
+            #{use_yn},
+            #{remark},
+            #{menu_json},
+            #{menu_order},
+            #{menu_depth},
+            #{inpt_seq},
+            SYSDATE
+        )
+    </insert>
+
+    <!-- 메뉴 삭제 -->
+    <delete id="delMenu" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        DELETE FROM TB_MENU WHERE MENU_INFO_SEQ = #{menu_info_seq}
+    </delete>
+
+    <!-- 사이트 게시판 목록 -->
+    <select id="getSiteBbsList" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            TBI.BBS_CD AS MENU_LINK_SEQ,
+            TBI.BBS_NM AS MENU_LINK_TITLE,
+            COUNT(TM.MENU_SEQ) AS FLAG
+        FROM TB_BBS_INFO TBI
+                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = CONCAT('/article/',TBI.BBS_CD) AND TM.MENU_INFO_SEQ = #{menu_info_seq}
+        WHERE 1=1
+          AND TBI.BBS_DEL_YN = 'N'
+          AND TBI.BBS_USE_YN = 'Y'
+        group by TBI.BBS_CD, TBI.BBS_NM
+        ORDER BY TBI.BBS_NM ASC
+    </select>
+
+    <!-- 사이트 HTML 목록 -->
+    <select id="getSiteHtmlList" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT
+            THC.HTML_SEQ AS MENU_LINK_SEQ,
+            THC.HTML_TITLE AS MENU_LINK_TITLE,
+            COUNT(TM.MENU_SEQ) AS FLAG
+        FROM TB_HTML_CONTENT THC
+                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = CONCAT('/page/',THC.HTML_SEQ) AND TM.MENU_INFO_SEQ = #{menu_info_seq}
+        WHERE 1=1
+          AND THC.DEL_YN = 'N'
+        group by THC.HTML_SEQ, THC.HTML_TITLE
+        ORDER BY THC.HTML_TITLE ASC
+    </select>
+
+    <!-- 최상위 JSON을 제외한 자식 JSON NULL 처리 (속도문제) -->
+    <update id="updMenuJson" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        UPDATE TB_MENU SET
+            MENU_JSON = NULL
+        WHERE MENU_INFO_SEQ = #{menu_info_seq}
+        AND MENU_SEQ NOT IN (
+            SELECT DD.MENU_SEQ FROM (
+                              SELECT TM.MENU_SEQ
+                              FROM TB_MENU TM
+                              WHERE TM.MENU_INFO_SEQ = 1
+                              ORDER BY TM.MENU_SEQ ASC
+                              LIMIT 0, 1) DD
+        )
+    </update>
+
+    <!-- 기관관리 수정시 메뉴반영 -->
+    <update id="updMenuUseYN" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        UPDATE TB_MENU SET
+          USE_YN = #{use_yn}
+        WHERE MENU_SEQ = #{menu_seq}
+    </update>
+
+</mapper>
