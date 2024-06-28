@@ -25,6 +25,14 @@ import java.util.List;
 public interface MenuMngMapper {
 
     /**
+     * 메뉴 정보 목록 CNT
+     * @param menuMngVO
+     * @return
+     * @throws Exception
+     */
+    int getMenuInfoListCNT(MenuMngVO menuMngVO) throws Exception;
+
+    /**
      * 메뉴 정보 목록
      *
      * @param vo

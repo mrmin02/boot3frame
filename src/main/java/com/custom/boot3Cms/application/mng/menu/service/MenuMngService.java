@@ -39,6 +39,16 @@ public class MenuMngService {
     MenuMngMapper menuMngMapper;
 
     /**
+     * 메뉴 정보 목록 cnt
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    public int getMenuInfoListCNT(MenuMngVO vo) throws Exception {
+        return menuMngMapper.getMenuInfoListCNT(vo);
+    }
+
+    /**
      * 메뉴 정보 목록
      * @param vo
      * @return

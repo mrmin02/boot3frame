@@ -8,17 +8,14 @@ import com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO;
 import com.custom.boot3Cms.application.mng.user.service.UserMngService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
 import java.security.Principal;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -72,6 +69,7 @@ public class MenuMngController {
 
         try{
             // FIXME 체크 필요
+            resultVO.putResult("total_cnt", menuMngService.getMenuInfoListCNT(menuMngVO));
             resultVO.putResult("list", menuMngService.getMenuInfoList(menuMngVO));
             result = true;
         }catch (Exception e){
@@ -178,20 +176,6 @@ public class MenuMngController {
         resultVO.putResult("result",result);
         resultVO.setResultCode(code);
         return resultVO;
-
-//        Map<String, Object> map = null;
-//        switch (menuMngVO.getFlag()){
-//            case "c": map = menuMngService.setMenuInfo(menuMngVO);
-//                break;
-//            case "u": map = menuMngService.updMenuInfo(menuMngVO);
-//                break;
-//            case "d": map = menuMngService.updMenuInfo(menuMngVO);
-//                break;
-//            default:
-//                redirectAttributes.addFlashAttribute("rHeader", "에러!");
-//                redirectAttributes.addFlashAttribute("rMsg", "잘못 된 접근입니다.");
-//                return "redirect:/mng/config/menu/list";
-//        }
     }
 
     /**
