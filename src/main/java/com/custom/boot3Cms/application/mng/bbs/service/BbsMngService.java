@@ -494,7 +494,7 @@ public class BbsMngService{
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, Object> deleteBbs(BbsMngVO vo) throws Exception{
+	public Map<String, Object> delBbs(BbsMngVO vo) throws Exception{
 		Map<String, Object> map = new HashMap<>();
 		String rMsg = "";
 		boolean result = false;

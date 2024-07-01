@@ -303,7 +303,7 @@ public class BbsMngController {
                 bbsMngVO.setUpd_seq(vo.getUser_seq());
             }
             bbsMngVO.setFlag("d");
-            Map<String, Object> map = bbsMngService.updBbs(bbsMngVO);
+            Map<String, Object> map = bbsMngService.delBbs(bbsMngVO);
             if((boolean)map.get("result")){
                 result = true;
             }else{

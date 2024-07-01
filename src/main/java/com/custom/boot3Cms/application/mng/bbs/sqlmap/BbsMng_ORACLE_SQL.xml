@@ -10,7 +10,7 @@
     </sql>
 
     <!--  게시판 목록 CNT  -->
-    <select id="getBbsListCNT" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+    <select id="getBbsListCNT" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO" resultType="int">
         SELECT
             COUNT(*)
         FROM TB_BBS_INFO TBI
@@ -27,7 +27,7 @@
             bbsList.*
         FROM (
             SELECT
-                ROWNUM() OVER(ORDER BY TBI.BBS_INFO_SEQ DESC) as rNum,
+                ROW_NUMBER() OVER(ORDER BY TBI.BBS_INFO_SEQ DESC) as rNum,
                 TBI.BBS_INFO_SEQ,
                 TBI.BBS_CD,
                 TBI.BBS_NM,

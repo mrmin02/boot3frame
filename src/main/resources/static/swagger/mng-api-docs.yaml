@@ -1391,7 +1391,7 @@ paths:
                   bbs_remark: "테스트 1"
                   bbs_use_yn: "Y"
                   bbs_del_yn: "N"
-                  site_type: "SITE_001"
+                  site_type: "ST_001"
                   # bbs_detail
                   file_cnt: "5"
                   bbs_type: "BBS_001"
@@ -1481,7 +1481,7 @@ paths:
                   bbs_remark : "테스트 1"
                   bbs_use_yn : "Y"
                   bbs_del_yn : "N"
-                  site_type : "SITE_001"
+                  site_type : "ST_001"
                   # bbs_detail
                   file_cnt: "5"
                   bbs_type: "BBS_001"
@@ -1590,10 +1590,10 @@ paths:
             examples:
               test:
                 value:
-                  bbs_code: "notice2"
+                  bbs_cd: "notice2"
               guide:
                 value:
-                  bbs_code: "게시판 코드"
+                  bbs_cd: "게시판 코드"
         required: true
       responses:
         "200":
