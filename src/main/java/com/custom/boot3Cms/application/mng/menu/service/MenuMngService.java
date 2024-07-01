@@ -247,8 +247,8 @@ public class MenuMngService {
      * @return
      * @throws Exception
      */
-    public List<MenuMngVO> getMenu(MenuMngVO vo) throws Exception{
-        return menuMngMapper.getMenu(vo);
+    public MenuMngVO getMenuJson(MenuMngVO vo) throws Exception{
+        return menuMngMapper.getMenuJson(vo);
     }
 
     /**
@@ -283,7 +283,9 @@ public class MenuMngService {
         JSONArray jsonArray = (JSONArray) parser.parse(vo.getMenu_json());
         // 메뉴 등록 (재귀)
         menuStream(jsonArray, vo, inpt_seq);
-        menuMngMapper.updMenuJson(vo);
+        // TODO 메뉴 JSON 관리 테이블 따로 두기
+
+        menuMngMapper.setMenuJson(vo);
     }
 
     public void menuStream(JSONArray jsonArray, MenuMngVO menuMngVO, String inpt_seq) throws Exception{
@@ -299,22 +301,10 @@ public class MenuMngService {
                 menuMngVO.setMenu_link("/picture-book/"+objMap.get("menu_link"));
             }else if((""+objMap.get("menu_type")).equals("MNT_003")){
                 menuMngVO.setMenu_link("/page/"+objMap.get("menu_link"));
-            }else if((""+objMap.get("menu_type")).equals("MNT_007")){ // 수상 정보
-                menuMngVO.setMenu_link("/award/info/"+objMap.get("menu_link"));
-            }else if((""+objMap.get("menu_type")).equals("MNT_008")){ // 추천 정보
-                menuMngVO.setMenu_link("/recommend/info/"+objMap.get("menu_link"));
-            }else if((""+objMap.get("menu_type")).equals("MNT_009")){ // 수상 정보 그림책 목록
-                menuMngVO.setMenu_link("/book/award/"+objMap.get("menu_link")+"/list");
-            }else if((""+objMap.get("menu_type")).equals("MNT_010")){ // 추천 정보 그림책 목록
-                menuMngVO.setMenu_link("/book/recommend/"+objMap.get("menu_link")+"/list");
-            }else if((""+objMap.get("menu_type")).equals("MNT_011")){ // 연령별 정보 그림책 목록
-                menuMngVO.setMenu_link("/book/age/"+objMap.get("menu_link")+"/list");
             }else{
                 menuMngVO.setMenu_link(""+objMap.get("menu_link"));
             }
             menuMngVO.setMenu_title(""+objMap.get("menu_title"));
-            menuMngVO.setShow_yn(""+objMap.get("show_yn"));
-            menuMngVO.setHighlight_yn((objMap.get("highlight_yn").equals("Y") ? "Y" : "N"));
             menuMngVO.setUse_yn(""+objMap.get("use_yn"));
             menuMngVO.setRemark(""+objMap.get("remark"));
             menuMngVO.setPrt_seq(""+objMap.get("parent"));

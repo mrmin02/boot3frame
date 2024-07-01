@@ -114,13 +114,21 @@ public interface MenuMngMapper {
     int delMenuInfoAdminReal(MenuMngVO vo) throws Exception;
 
     /**
-     * 메뉴 목록
+     * 메뉴 Json
      *
      * @param vo
      * @return
      * @throws Exception
      */
-    List<MenuMngVO> getMenu(MenuMngVO vo) throws Exception;
+    MenuMngVO getMenuJson(MenuMngVO vo) throws Exception;
+
+    /**
+     * 메뉴 json 등록
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    int setMenuJson(MenuMngVO vo) throws Exception;
 
     /**
      * 메뉴 등록

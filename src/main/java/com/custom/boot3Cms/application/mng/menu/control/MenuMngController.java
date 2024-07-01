@@ -87,7 +87,6 @@ public class MenuMngController {
 
     /**
      * 메뉴 정보 상세보기
-     * @param menuMngVO
      * @param model
      * @param request
      * @param response
@@ -98,8 +97,7 @@ public class MenuMngController {
      */
     @Operation(summary = "메뉴 정보 상세")
     @GetMapping("/api/mng/menu/detail/{menu_info_seq}")
-    public ResultVO menuInfoDetail(@ModelAttribute("menuMngVO") MenuMngVO menuMngVO
-            , @PathVariable("menu_info_seq") String menu_info_seq
+    public ResultVO menuInfoDetail(@PathVariable("menu_info_seq") String menu_info_seq
             , Model model
             , HttpServletRequest request
             , HttpServletResponse response
@@ -113,7 +111,7 @@ public class MenuMngController {
         try{
             Map<String, Object> map = menuMngService.getMenuInfoDetail(new MenuMngVO(menu_info_seq, ""));
             if ((boolean) map.get("result")) {
-                menuMngVO = (MenuMngVO) map.get("value");
+                MenuMngVO menuMngVO = (MenuMngVO) map.get("value");
                 resultVO.putResult("list", menuMngService.getMenuAdminList(menuMngVO));
                 result = true;
 //                model.addAttribute("menuMngVO", menuMngVO);
@@ -158,6 +156,7 @@ public class MenuMngController {
                 LoginVO vo = CommonUtil.fn_getUserAuth(principal);
                 menuMngVO.setInpt_seq(vo.getUser_seq());
                 menuMngVO.setUpd_seq(vo.getUser_seq());
+                menuMngVO.setUser_seq(vo.getUser_seq());
             }
             Map<String,Object> map = menuMngService.setMenuInfo(menuMngVO);
             if((boolean)map.get("result")){
@@ -203,6 +202,7 @@ public class MenuMngController {
                 LoginVO vo = CommonUtil.fn_getUserAuth(principal);
                 menuMngVO.setInpt_seq(vo.getUser_seq());
                 menuMngVO.setUpd_seq(vo.getUser_seq());
+                menuMngVO.setUser_seq(vo.getUser_seq());
             }
             menuMngVO.setFlag("u");
             Map<String,Object> map = menuMngService.updMenuInfo(menuMngVO);
@@ -225,7 +225,7 @@ public class MenuMngController {
     }
 
     /**
-     * 메뉴 정보 수정
+     * 메뉴 정보 삭제
      * @param menuMngVO
      * @param request
      * @param response
@@ -234,7 +234,7 @@ public class MenuMngController {
      * @throws Exception
      */
     @Operation(summary = "메뉴 정보 삭제")
-    @PutMapping(value = "/api/mng/menu/proc")
+    @DeleteMapping(value = "/api/mng/menu/proc")
     public ResultVO menuInfoDelete(@RequestBody MenuMngVO menuMngVO,
                                    HttpServletRequest request,
                                    HttpServletResponse response,
@@ -249,6 +249,7 @@ public class MenuMngController {
                 LoginVO vo = CommonUtil.fn_getUserAuth(principal);
                 menuMngVO.setInpt_seq(vo.getUser_seq());
                 menuMngVO.setUpd_seq(vo.getUser_seq());
+                menuMngVO.setUser_seq(vo.getUser_seq());
             }
             menuMngVO.setFlag("d");
             Map<String,Object> map = menuMngService.updMenuInfo(menuMngVO);
@@ -277,8 +278,8 @@ public class MenuMngController {
      * @return
      * @throws Exception
      */
-    @Operation(summary = "메뉴 데이터 리스트")
-    @GetMapping("/api/mng/menu/data/list")
+    @Operation(summary = "메뉴 데이터 Json")
+    @GetMapping("/api/mng/menu/data/json")
     public ResultVO menuList(@RequestParam("menu_info_seq") String menu_info_seq
             , HttpServletRequest request
             , HttpServletResponse response ) throws Exception{
@@ -291,13 +292,13 @@ public class MenuMngController {
             MenuMngVO menuMngVO = new MenuMngVO();
             menuMngVO.setMenu_info_seq(menu_info_seq);
 
-            resultVO.putResult("list",menuMngService.getMenu(menuMngVO));
+            resultVO.putResult("data",menuMngService.getMenuJson(menuMngVO));
             result = true;
         }catch (Exception e){
             e.printStackTrace();
             result = false;
             code = 404;
-            rMsg = "메뉴 데이터 리스트 조회 중 오류가 발생하였습니다.";
+            rMsg = "메뉴 데이터 Json 조회 중 오류가 발생하였습니다.";
         }
 
         resultVO.setResultMsg(rMsg);
@@ -354,8 +355,8 @@ public class MenuMngController {
      * @throws Exception
      */
     @Operation(summary = "메뉴 데이터 등록")
-    @PostMapping("/api/mng/config/menu/data/proc")
-    public ResultVO setMenu(@ModelAttribute("menuMngVO") MenuMngVO menuMngVO
+    @PostMapping("/api/mng/menu/data/proc")
+    public ResultVO setMenu(@RequestBody MenuMngVO menuMngVO
             , HttpServletRequest request
             , HttpServletResponse response
             , Principal principal) throws Exception{

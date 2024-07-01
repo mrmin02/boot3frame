@@ -62,6 +62,7 @@ public class MenuMngVO extends DefaultVO {
     private String parent;
     private String depth;
     private String flag;
+    private String menu_json_seq; // 메뉴 json 순번
     private List<MenuMngVO> children = new ArrayList<>();
 
     private List<UserVO> userVOList; // 관리자 정보 목록

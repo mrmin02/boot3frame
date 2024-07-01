@@ -1304,6 +1304,211 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/proc:
+    put:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 정보 수정
+      operationId: menuInfoUpdate
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuMngVO'
+            examples:
+              test:
+                value:
+                  menu_info_seq : "1"
+                  menu_name : "메뉴 수정 1"
+                  remark : "메모 수정"
+                  use_yn : "Y"
+              guide:
+                value:
+                  menu_info_seq : "메뉴 순번"
+                  menu_name: "메뉴 수정 1"
+                  remark: "메모 수정"
+                  use_yn: "Y"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 정보 등록
+      operationId: menuInfoProc
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuMngVO'
+            examples:
+              test:
+                value:
+                  menu_name : "PC 테스트1"
+                  remark : "테스트"
+                  use_yn : "Y"
+                  del_yn : "N"
+              guide:
+                value:
+                  menu_name: "메뉴명"
+                  remark: "메모"
+                  use_yn: "사용여부 ( Y, N )"
+                  del_yn: "삭제여부 ( Y, N )"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 정보 삭제
+      operationId: menuInfoDelete
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuMngVO'
+            examples:
+              test:
+                value:
+                  menu_info_seq : "2"
+              guide:
+                value:
+                  menu_info_seq : "메뉴 정보 순번"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/list:
+    get:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 정보 목록
+      operationId: menuInfoList
+      parameters:
+        - name: menuMngVO
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/MenuMngVO'
+          examples:
+            test:
+              value:
+                pageIndex: "1"
+            guide:
+              value:
+                pageIndex: "페이지 번호"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/detail/{menu_info_seq}:
+    get:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 정보 상세
+      operationId: menuInfoDetail
+      parameters:
+        - name: menu_info_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/data/{menu_type}/{menu_info_seq}/list:
+    get:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 타입별 링크 목록
+      operationId: menuLinkList_1
+      parameters:
+        - name: menu_type
+          in: path
+          required: true
+          schema:
+            type: string
+          example: "MNT_002 MNT_003 (게시판, html)"
+        - name: menu_info_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/data/json:
+    get:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 데이터 Json
+      operationId: menuList
+      parameters:
+        - name: menu_info_seq
+          in: query
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/menu/data/proc:
+    post:
+      tags:
+        - 메뉴 관리 컨트롤러
+      summary: 메뉴 데이터 등록
+      operationId: setMenu
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/MenuMngVO'
+            examples:
+              test:
+                value:
+                  menu_info_seq: "1"
+                  menu_json : ""
+              guide:
+                value:
+                  menu_info_seq: "메뉴 정보 순번"
+                  menu_json : "[{\"parent\" : \"null\", \"order\":0, \"depth\":0, \"update\":true, \"remark\":\"메뉴1\",\"use_yn\":\"Y\",\"menu_link\":\"#\",\"menu_link_type\":\"LNK_001\",\"menu_type\":\"MNT_004\",\"menu_title\":\"메뉴1\",\"id\":1000001,\"children\":[{\"parent\" : \"1000001\", \"order\":0, \"depth\":1, \"update\":true, \"remark\":\"자식1\",\"use_yn\":\"Y\",\"menu_link\":\"#\",\"menu_link_type\":\"LNK_001\",\"menu_type\":\"MNT_004\",\"menu_title\":\"자식1\",\"id\":1000002}]}]"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+
 components:
   schemas:
     사용자 DTO:
@@ -1884,6 +2089,104 @@ components:
           type: string
         code_detail_nm:
           type: string
+    MenuMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        access_code:
+          type: string
+        inpt_date:
+          type: string
+        inpt_seq:
+          type: string
+        menu_depth:
+          type: string
+        menu_info_seq:
+          type: string
+        menu_json:
+          type: string
+        menu_link:
+          type: string
+        menu_link_seq:
+          type: string
+        menu_link_title:
+          type: string
+        menu_link_type:
+          type: string
+        menu_name:
+          type: string
+        menu_order:
+          type: string
+        menu_seq:
+          type: string
+        menu_title:
+          type: string
+        menu_type:
+          type: string
+        ord:
+          type: string
+        prt_seq:
+          type: string
+        remark:
+          type: string
+        upd_date:
+          type: string
+        upd_seq:
+          type: string
+        show_yn:
+          type: string
+        highlight_yn:
+          type: string
+        use_yn:
+          type: string
+        user_auth:
+          type: string
+        user_seq:
+          type: string
+        update_menu:
+          type: string
+        id:
+          type: string
+        parent:
+          type: string
+        depth:
+          type: string
+        flag:
+          type: string
+        children:
+          type: array
+          items:
+            $ref: '#/components/schemas/MenuMngVO'
+        userVOList:
+          type: array
+          items:
+            $ref: '#/components/schemas/사용자 DTO'
   securitySchemes:
     Authorization:
       type: http

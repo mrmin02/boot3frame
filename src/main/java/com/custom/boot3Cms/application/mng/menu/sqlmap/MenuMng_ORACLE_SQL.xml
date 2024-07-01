@@ -17,7 +17,7 @@
             menuList.*
         FROM (
              SELECT
-                ROW_NUMBER() OVER(ORDER BY TMI.MENU_INFO_SEQ ASC) as rNum
+                ROW_NUMBER() OVER(ORDER BY TMI.MENU_INFO_SEQ ASC) as rNum,
                 TMI.MENU_INFO_SEQ,
                 TMI.MENU_NAME,
                 TMI.USE_YN,
@@ -75,32 +75,43 @@
     </select>
 
     <!-- 메뉴 목록 -->
-    <select id="getMenu" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
-        SELECT
-            TM.MENU_INFO_SEQ,
-            TM.MENU_SEQ,
-            TM.MENU_TITLE,
-            TM.MENU_TYPE,
-            TM.MENU_LINK,
-            TM.MENU_LINK_TYPE,
-            TM.PRT_SEQ,
-            TM.USE_YN,
-            TM.REMARK,
-            TM.INPT_SEQ,
-            TM.INPT_DATE,
-            TM.MENU_JSON
-        FROM TB_MENU TM
-        WHERE 1=1
-        AND TM.MENU_INFO_SEQ = #{menu_info_seq}
-        AND TM.MENU_JSON IS NOT NULL -- 관리자에서는 JSON으로만 리스트를 만들기때문에 1줄만 있으면 된다.
-        ORDER BY TM.MENU_SEQ ASC
+    <select id="getMenuJson" resultType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        SELECT MENU_JSON
+        FROM (SELECT MENU_JSON
+              FROM TB_MENU_JSON
+              WHERE MENU_INFO_SEQ = #{menu_info_seq}
+              ORDER BY MENU_JSON_SEQ DESC) jsonList
+        where ROWNUM = 1
     </select>
 
+    <!-- 메뉴 json 저장 -->
+    <insert id="setMenuJson" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        <selectKey keyProperty="menu_json_seq" resultType="string" order="BEFORE">
+            SELECT TB_MENU_JSON_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
+        INSERT INTO TB_MENU_JSON (
+            MENU_JSON_SEQ,
+            MENU_INFO_SEQ,
+            MENU_JSON,
+            INPT_SEQ,
+            INPT_DATE
+        ) VALUES (
+             #{menu_json_seq},
+             #{menu_info_seq},
+             #{menu_json},
+             #{inpt_seq},
+             SYSDATE
+         )
+    </insert>
+
     <!-- 메뉴 정보 등록 -->
-    <insert id="setMenuInfo" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO"
-            useGeneratedKeys="true" keyProperty="menu_info_seq" >
+    <insert id="setMenuInfo" parameterType="com.custom.boot3Cms.application.mng.menu.vo.MenuMngVO">
+        <selectKey keyProperty="menu_info_seq" resultType="string" order="BEFORE">
+            SELECT TB_MENU_INFO_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_MENU_INFO
         (
+            MENU_INFO_SEQ,
             MENU_NAME,
             REMARK,
             USE_YN,
@@ -110,6 +121,7 @@
         )
         VALUES
         (
+            #{menu_info_seq},
             #{menu_name},
             #{remark},
             #{use_yn},
@@ -176,11 +188,8 @@
             MENU_LINK,
             MENU_LINK_TYPE,
             PRT_SEQ,
-            SHOW_YN,
-            HIGHLIGHT_YN,
             USE_YN,
             REMARK,
-            MENU_JSON,
             MENU_ORDER,
             MENU_DEPTH,
             INPT_SEQ,
@@ -195,11 +204,8 @@
             #{menu_link},
             #{menu_link_type},
             #{prt_seq},
-            #{show_yn},
-            #{highlight_yn},
             #{use_yn},
             #{remark},
-            #{menu_json},
             #{menu_order},
             #{menu_depth},
             #{inpt_seq},
@@ -219,7 +225,7 @@
             TBI.BBS_NM AS MENU_LINK_TITLE,
             COUNT(TM.MENU_SEQ) AS FLAG
         FROM TB_BBS_INFO TBI
-                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = CONCAT('/article/',TBI.BBS_CD) AND TM.MENU_INFO_SEQ = #{menu_info_seq}
+                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = '/article/'||TBI.BBS_CD AND TM.MENU_INFO_SEQ = #{menu_info_seq}
         WHERE 1=1
           AND TBI.BBS_DEL_YN = 'N'
           AND TBI.BBS_USE_YN = 'Y'
@@ -234,7 +240,7 @@
             THC.HTML_TITLE AS MENU_LINK_TITLE,
             COUNT(TM.MENU_SEQ) AS FLAG
         FROM TB_HTML_CONTENT THC
-                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = CONCAT('/page/',THC.HTML_SEQ) AND TM.MENU_INFO_SEQ = #{menu_info_seq}
+                 LEFT JOIN TB_MENU TM ON TM.MENU_LINK = '/page/'||THC.HTML_SEQ AND TM.MENU_INFO_SEQ = #{menu_info_seq}
         WHERE 1=1
           AND THC.DEL_YN = 'N'
         group by THC.HTML_SEQ, THC.HTML_TITLE
