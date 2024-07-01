@@ -26,6 +26,14 @@ import java.util.List;
 public interface BbsMngMapper {
 
     /**
+     * 게시판 목록 CNT
+     * @param vo
+     * @return
+     * @throws Exception
+     */
+    int getBbsListCNT(BbsMngVO vo) throws Exception;
+
+    /**
      * 게시판 목록
      * @param vo
      * @return
@@ -217,7 +225,7 @@ public interface BbsMngMapper {
      * @return
      * @throws Exception
      */
-    int setBbsHtml(BbsMngVO vo) throws Exception;
+//    int setBbsHtml(BbsMngVO vo) throws Exception;
 
 
 }

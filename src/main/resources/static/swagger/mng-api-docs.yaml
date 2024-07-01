@@ -165,144 +165,6 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
-  /mng/bbs/proc:
-    put:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 수정
-      operationId: updateBbs
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/BbsMngVO'
-            example:
-
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    post:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 등록
-      operationId: createBbs
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/BbsMngVO'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-    delete:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 삭제
-      operationId: deleteBbs
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/BbsMngVO'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-  /mng/bbs/code/check:
-    post:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 코드 중복검사
-      operationId: checkBbsCode
-      requestBody:
-        content:
-          application/json;charset=UTF-8:
-            schema:
-              $ref: '#/components/schemas/BbsMngVO'
-        required: true
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: boolean
-  /mng/{bbs_seq}/config/bbs/cnt:
-    get:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 존재여부 확인
-      operationId: menuLinkList
-      parameters:
-        - name: bbs_seq
-          in: path
-          required: true
-          schema:
-            type: string
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-  /mng/bbs/list:
-    get:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 리스트
-      operationId: bbsList
-      parameters:
-        - name: bbsMngVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/BbsMngVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-  /mng/bbs/info:
-    get:
-      tags:
-        - bbs-mng-controller
-      summary: 게시판 상세정보
-      operationId: bbsForm
-      parameters:
-        - name: bbsMngVO
-          in: query
-          required: true
-          schema:
-            $ref: '#/components/schemas/BbsMngVO'
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json;charset=UTF-8:
-              schema:
-                type: string
-
-
-
-
-
   /mng/user/check:
     get:
       tags:
@@ -1508,7 +1370,284 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
-
+  /api/mng/bbs/proc:
+    put:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 수정
+      operationId: updateBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+            examples:
+              test:
+                value:
+                  bbs_info_seq: "1"
+                  # bbs_info
+                  bbs_cd: "test001"
+                  bbs_nm: "테스트001"
+                  bbs_remark: "테스트 1"
+                  bbs_use_yn: "Y"
+                  bbs_del_yn: "N"
+                  site_type: "SITE_001"
+                  # bbs_detail
+                  file_cnt: "5"
+                  bbs_type: "BBS_001"
+                  bbs_dft_list_cnt: "10"
+                  bbs_page_cnt: "10"
+                  attach_file_use_yn: "Y"
+                  comment_use_yn: "N"
+                  reply_use_yn: "N"
+                  notice_use_yn: "Y"
+                  secret_use_yn: "N"
+                  category_use_yn: "Y"
+                  pwd_use_yn: "N"
+                  date_range_use_yn: "N"
+                  # category
+                  category_nm: "카테고리1,카테고리2,카테고리3"
+                  category_order: "1,2,3"
+                  category_cd: "cate1,cate2,cate3"
+                  # file
+                  file_size: "5,5,5"
+                  file_type: "jpg,png,pdf"
+                  # user auth
+                  user_auth: "ROLE_ANON,ROLE_USER,ROLE_ADMIN"
+                  read_yn: "N,Y,Y"
+                  write_yn: "N,Y,Y"
+                  update_yn: "N,Y,Y"
+                  delete_yn: "N,Y,Y"
+              guide:
+                value:
+                  bbs_info_seq: "게시판 정보 순번"
+                  # bbs_info
+                  bbs_cd: "게시판 코드"
+                  bbs_nm: "게시판 이름"
+                  bbs_remark: "메모"
+                  bbs_use_yn: "사용여부 ( Y, N )"
+                  bbs_del_yn: "삭제여부 ( Y, N )"
+                  site_type: "사이트 타입  ( code 관리 )"
+                  # bbs_detail
+                  file_cnt: "파일 개수"
+                  bbs_type: "게시판 타입"
+                  bbs_dft_list_cnt: "게시판 목록 수"
+                  bbs_page_cnt: "게시판 페이지 수"
+                  attach_file_use_yn: "첨부파일 사용여부 ( Y, N )"
+                  comment_use_yn: "댓글 사용여부 ( Y, N )"
+                  reply_use_yn: "답글 사용 여부 ( Y, N )"
+                  notice_use_yn: "공지사항 사용 여부 ( Y, N )"
+                  secret_use_yn: "비밀글 사용여부 ( Y, N )"
+                  category_use_yn: "카테고리 사용 여부 ( Y, N )"
+                  pwd_use_yn: "비밀번호 사용여부 ( Y, N )"
+                  date_range_use_yn: "기간 설정 사용 여부 ( Y, N )"
+                  # category
+                  category_nm: "카테고리 이름 str ( 이름,이름,이름... )"
+                  category_order: "카테고리 order str ( 1,2,3,4... )"
+                  category_cd: "카테고리 코드 str ( test1,test2,test3 )"
+                  # file
+                  file_size: "파일 크기 (3,3,3 ...)"
+                  file_type: "파일 타입 (jpg,png,pdf ...)"
+                  # user auth
+                  user_auth: "사용자 권한 (ROLE_ANON,ROLE_USER,ROLE_ADMIN ...)"
+                  read_yn: "읽기권한 (N,Y,Y ... )"
+                  write_yn: "쓰기권한 (N,Y,Y ... )"
+                  update_yn: "수정권한 (N,Y,Y ... )"
+                  delete_yn: "삭제권한 (N,Y,Y ...)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 등록
+      operationId: createBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+            examples:
+              test:
+                value:
+                  # bbs_info
+                  bbs_cd : "test001"
+                  bbs_nm : "테스트001"
+                  bbs_remark : "테스트 1"
+                  bbs_use_yn : "Y"
+                  bbs_del_yn : "N"
+                  site_type : "SITE_001"
+                  # bbs_detail
+                  file_cnt: "5"
+                  bbs_type: "BBS_001"
+                  bbs_dft_list_cnt: "10"
+                  bbs_page_cnt: "10"
+                  attach_file_use_yn: "Y"
+                  comment_use_yn: "N"
+                  reply_use_yn: "N"
+                  notice_use_yn: "Y"
+                  secret_use_yn: "N"
+                  category_use_yn: "Y"
+                  pwd_use_yn: "N"
+                  date_range_use_yn: "N"
+                  # category
+                  category_nm: "카테고리1,카테고리2,카테고리3"
+                  category_order: "1,2,3"
+                  category_cd: "cate1,cate2,cate3"
+                  # file
+                  file_size: "5,5,5"
+                  file_type: "jpg,png,pdf"
+                  # user auth
+                  user_auth: "ROLE_ANON,ROLE_USER,ROLE_ADMIN"
+                  read_yn: "N,Y,Y"
+                  write_yn: "N,Y,Y"
+                  update_yn: "N,Y,Y"
+                  delete_yn: "N,Y,Y"
+              guide:
+                value:
+                  # bbs_info
+                  bbs_cd: "게시판 코드"
+                  bbs_nm: "게시판 이름"
+                  bbs_remark: "메모"
+                  bbs_use_yn: "사용여부 ( Y, N )"
+                  bbs_del_yn: "삭제여부 ( Y, N )"
+                  site_type: "사이트 타입  ( code 관리 )"
+                  # bbs_detail
+                  file_cnt: "파일 개수"
+                  bbs_type: "게시판 타입"
+                  bbs_dft_list_cnt: "게시판 목록 수"
+                  bbs_page_cnt: "게시판 페이지 수"
+                  attach_file_use_yn: "첨부파일 사용여부 ( Y, N )"
+                  comment_use_yn: "댓글 사용여부 ( Y, N )"
+                  reply_use_yn: "답글 사용 여부 ( Y, N )"
+                  notice_use_yn: "공지사항 사용 여부 ( Y, N )"
+                  secret_use_yn: "비밀글 사용여부 ( Y, N )"
+                  category_use_yn: "카테고리 사용 여부 ( Y, N )"
+                  pwd_use_yn: "비밀번호 사용여부 ( Y, N )"
+                  date_range_use_yn: "기간 설정 사용 여부 ( Y, N )"
+                  # category
+                  category_nm : "카테고리 이름 str ( 이름,이름,이름... )"
+                  category_order : "카테고리 order str ( 1,2,3,4... )"
+                  category_cd : "카테고리 코드 str ( test1,test2,test3 )"
+                  # file
+                  file_size : "파일 크기 (3,3,3 ...)"
+                  file_type : "파일 타입 (jpg,png,pdf ...)"
+                  # user auth
+                  user_auth : "사용자 권한 (ROLE_ANON,ROLE_USER,ROLE_ADMIN ...)"
+                  read_yn : "읽기권한 (N,Y,Y ... )"
+                  write_yn : "쓰기권한 (N,Y,Y ... )"
+                  update_yn : "수정권한 (N,Y,Y ... )"
+                  delete_yn : "삭제권한 (N,Y,Y ...)"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 삭제
+      operationId: deleteBbs
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+            examples:
+              test:
+                value:
+                  bbs_info_seq: "1"
+              guide:
+                value:
+                  bbs_info_seq: "게시판 정보 순번"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/bbs/code/check:
+    post:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 코드 중복검사
+      operationId: checkBbsCode
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/BbsMngVO'
+            examples:
+              test:
+                value:
+                  bbs_code: "notice2"
+              guide:
+                value:
+                  bbs_code: "게시판 코드"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/bbs/info:
+    get:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 상세정보
+      operationId: bbsForm
+      parameters:
+        - name: bbs_info_seq
+          in: query
+          required: true
+          schema:
+            type: string
+          example: "1"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/bbs/list:
+    get:
+      tags:
+        - 게시판 관리 컨트롤러
+      summary: 게시판 리스트
+      operationId: bbsList
+      parameters:
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "1"
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+          example: ""
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
 components:
   schemas:
     사용자 DTO:

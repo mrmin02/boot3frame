@@ -2,32 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.custom.boot3Cms.application.mng.bbs.mapper.BbsMngMapper">
 
+    <sql id="bbsWhere">
+        <if test="searchKeyword != null and searchKeyword != ''">
+            AND (TBI.BBS_NM LIKE '%'||#{searchKeyword}||'%'
+            OR TBI.BBS_CD LIKE '%'||#{searchKeyword}||'%')
+        </if>
+    </sql>
+
+    <!--  게시판 목록 CNT  -->
+    <select id="getBbsListCNT" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        SELECT
+            COUNT(*)
+        FROM TB_BBS_INFO TBI
+         INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+         INNER JOIN TB_CODE TC ON TBI.SITE_TYPE = TC.CODE
+        WHERE 1=1
+         AND TBI.BBS_DEL_YN = 'N'
+        <include refid="bbsWhere"/>
+    </select>
+
     <!-- 게시판 목록 -->
     <select id="getBbsList" resultType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
         SELECT
-            TBI.BBS_INFO_SEQ,
-            TBI.BBS_CD,
-            TBI.BBS_NM,
-            TBI.BBS_REMARK,
-            TBI.BBS_DEL_YN,
-            TBI.BBS_USE_YN,
-            (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TBI.INPT_SEQ) AS INPT_USER_NAME,
-            TBI.INPT_DATE,
-            TBD.BBS_TYPE,
-            TBD.ATTACH_FILE_USE_YN,
-            TBD.COMMENT_USE_YN,
-            TBD.REPLY_USE_YN,
-            TBD.NOTICE_USE_YN,
-            TBD.SECRET_USE_YN,
-            TBD.CATEGORY_USE_YN,
-            TBD.PWD_USE_YN,
-            TC.CODE_NM AS SITE_TYPE
-        FROM TB_BBS_INFO TBI
-        INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
-        INNER JOIN TB_CODE TC ON TBI.SITE_TYPE = TC.CODE
-        WHERE 1=1
-        AND TBI.BBS_DEL_YN = 'N'
-        ORDER BY TBI.BBS_INFO_SEQ DESC
+            bbsList.*
+        FROM (
+            SELECT
+                ROWNUM() OVER(ORDER BY TBI.BBS_INFO_SEQ DESC) as rNum,
+                TBI.BBS_INFO_SEQ,
+                TBI.BBS_CD,
+                TBI.BBS_NM,
+                TBI.BBS_REMARK,
+                TBI.BBS_DEL_YN,
+                TBI.BBS_USE_YN,
+                (SELECT USER_NAME FROM TB_USER_DETAIL WHERE USER_SEQ = TBI.INPT_SEQ) AS INPT_USER_NAME,
+                TBI.INPT_DATE,
+                TBD.BBS_TYPE,
+                TBD.ATTACH_FILE_USE_YN,
+                TBD.COMMENT_USE_YN,
+                TBD.REPLY_USE_YN,
+                TBD.NOTICE_USE_YN,
+                TBD.SECRET_USE_YN,
+                TBD.CATEGORY_USE_YN,
+                TBD.PWD_USE_YN,
+                TC.CODE_NM AS SITE_TYPE
+            FROM TB_BBS_INFO TBI
+            INNER JOIN TB_BBS_DETAIL TBD ON TBI.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
+            INNER JOIN TB_CODE TC ON TBI.SITE_TYPE = TC.CODE
+            WHERE 1=1
+            AND TBI.BBS_DEL_YN = 'N'
+            <include refid="bbsWhere"/>
+        ) bbsList
+        WHERE bbsList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
     </select>
 
     <!-- 게시판 목록 (메뉴) -->
@@ -133,10 +158,13 @@
     </select>
 
     <!-- 게시판 기본정보 등록 -->
-    <insert id="setBbsInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO"
-            useGeneratedKeys="true" keyProperty="bbs_info_seq" >
+    <insert id="setBbsInfo" parameterType="com.custom.boot3Cms.application.mng.bbs.vo.BbsMngVO">
+        <selectKey keyProperty="bbs_info_seq" resultType="string" order="BEFORE">
+            SELECT TB_BBS_INFO_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_BBS_INFO
         (
+            BBS_INFO_SEQ,
             BBS_CD,
             BBS_NM,
             BBS_REMARK,
@@ -148,6 +176,7 @@
         )
         VALUES
         (
+            #{bbs_info_seq},
             #{bbs_cd},
             #{bbs_nm},
             #{bbs_remark},
@@ -155,7 +184,7 @@
             'N',
             #{inpt_seq},
             SYSDATE,
-          #{site_type}
+            #{site_type}
         )
     </insert>
 

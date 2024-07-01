@@ -36,6 +36,16 @@ public class BbsMngService{
 	private BbsMngMapper bbsMngMapper;
 
 	/**
+	 * 게시판 목록 CNT
+	 * @param vo
+	 * @return
+	 * @throws Exception
+	 */
+	public int getBbsListCNT(BbsMngVO vo) throws Exception{
+		return bbsMngMapper.getBbsListCNT(vo);
+	}
+
+	/**
 	 * 게시판 목록
 	 * @param vo
 	 * @return
@@ -223,7 +233,7 @@ public class BbsMngService{
 	 * @return
 	 * @throws Exception
 	 */
-	public Map<String, Object> updateBbs(BbsMngVO vo) throws Exception{
+	public Map<String, Object> updBbs(BbsMngVO vo) throws Exception {
 		Map<String, Object> map = new HashMap<>();
 		String rMsg = "";
 		boolean result = false;

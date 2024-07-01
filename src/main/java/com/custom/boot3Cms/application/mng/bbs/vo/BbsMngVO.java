@@ -125,6 +125,8 @@ public class BbsMngVO extends DefaultVO {
     @Getter @Setter
     private String data_range_use_yn;
 
+    private String flag;
+
     public BbsMngVO(){}
 
     public BbsMngVO(String bbs_info_seq){
