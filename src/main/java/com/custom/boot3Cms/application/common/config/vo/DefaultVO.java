@@ -133,6 +133,28 @@ public class DefaultVO implements Serializable {
 	@Schema(hidden = true)
 	private List<String> role_list;
 
+	private String[] del_img_seq;
+
+	private MultipartFile[] thumbnail;
+
+	public String[] getDel_img_seq() {
+		return del_img_seq;
+	}
+
+	public void setDel_img_seq(String[] del_img_seq) {
+		this.del_img_seq = del_img_seq;
+	}
+
+
+
+	public MultipartFile[] getThumbnail() {
+		return thumbnail;
+	}
+
+	public void setThumbnail(MultipartFile[] thumbnail) {
+		this.thumbnail = thumbnail;
+	}
+
 	public String getDel_file_count() { return del_file_count; }
 
 	public void setDel_file_count(String del_file_count) { this.del_file_count = del_file_count; }
