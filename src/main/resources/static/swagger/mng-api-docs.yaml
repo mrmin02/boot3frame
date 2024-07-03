@@ -1648,6 +1648,322 @@ paths:
             application/json;charset=UTF-8:
               schema:
                 $ref: '#/components/schemas/ResultVO'
+  /api/mng/article/{bbs_cd}/{article_seq}/comment:
+    put:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 댓글 복원 및 삭제
+      operationId: commentTmpDelete
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleMngVO'
+            examples:
+              test:
+                value:
+                  comment_seq : "1"
+                  flag : "d"
+              guide:
+                value:
+                  comment_seq: "댓글 순번"
+                  flag : "삭제일 경우 d , 복원일 경우, u"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 댓글 등록
+      operationId: commentInsert
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleMngVO'
+            examples:
+              test:
+                value:
+                  content : "댓글 테스트"
+                  prt_seq : "1"
+                  flag : "c"
+              guide:
+                value:
+                  content: "댓글 테스트"
+                  prt_seq: "부모글 순번"
+                  flag : "댓글 대댓글 구분 플레그 ( c , r )"
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/article/{bbs_cd}/proc:
+    put:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글 수정
+      operationId: articleUpdateProc
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                article_seq :
+                  description: "게시글 순번"
+                  default: "1"
+                  type: string
+                category_cd :
+                  description: "카테고리 code"
+                  default: "cate01"
+                  type: string
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                secret_yn :
+                  description: "비밀글 여부 Y N"
+                  default: "N"
+                  type: string
+                notice_yn :
+                  description: "공지 여부 Y N"
+                  default: "N"
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    post:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글 등록
+      operationId: articleProc
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  description: "파일 배열"
+                  type: array
+                  items:
+                    type: string
+                    format: binary
+                category_cd:
+                  description: "카테고리 code"
+                  default: "cate01"
+                  type: string
+                subject:
+                  description: "제목"
+                  default: "테스트 제목"
+                  type: string
+                content:
+                  description: "내용"
+                  default: "테스트 테스트 내용"
+                  type: string
+                secret_yn:
+                  description: "비밀글 여부 Y N"
+                  default: "N"
+                  type: string
+                notice_yn:
+                  description: "공지 여부 Y N"
+                  default: "N"
+                  type: string
+                prt_seq:
+                  description: "부모글 순번"
+                  default: ""
+                  type: string
+                prt_grp:
+                  description: "부모글 그룹"
+                  default: ""
+                  type: string
+        required: true
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+    delete:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글 삭제
+      operationId: articleDeleteProc
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json;charset=UTF-8:
+            schema:
+              $ref: '#/components/schemas/ArticleMngVO'
+            examples:
+              test:
+                value:
+                  article_seq: "32"
+                  del_yn: "Y"
+              guide:
+                value:
+                  article_seq: "게시글 순번"
+                  del_yn: "삭제 여부"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/article/{bbs_cd}/setting:
+    get:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글의 게시판 설정 정보
+      operationId: articleForm
+      parameters:
+        - name: article_seq
+          in: query
+          required: false
+          schema:
+            type: string
+          example: "1"
+        - name: flag
+          in: query
+          required: false
+          schema:
+            description: "플레그 ( 답글 : r )"
+            type: string
+          example: ""
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/article/{bbs_cd}/list:
+    get:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글 목록
+      operationId: articleList
+      parameters:
+        - name: pageIndex
+          in: query
+          required: false
+          schema:
+            type : string
+            description: "페이지 순번"
+            example: "1"
+        - name: searchKeyword
+          in: query
+          required: false
+          schema:
+            type: string
+            description: "검색어"
+            example: "테스트"
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
+  /api/mng/article/{bbs_cd}/detail/{article_seq}:
+    get:
+      tags:
+        - 게시글 관리 컨트롤러
+      summary: 게시글 상세보기
+      operationId: articleDetail
+      parameters:
+        - name: bbs_cd
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: article_seq
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/ResultVO'
 components:
   schemas:
     사용자 DTO:
@@ -2326,6 +2642,203 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/사용자 DTO'
+    ArticleMngVO:
+      type: object
+      properties:
+        searchCondition:
+          type: string
+          description: 검색 조건
+        searchKeyword:
+          type: string
+          description: 검색어
+        searchUseYn:
+          type: string
+          description: 검색 사용 여부
+          example: Y or N
+        searchOrderBy:
+          type: string
+          description: 검색 정렬 기준
+        pageIndex:
+          type: integer
+          description: 현재 페이지
+          format: int32
+        pageUnit:
+          type: integer
+          description: 페이지 개수
+          format: int32
+        file:
+          type: array
+          description: 파일 배열
+          items:
+            type: string
+            format: binary
+        inpt_user_name:
+          type: string
+        del_img_seq:
+          type: array
+          items:
+            type: string
+        thumbnail:
+          type: array
+          items:
+            type: string
+            format: binary
+        user_auth:
+          type: string
+        read_yn:
+          type: string
+        write_yn:
+          type: string
+        update_yn:
+          type: string
+        delete_yn:
+          type: string
+        category_nm:
+          type: string
+        category_del_yn:
+          type: string
+        category_order:
+          type: string
+        category_cd:
+          type: string
+        file_cnt:
+          type: string
+        bbs_type:
+          type: string
+        mobile_bbs_type:
+          type: string
+        bbs_dft_list_cnt:
+          type: string
+        bbs_page_cnt:
+          type: string
+        attach_file_use_yn:
+          type: string
+        comment_use_yn:
+          type: string
+        reply_use_yn:
+          type: string
+        notice_use_yn:
+          type: string
+        secret_use_yn:
+          type: string
+        category_use_yn:
+          type: string
+        pwd_use_yn:
+          type: string
+        date_range_use_yn:
+          type: string
+        file_size:
+          type: string
+        file_type:
+          type: string
+        bbs_info_seq:
+          type: string
+        bbs_cd:
+          type: string
+        bbs_nm:
+          type: string
+        bbs_remark:
+          type: string
+        bbs_use_yn:
+          type: string
+        bbs_del_yn:
+          type: string
+        inpt_seq:
+          type: string
+        inpt_date:
+          type: string
+        upd_seq:
+          type: string
+        upd_date:
+          type: string
+        date_remark:
+          type: string
+        bbs_cd_check_yn:
+          type: string
+        site_type:
+          type: string
+        data_range_use_yn:
+          type: string
+        flag:
+          type: string
+        article_seq:
+          type: string
+        subject:
+          type: string
+        secret_yn:
+          type: string
+        pwd_yn:
+          type: string
+        notice_yn:
+          type: string
+        content:
+          type: string
+        prt_grp:
+          type: string
+        prt_seq:
+          type: string
+        bbs_order:
+          type: string
+        read_cnt:
+          type: string
+        inpt_ip:
+          type: string
+        upd_ip:
+          type: string
+        user_id:
+          type: string
+        user_pwd:
+          type: string
+        del_yn:
+          type: string
+        link_url:
+          type: string
+        link_type:
+          type: string
+        hide_yn:
+          type: string
+        article_start_date:
+          type: string
+        article_end_date:
+          type: string
+        pwd:
+          type: string
+        inpt_user_dept:
+          type: string
+        inpt_user_type:
+          type: string
+        upd_user_type:
+          type: string
+        manager:
+          type: string
+        place:
+          type: string
+        nickname:
+          type: string
+        doc_source:
+          type: string
+        editor:
+          type: string
+        categorize:
+          type: string
+        publish_year:
+          type: string
+        publish_month:
+          type: string
+        public_range:
+          type: string
+        public_cycle:
+          type: string
+        public_time:
+          type: string
+        public_type:
+          type: string
+        youtube_url:
+          type: string
+        comment_seq:
+          type: string
+        repl_order:
+          type: string
   securitySchemes:
     Authorization:
       type: http

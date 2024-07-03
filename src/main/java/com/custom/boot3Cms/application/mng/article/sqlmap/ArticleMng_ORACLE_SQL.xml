@@ -6,9 +6,9 @@
         <if test="searchKeyword != null and searchKeyword != ''">
             AND
             (
-                TA.SUBJECT LIKE CONCAT('%',#{searchKeyword},'%') OR
-                TA.CONTENT LIKE CONCAT('%',#{searchKeyword},'%') OR
-                TA.INPT_USER_NAME LIKE CONCAT('%',#{searchKeyword},'%')
+                TA.SUBJECT LIKE '%'||#{searchKeyword}||'%' OR
+                TA.CONTENT LIKE '%'||#{searchKeyword}||'%' OR
+                TA.INPT_USER_NAME LIKE '%'||#{searchKeyword}||'%'
             )
         </if>
         <if test="category_cd != null and category_cd != ''">
@@ -22,6 +22,7 @@
             bbsList.*
         FROM (
             SELECT
+                ROW_NUMBER() OVER(ORDER BY PRT_GRP DESC, BBS_ORDER ASC, ARTICLE_SEQ ASC) as rNum,
                 TA.ARTICLE_SEQ,
                 TA.BBS_INFO_SEQ,
                 (SELECT TBC.CATEGORY_NM
@@ -39,24 +40,13 @@
                 TA.UPD_IP,
                 TA.READ_CNT,
                 TA.INPT_USER_NAME,
-                TA.INPT_USER_DEPT,
-                DATE_FORMAT(TA.INPT_DATE, '%Y-%m-%d') AS INPT_DATE,
+                TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
                 TA.UPD_USER_NAME,
                 UPD_DATE,
-                TA.PUBLISH_YEAR,
-                TA.PUBLISH_MONTH,
                 (SELECT COUNT(COMMENT_SEQ) FROM TB_ARTICLE_COMMENTS TAC WHERE TAC.ARTICLE_SEQ = TA.ARTICLE_SEQ AND TAC.DEL_YN = 'N') AS COMMENT_CNT,
                 (SELECT COUNT(FILE_SEQ) FROM TB_FILES TF WHERE TF.TABLE_SEQ = TA.ARTICLE_SEQ AND TF.TABLE_NM = 'TB_ARTICLES' ) AS FILE_CNT,
                 (SELECT BBS_NM FROM TB_BBS_INFO TBI WHERE TBI.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS BBS_NM,
-                (SELECT BBS_CD FROM TB_BBS_INFO TBI WHERE TBI.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS BBS_CD,
-                ARTICLE_START_DATE,
-                ARTICLE_END_DATE,
-                DOC_SOURCE,
-                TA.PUBLIC_RANGE,
-                TA.PUBLIC_CYCLE,
-                TA.PUBLIC_TIME,
-                TA.PUBLIC_TYPE,
-                TUD.NICKNAME as nickname
+                (SELECT BBS_CD FROM TB_BBS_INFO TBI WHERE TBI.BBS_INFO_SEQ = TA.BBS_INFO_SEQ) AS BBS_CD
             FROM TB_ARTICLES TA
             INNER JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
             WHERE 1 = 1
@@ -71,9 +61,7 @@
                 </choose>
             <include refid="articleWhere"/>
         ) bbsList
-        WHERE 1=1
-        ORDER BY bbsList.PRT_GRP DESC, bbsList.BBS_ORDER ASC, bbsList.ARTICLE_SEQ ASC
-        LIMIT #{firstIndex}, #{recordCountPerPage}
+        WHERE bbsList.rNum BETWEEN #{firstIndex} AND #{lastIndex}
     </select>
 
     <!-- 게시글 TOTAL COUNT -->
@@ -117,28 +105,11 @@
             TA.READ_CNT,
             TA.INPT_USER_NAME,
             TA.INPT_SEQ,
-            TA.INPT_USER_DEPT,
-            DATE_FORMAT(TA.INPT_DATE, '%Y-%m-%d') AS INPT_DATE,
+            TO_CHAR(TA.INPT_DATE, 'YYYY-MM-DD') AS INPT_DATE,
             TA.UPD_USER_NAME,
             TA.UPD_DATE,
             TBD.CATEGORY_USE_YN,
-            TBD.ATTACH_FILE_USE_YN,
-            DATE_FORMAT(TA.ARTICLE_START_DATE, '%Y-%m-%d') AS ARTICLE_START_DATE,
-            DATE_FORMAT(TA.ARTICLE_END_DATE, '%Y-%m-%d') AS ARTICLE_END_DATE,
-            TA.DOC_SOURCE,
-            TA.EDITOR,
-            TA.CATEGORIZE,
-            TA.LINK_URL,
-            TA.PUBLISH_YEAR,
-            TA.PUBLISH_MONTH,
-            TA.PUBLIC_RANGE,
-            TA.PUBLIC_CYCLE,
-            DATE_FORMAT(TA.PUBLIC_TIME, '%Y-%m-%d') AS PUBLIC_TIME,
-            TA.PUBLIC_TYPE,
-            TA.YOUTUBE_URL,
-            TA.MANAGER,
-            TUD.NICKNAME,
-            TA.PLACE
+            TBD.ATTACH_FILE_USE_YN
         FROM TB_ARTICLES TA
         INNER JOIN TB_BBS_DETAIL TBD ON TA.BBS_INFO_SEQ = TBD.BBS_INFO_SEQ
         INNER JOIN TB_USER_DETAIL TUD ON TA.INPT_SEQ = TUD.USER_SEQ
@@ -166,15 +137,13 @@
             TAC.PRT_SEQ,
             TAC.REPL_ORDER,
             TAC.DEL_YN,
-            TAC.INPT_USER_NAME,
             INPT_DATE,
-            TAC.UPD_USER_NAME,
             UPD_DATE,
             TAC.INPT_SEQ
         FROM TB_ARTICLE_COMMENTS TAC
         WHERE 1=1
         AND TAC.ARTICLE_SEQ = #{article_seq}
-        ORDER BY TAC.PRT_GRP, TAC.REPL_ORDER;
+        ORDER BY TAC.PRT_GRP, TAC.REPL_ORDER
         <!-- TODO 사용자 적용시 DEL_YN FLAG 처리 필요합니다. -->
     </select>
 
@@ -199,10 +168,13 @@
     </select>
 
     <!-- 게시글 컨텐츠 등록 -->
-    <insert id="setArticle" parameterType="com.custom.boot3Cms.application.mng.article.vo.ArticleMngVO"
-            useGeneratedKeys="true" keyProperty="article_seq">
+    <insert id="setArticle" parameterType="com.custom.boot3Cms.application.mng.article.vo.ArticleMngVO">
+        <selectKey keyProperty="article_seq" resultType="string" order="BEFORE">
+            SELECT TB_ARTICLE_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_ARTICLES
         (
+            ARTICLE_SEQ,
             BBS_INFO_SEQ,
             CATEGORY_CD,
             SUBJECT,
@@ -226,26 +198,11 @@
             INPT_IP,
             INPT_DATE,
             READ_CNT,
-            INPT_USER_NAME,
-            ARTICLE_START_DATE,
-            ARTICLE_END_DATE,
-            DOC_SOURCE,
-            EDITOR,
-            CATEGORIZE,
-            LINK_URL,
-            INPT_USER_DEPT,
-            PUBLISH_YEAR,
-            PUBLISH_MONTH,
-            PUBLIC_RANGE,
-            PUBLIC_CYCLE,
-            PUBLIC_TIME,
-            PUBLIC_TYPE,
-            YOUTUBE_URL,
-            MANAGER,
-            PLACE
+            INPT_USER_NAME
         )
         VALUES
         (
+            #{article_seq},
             #{bbs_info_seq},
             #{category_cd},
             #{subject},
@@ -288,33 +245,21 @@
                 </otherwise>
             </choose>
             #{inpt_ip},
-            now(),
+            SYSDATE,
             0,
-            #{inpt_user_name},
-            TIMESTAMP(#{article_start_date}),
-            TIMESTAMP(#{article_end_date}),
-            #{doc_source},
-            #{editor},
-            #{categorize},
-            #{link_url},
-            #{inpt_user_dept},
-            #{publish_year},
-            #{publish_month},
-            #{public_range},
-            #{public_cycle},
-            #{public_time},
-            #{public_type},
-            #{youtube_url},
-            #{manager},
-            #{place}
+            #{inpt_user_name}
         )
     </insert>
 
     <!-- 댓글 등록 -->
     <insert id="setComment" parameterType="com.custom.boot3Cms.application.mng.article.vo.ArticleMngVO"
             useGeneratedKeys="true" keyProperty="comment_seq">
+        <selectKey keyProperty="comment_seq" resultType="string" order="BEFORE">
+            SELECT TB_COMMENT_SEQ.NEXTVAL FROM DUAL
+        </selectKey>
         INSERT INTO TB_ARTICLE_COMMENTS
         (
+            COMMENT_SEQ,
             ARTICLE_SEQ,
             CONTENT,
             PRT_GRP,
@@ -330,11 +275,11 @@
                 </otherwise>
             </choose>
             DEL_YN,
-            INPT_DATE,
-            INPT_USER_NAME
+            INPT_DATE
         )
         VALUES
         (
+            #{comment_seq},
             #{article_seq},
             #{content},
             <choose>
@@ -371,8 +316,7 @@
                 </otherwise>
             </choose>
             'N',
-            NOW(),
-            #{inpt_user_name}
+            SYSDATE
         )
     </insert>
 
@@ -386,8 +330,8 @@
     <!-- 게시글 댓글 등록 (답글이 아닐 경우 prt_grp에 본인 seq를 넣어준다.)  -->
     <update id="setCommentPrtGrp" parameterType="com.custom.boot3Cms.application.mng.article.vo.ArticleMngVO">
         UPDATE TB_ARTICLE_COMMENTS SET
-        PRT_GRP = #{comment_seq},
-        PRT_SEQ = #{comment_seq}
+            PRT_GRP = #{comment_seq},
+            PRT_SEQ = #{comment_seq}
         WHERE COMMENT_SEQ = #{comment_seq}
     </update>
 
@@ -416,23 +360,8 @@
                 </otherwise>
             </choose>
             UPD_IP = #{upd_ip},
-            UPD_DATE = NOW(),
-            UPD_USER_NAME = #{upd_user_name},
-            ARTICLE_START_DATE = TIMESTAMP(#{article_start_date}),
-            ARTICLE_END_DATE = TIMESTAMP(#{article_end_date}),
-            DOC_SOURCE = #{doc_source},
-            EDITOR = #{editor},
-            CATEGORIZE = #{categorize},
-            LINK_URL = #{link_url},
-            INPT_USER_DEPT = #{inpt_user_dept},
-            PUBLISH_YEAR = #{publish_year},
-            PUBLISH_MONTH = #{publish_month},
-            PUBLIC_RANGE = #{public_range},
-            PUBLIC_CYCLE = #{public_cycle},
-            PUBLIC_TIME = #{public_time},
-            PUBLIC_TYPE = #{public_type},
-            MANAGER = #{manager},
-            PLACE = #{place}
+            UPD_DATE = SYSDATE,
+            UPD_USER_NAME = #{upd_user_name}
         WHERE ARTICLE_SEQ = #{article_seq}
     </update>
 
@@ -441,7 +370,7 @@
         UPDATE TB_ARTICLES SET
             DEL_YN = 'Y',
             UPD_SEQ = #{upd_seq},
-            UPD_DATE = NOW()
+            UPD_DATE = SYSDATE
         WHERE ARTICLE_SEQ = #{article_seq}
         AND BBS_INFO_SEQ =
         <choose>
@@ -460,8 +389,7 @@
         UPDATE TB_ARTICLE_COMMENTS SET
             DEL_YN = #{del_yn},
             UPD_SEQ = #{upd_seq},
-            UPD_DATE = NOW(),
-            UPD_USER_TYPE = #{upd_user_type}
+            UPD_DATE = SYSDATE
         WHERE COMMENT_SEQ = #{comment_seq}
         AND ARTICLE_SEQ = #{article_seq}
     </update>

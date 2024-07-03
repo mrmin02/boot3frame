@@ -9,19 +9,19 @@ import lombok.Setter;
 
 /**
  * 게시글 관리 구조체
+ * boot3Cms
  *
- * @author SEKOREA
- * @version 1.1
+ * @author cms
+ * @version 1.0
  * @see <pre>
  *  Modification Information
  *
- * 	수정일       / 수정자    / 수정내용
+ * 	수정일     / 수정자   / 수정내용
  * 	------------------------------------------
- * 	2017-11-10 / 김기식	  / 최초 생성
- * 	2018-03-18 / 에스이코리아	  / 프레임워크 구조 변경
+ * 	2024-07-03 / cms  / 최초 생성
+ *
  * </pre>
- * @since 2017-11-10
- */
+ * @since 2024-07-03 */
 @Data
 @EqualsAndHashCode(callSuper = false)
 public class ArticleMngVO extends BbsMngVO {

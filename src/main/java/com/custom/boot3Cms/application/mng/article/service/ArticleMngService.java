@@ -295,7 +295,7 @@ public class ArticleMngService {
      * @return
      * @throws Exception
      */
-    public Map<String, Object> updArticle(ArticleMngVO vo, Principal principal) throws Exception{
+    public Map<String, Object> updArticle(ArticleMngVO vo, Principal principal) throws Exception {
         Map<String, Object> map = new HashMap<>();
         String rMsg = "";
         String rHeader = "";
@@ -303,24 +303,25 @@ public class ArticleMngService {
         // 게시판 설정정보 GET
         BbsMngVO bbsMngVO = bbsMngMapper.getBbsDetail(vo);
         // 동일한 변수가 존재하므로 초기화 방지..
-        CommonUtil.fn_copyClassByFilterBeanName(vo, bbsMngVO,"inpt_date");
-        if(principal != null){
+        CommonUtil.fn_copyClassByFilterBeanName(vo, bbsMngVO, "inpt_date");
+        if (principal != null) {
             vo.setUpd_user_type("U");
             LoginVO loginVO = CommonUtil.fn_getUserAuth(principal);
             vo.setInpt_seq(loginVO.getUser_seq());
             vo.setUpd_seq(loginVO.getUser_seq());
-        }else {
+        } else {
             vo.setUpd_user_type("S");
         }
         // 설정정보가 존재 할 경우
-        if(StringUtil.isNotEmpty(vo.getBbs_info_seq()) && StringUtil.isNotEmpty(vo.getArticle_seq()) && "u".equals(vo.getFlag())){
+        if (StringUtil.isNotEmpty(vo.getBbs_info_seq())
+                && StringUtil.isNotEmpty(vo.getArticle_seq()) && "u".equals(vo.getFlag())) {
             ArticleMngVO tempArticleVO = articleMngMapper.getArticle(vo);
-            if(bbsMngVO.getBbs_type().equals("BBS_004")){
+            if (bbsMngVO.getBbs_type().equals("BBS_004")) {
                 vo.setContent(vo.getSubject());
             }
             result = articleMngMapper.updArticle(vo) > 0;
             // 게시판 수정에 성공 할 경우
-            if(result) {
+            if (result) {
 
                 //웹진형 게시판 썸네일 이미지 등록
                 if ((vo.getBbs_type().equals("BBS_001")) || (vo.getBbs_type().equals("BBS_002"))) {
@@ -354,7 +355,7 @@ public class ArticleMngService {
                                     break;
                                 }
                             }
-                            if(!result){
+                            if (!result) {
                                 rHeader = "에러!";
                                 rMsg = "게시글 수정에 실패하였습니다.<br/>(이전 파일정보 삭제에 실패하였습니다.)";
                             }
@@ -499,19 +500,20 @@ public class ArticleMngService {
                     rHeader = "알림!";
                     rMsg = "게시글 수정이 완료되었습니다.";
                 }
-            }else{
+            } else {
                 rHeader = "에러!";
                 rMsg = "게시글 수정에 실패하였습니다.<br/>게시글 정보 수정 중 오류가 발생했습니다.";
             }
-        }else if(StringUtil.isNotEmpty(vo.getBbs_info_seq()) && StringUtil.isNotEmpty(vo.getArticle_seq()) && "d".equals(vo.getFlag())) {
-                articleMngMapper.delCommentReal(vo); //게시글 댓글 삭제
-                result = articleMngMapper.delArticle(vo) > 0;
-                /*result = articleMngMapper.delArticleReal(vo) > 0;*/ //게시글 물리 삭제
+        } else if (StringUtil.isNotEmpty(vo.getBbs_info_seq())
+                && StringUtil.isNotEmpty(vo.getArticle_seq()) && "d".equals(vo.getFlag())) {
+            articleMngMapper.delCommentReal(vo); //게시글 댓글 삭제
+            result = articleMngMapper.delArticle(vo) > 0;
+            /*result = articleMngMapper.delArticleReal(vo) > 0;*/ //게시글 물리 삭제
 
-                rHeader = result ? "알림!" : "에러!";
-                rMsg = result ? "게시글 삭제에 성공하였습니다." : "게시글 삭제에 실패하였습니다.";
+            rHeader = result ? "알림!" : "에러!";
+            rMsg = result ? "게시글 삭제에 성공하였습니다." : "게시글 삭제에 실패하였습니다.";
 
-        }else{
+        } else {
             rHeader = "에러!";
             rMsg = "잘못된 접근입니다.";
         }
@@ -547,6 +549,7 @@ public class ArticleMngService {
             }
             result = articleMngMapper.setComment(vo) > 0;
             if (result) {
+                // FIXME flag r 은 대댓글?
                 if(!vo.getFlag().equals("r")){ //답댓글이 아닐 경우 prt_grp에 본인 seq를 넣어준다.
                     result = articleMngMapper.setCommentPrtGrp(vo) > 0;
                 }
